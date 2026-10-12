@@ -9,6 +9,9 @@ const mathEnd = source.indexOf('const digitMarkup =');
 assert.notEqual(mathStart, -1);
 assert.notEqual(mathEnd, -1);
 const mathApi = new Function(`let lastReadingTitle = ''; let lastCopyingSequence = -1; ${source.slice(mathStart, mathEnd)}; return { makeOperation, makeContent };`)();
+const markupStart = source.indexOf('function exerciseMarkup(');
+const markupEnd = source.indexOf('\nfunction printableHtml(', markupStart);
+const markupApi = new Function('labels', 'escapeHtml', 'geometrySvg', `${source.slice(markupStart, markupEnd)}; return exerciseMarkup;`)({ sumas: 'Sumas', restas: 'Restas', multiplicaciones: 'Multiplicaciones', divisiones: 'Divisiones' }, value => String(value), () => '');
 
 const poolStart = source.indexOf('function difficultyTier(');
 const poolEnd = source.indexOf('const geometryFigureFor =');
@@ -164,5 +167,22 @@ test('el copiado no añade párrafos genéricos que rompan la historia', () => {
   assert.doesNotMatch(source, /const sequence = \[\.\.\.copyingSequences\[sequenceIndex\], \.\.\.copyingExtraParagraphs\]/);
   const paragraphSelect = source.match(/id="paragraphs"[\s\S]*?<\/select>/)?.[0] || '';
   assert.doesNotMatch(paragraphSelect, /value="[6-8]"/);
+});
+
+test('las fichas imprimibles incluyen respuestas en soluciones y espacio para resolver', () => {
+  for (const [type, question, answer] of [
+    ['sumas', '24 + 18 =', 42],
+    ['restas', '54 − 12 =', 42],
+    ['multiplicaciones', '6 × 7 =', 42],
+    ['divisiones', '84 ÷ 2 =', 42]
+  ]) {
+    const config = { type };
+    const item = { question, answer };
+    const solution = markupApi(config, item, 0, true);
+    assert.ok(type === 'divisiones' ? solution.includes('>42</span>') : solution.includes('>42</td>'), `${type}: no muestra la respuesta en la ficha de soluciones`);
+    const worksheet = markupApi(config, item, 0, false);
+    if (type === 'sumas' || type === 'restas') assert.ok(worksheet.includes('color="#c4cbd4"'), `${type}: falta línea de respuesta`);
+    if (type === 'multiplicaciones') assert.equal((worksheet.match(/color="#c4cbd4"/g) || []).length, 3, 'multiplicación: faltan líneas de espacio de trabajo');
+  }
 });
 

@@ -1358,10 +1358,12 @@ function exerciseMarkup(config, item, index, solutions) {
     const digitMarkup = value => [...String(value)].map(digit => `<span style="display:inline-block;width:1ch;text-align:center">${digit}</span>`).join('');
     const numberRow = (operator, value) => `<tr><td width="20%" align="center" valign="middle" style="font:700 14pt 'Courier New',monospace">${operator || '&nbsp;'}</td><td width="80%" align="right" valign="middle" style="font:700 14pt 'Courier New',monospace"><span style="display:inline-flex;justify-content:flex-end">${digitMarkup(value)}</span></td></tr>`;
     const answerRows = solutions
-      ? `<tr><td colspan="2" height="8mm" align="right" valign="middle" style="font:700 13pt Arial,Helvetica,sans-serif;padding-right:2mm;color:#20283f">${item.answer}</td></tr>`
+      ? `<tr><td colspan="2" height="8mm" align="right" valign="middle" style="font:700 13pt Arial,Helvetica,sans-serif;padding-right:2mm;color:#20283f">${escapeHtml(String(item.answer))}</td></tr>`
       : config.type === 'multiplicaciones'
         ? Array.from({ length: 3 }, () => '<tr><td colspan="2" height="25" align="center" valign="bottom"><hr width="100%" size="1" color="#c4cbd4" noshade></td></tr>').join('')
-        : '';
+        : config.type === 'sumas' || config.type === 'restas'
+          ? '<tr><td colspan="2" height="25" align="center" valign="bottom"><hr width="100%" size="1" color="#c4cbd4" noshade></td></tr>'
+          : '';
     const operationRows = threeTermMatch
       ? `${numberRow('', threeTermMatch[1])}${numberRow(threeTermMatch[2], threeTermMatch[3])}${numberRow(threeTermMatch[4], threeTermMatch[5])}`
       : (() => {
@@ -1421,6 +1423,7 @@ function downloadPdf(config, items, solutions = false) {
   const margin = 15;
   const pageWidth = 210;
   const pageHeight = 297;
+  const contentBottom = pageHeight - margin - 10;
   let y = 17;
   doc.setTextColor(32, 40, 63);
   const mathTypes = ['sumas', 'restas', 'multiplicaciones', 'divisiones'];
@@ -1479,7 +1482,23 @@ function downloadPdf(config, items, solutions = false) {
       lineY = topY + 16;
     }
     doc.line(operatorX - 3, lineY, numberRight + 1, lineY);
-    if (solutions) doc.text(String(item.answer), numberRight, lineY + 8, { align: 'right' });
+    if (solutions) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.text(String(item.answer), numberRight, lineY + 8, { align: 'right' });
+    } else if (config.type === 'multiplicaciones') {
+      doc.setDrawColor(196, 203, 212);
+      doc.setLineWidth(0.25);
+      [lineY + 8, lineY + 15, lineY + 22].forEach(answerY => doc.line(operatorX - 3, answerY, numberRight + 1, answerY));
+      doc.setDrawColor(0, 0, 0);
+      doc.setLineWidth(0.2);
+    } else if (config.type === 'sumas' || config.type === 'restas') {
+      doc.setDrawColor(196, 203, 212);
+      doc.setLineWidth(0.25);
+      doc.line(operatorX - 3, lineY + 8, numberRight + 1, lineY + 8);
+      doc.setDrawColor(0, 0, 0);
+      doc.setLineWidth(0.2);
+    }
   };
   const drawGeometryFigure = (figure, x, topY) => {
     doc.setDrawColor(49, 92, 155);
@@ -1520,7 +1539,7 @@ function downloadPdf(config, items, solutions = false) {
     doc.setLineWidth(0.2);
   };
   const ensureSpace = height => {
-    if (y + height <= pageHeight - margin) return;
+    if (y + height <= contentBottom) return;
     doc.addPage();
     y = margin;
   };
@@ -1593,7 +1612,7 @@ function downloadPdf(config, items, solutions = false) {
     items.forEach((item, index) => {
     if (config.type === 'geometria') {
       const questionLines = doc.splitTextToSize(`${index + 1}. ${item.question}`, pageWidth - margin * 2 - 34);
-      ensureSpace(42);
+      ensureSpace(Math.max(42, questionLines.length * 6 + (solutions ? 14 : 42)));
       drawGeometryFigure(item.figure, margin + 12, y + 2);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
@@ -1615,6 +1634,10 @@ function downloadPdf(config, items, solutions = false) {
       write(item.title, 14, { bold: true, gap: 3 });
       write(item.text, 11, { gap: 5 });
       item.questions.forEach((question, questionIndex) => {
+        if (!solutions) {
+          const questionLines = doc.splitTextToSize(`${questionIndex + 1}. ${question}`, pageWidth - margin * 2);
+          ensureSpace(questionLines.length * (11 * 0.48 + 2) + 3 * 10 + 20);
+        }
         write(`${questionIndex + 1}. ${question}`, 11, { bold: true, gap: 2 });
         if (solutions) write(`Respuesta: ${item.answers[questionIndex]}`, 10, { gap: 5 });
         else writeAnswerLines(3);

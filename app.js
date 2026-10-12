@@ -58,7 +58,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261012-95', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261012-97', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -77,6 +77,29 @@ const updateDigitLabels = () => {
   document.querySelector('#first-digits-label').textContent = names[0];
   document.querySelector('#second-digits-label').textContent = names[1];
 };
+const updateSubtractionDigitOptions = () => {
+  const first = document.querySelector('#firstDigits');
+  const second = document.querySelector('#secondDigits');
+  const constrainsSubtraction = activity.value === 'restas';
+  const gradeMaximum = { Inicial: 9, Medio: 999, Avanzado: 99999 }[document.querySelector('#difficulty').value] || 9;
+  const firstMaximum = first.value === 'auto' ? gradeMaximum : (10 ** Number(first.value)) - 1;
+  [...second.options].forEach(option => {
+    option.disabled = constrainsSubtraction && option.value !== 'auto' && (10 ** (Number(option.value) - 1)) > firstMaximum;
+  });
+  if (second.selectedOptions[0]?.disabled) second.value = 'auto';
+};
+const updateDivisionOptions = () => {
+  const divisor = document.querySelector('#specificDivisor');
+  const isRemainderDivision = activity.value === 'divisiones' && document.querySelector('#divisionMode').value === 'remainder';
+  const digits = document.querySelector('#firstDigits').value;
+  const difficulty = document.querySelector('#difficulty').value;
+  const autoMaximum = { Inicial: 9, Medio: 999, Avanzado: 99999 }[difficulty] || 9;
+  const dividendMaximum = digits === 'auto' ? autoMaximum : (10 ** Number(digits)) - 1;
+  [...divisor.options].forEach(option => {
+    option.disabled = isRemainderDivision && option.value !== 'all' && dividendMaximum <= Number(option.value);
+  });
+  if (divisor.selectedOptions[0]?.disabled) divisor.value = 'all';
+};
 const updateActivityFields = () => {
   const isMath = ['sumas', 'restas', 'multiplicaciones', 'divisiones'].includes(activity.value);
   const usesMultipleTerms = activity.value === 'sumas';
@@ -93,6 +116,8 @@ const updateActivityFields = () => {
   document.querySelector('#table-field').classList.toggle('hidden-field', activity.value !== 'multiplicaciones');
   document.querySelector('#specific-divisor-field').classList.toggle('hidden-field', activity.value !== 'divisiones' || document.querySelector('#secondDigits').value !== '1');
   document.querySelector('#remainder-field').classList.toggle('hidden-field', activity.value !== 'divisiones');
+  updateSubtractionDigitOptions();
+  updateDivisionOptions();
 };
 const savePreferences = () => {
   try { localStorage.setItem(preferenceKey, JSON.stringify(Object.fromEntries(preferenceIds.map(id => [id, document.querySelector(`#${id}`).value])))); } catch (error) { /* almacenamiento opcional */ }
@@ -291,6 +316,12 @@ function difficultyIndex(difficulty) {
   return 5;
 }
 
+function difficultyTier(difficulty) {
+  if (difficulty === 'Inicial' || difficulty === 'Tranquila') return 'Inicial';
+  if (difficulty === 'Medio' || difficulty === 'Estándar') return 'Medio';
+  return 'Avanzado';
+}
+
 function rangeForDigits(digits, fallback, minimum = 1) {
   if (digits === 'auto') return fallback;
   const size = Number(digits);
@@ -313,32 +344,39 @@ function makeOperation(type, difficulty, level = '', operands = 2, firstDigits =
   const grade = level ? levelIndex(level) : difficultyIndex(difficulty);
   if (type === 'multiplicaciones') {
     const rangesByGrade = [[1, 9, 2, 5], [1, 20, 2, 5], [10, 99, 2, 9], [100, 999, 2, 9], [1000, 9999, 2, 9], [1000, 99999, 2, 12], [10000, 999999, 10, 99]];
-    const ranges = [...(rangesByGrade[grade] || rangesByGrade[1])];
-    if ((difficulty === 'Avanzado' || difficulty === 'Un poquito más') && grade < 6) { ranges[0] *= 10; ranges[1] *= 10; }
+    const ranges = rangesByGrade[grade] || rangesByGrade[1];
     const firstRange = rangeForDigits(firstDigits, ranges.slice(0, 2));
     const secondRange = rangeForDigits(secondDigits, ranges.slice(2, 4), 2);
     const a = randomInt(firstRange[0], firstRange[1]);
     const table = options.tableNumber && options.tableNumber !== 'all' ? Number(options.tableNumber) : null;
-    const b = table && Number(secondDigits) === 1 ? table : randomInt(secondRange[0], secondRange[1]);
+    // La tabla seleccionada tiene prioridad: siempre debe poder reconocerse en la ficha.
+    const b = table || randomInt(secondRange[0], secondRange[1]);
     return { question: `${a} × ${b} =`, answer: a * b };
   }
   const rangesByGrade = [[1, 9], [1, 20], [10, 99], [10, 999], [100, 9999], [1000, 99999], [10000, 999999]];
   const range = rangesByGrade[grade] || rangesByGrade[1];
-  let [minimum, maximum] = range;
-  if ((difficulty === 'Avanzado' || difficulty === 'Un poquito más') && grade < 6) { minimum *= 10; maximum *= 10; }
+  const [minimum, maximum] = range;
   if (type === 'divisiones') {
     const dividendRange = rangeForDigits(firstDigits, [minimum, maximum]);
     const divisorRange = rangeForDigits(secondDigits, [2, grade >= 5 ? 12 : 9], 2);
+    const remainderMode = options.divisionMode === 'remainder';
     const specificDivisor = options.specificDivisor && options.specificDivisor !== 'all' ? Number(options.specificDivisor) : null;
     if (specificDivisor && Number(secondDigits) === 1) divisorRange[0] = divisorRange[1] = specificDivisor;
+    if (remainderMode) divisorRange[1] = Math.min(divisorRange[1], dividendRange[1] - 1);
     for (let attempt = 0; attempt < 20; attempt += 1) {
       const divisor = randomInt(divisorRange[0], divisorRange[1]);
-      const minQuotient = Math.ceil(dividendRange[0] / divisor);
-        const remainderMode = options.divisionMode === 'remainder';
-        const maxQuotient = Math.floor((dividendRange[1] - (remainderMode ? divisor - 1 : 0)) / divisor);
+      const minQuotient = remainderMode
+        ? Math.max(1, Math.ceil((dividendRange[0] - divisor + 1) / divisor))
+        : Math.ceil(dividendRange[0] / divisor);
+      const maxQuotient = remainderMode
+        ? Math.floor((dividendRange[1] - 1) / divisor)
+        : Math.floor(dividendRange[1] / divisor);
       if (minQuotient <= maxQuotient) {
         const quotient = randomInt(Math.max(1, minQuotient), Math.max(1, maxQuotient));
-        const remainder = remainderMode ? randomInt(1, divisor - 1) : 0;
+        const minimumRemainder = remainderMode ? Math.max(1, dividendRange[0] - divisor * quotient) : 0;
+        const maximumRemainder = remainderMode ? Math.min(divisor - 1, dividendRange[1] - divisor * quotient) : 0;
+        if (remainderMode && minimumRemainder > maximumRemainder) continue;
+        const remainder = remainderMode ? randomInt(minimumRemainder, maximumRemainder) : 0;
         const dividend = divisor * quotient + remainder;
         if (dividend <= dividendRange[1]) return { question: `${dividend} ÷ ${divisor} =`, answer: remainder ? `${quotient} · resto ${remainder}` : quotient };
       }
@@ -347,9 +385,19 @@ function makeOperation(type, difficulty, level = '', operands = 2, firstDigits =
     const fallbackQuotient = Math.max(1, Math.floor(dividendRange[1] / fallbackDivisor));
     return { question: `${fallbackDivisor * fallbackQuotient} ÷ ${fallbackDivisor} =`, answer: fallbackQuotient };
   }
-  let a = randomInt(minimum, maximum), b = randomInt(minimum, maximum);
+  const firstRange = rangeForDigits(firstDigits, range);
+  const secondRange = rangeForDigits(secondDigits, type === 'restas' && secondDigits === 'auto' ? firstRange : range);
+  let a = randomInt(firstRange[0], firstRange[1]);
+  let b = randomInt(secondRange[0], secondRange[1]);
+  if (type === 'restas' && operands === 2) {
+    const highestValidSubtrahend = Math.min(secondRange[1], firstRange[1] - 1);
+    if (highestValidSubtrahend >= secondRange[0]) {
+      b = randomInt(secondRange[0], highestValidSubtrahend);
+      a = randomInt(Math.max(firstRange[0], b + 1), firstRange[1]);
+    }
+  }
   if (operands === 3 && ['sumas', 'restas'].includes(type)) {
-    let c = randomInt(minimum, maximum);
+    let c = randomInt(secondRange[0], secondRange[1]);
     if (type === 'restas') [a, b, c] = [a, b, c].sort((first, second) => second - first);
     if (attempt < 80 && options.carryMode && options.carryMode !== 'any') {
       const carries = type === 'sumas' ? hasAdditionCarry(a, b, c) : hasSubtractionBorrow(a, b) || hasSubtractionBorrow(a - b, c);
@@ -693,7 +741,7 @@ calligraphySamples.sentences.push('La estrella brilla por la noche.', 'Mi perro 
 
 const spellingActivities = [
   ['Completa con b o v', 'La _icicleta de Bea es _erde.', 'La bicicleta de Bea es verde.'],
-  ['Completa con g o j', 'El _inete monta un ca_allo.', 'El jinete monta un caballo.'],
+  ['Completa con g o j', 'El _inete monta un gara_e.', 'El jinete monta un garaje.'],
   ['Completa con h', 'Ayer _icimos una excursión y _allamos un tesoro.', 'Ayer hicimos una excursión y hallamos un tesoro.'],
   ['Completa con c o z', 'El _apato está junto a la _anahoria.', 'El zapato está junto a la zanahoria.'],
   ['Coloca las mayúsculas', 'marta vive en sevilla y visita el museo.', 'Marta vive en Sevilla y visita el museo.'],
@@ -701,11 +749,11 @@ const spellingActivities = [
   ['Completa con ll o y', 'El po_ito corre detrás de la _egua.', 'El pollito corre detrás de la yegua.'],
   ['Completa con r o rr', 'El pe_o corre alrededor del ca_o.', 'El perro corre alrededor del carro.'],
   ['Completa con m o n', 'La ca_pana suena junto al ta_bor.', 'La campana suena junto al tambor.'],
-  ['Completa con mp o mb', 'El ca_po tiene una bo_billa.', 'El campo tiene una bombilla.'],
-  ['Completa con güe o gue', 'La ci_eña vuela sobre el para_e.', 'La cigüeña vuela sobre el parque.'],
+  ['Completa con mp o mb', 'El ca__o tiene una bo__a.', 'El campo tiene una bomba.'],
+  ['Completa con gü o gu', 'La ci_eña vuela sobre el para_as.', 'La cigüeña vuela sobre el paraguas.'],
   ['Completa con qu o c', 'El _eso está en la _ocina.', 'El queso está en la cocina.'],
   ['Completa con s o x', 'El e_amen fue muy sencillo y e_plicó la respuesta.', 'El examen fue muy sencillo y explicó la respuesta.'],
-  ['Coloca los signos', 'que sorpresa has preparado', '¡Qué sorpresa has preparado!'],
+  ['Coloca los signos y las tildes', 'que sorpresa has preparado', '¡Qué sorpresa has preparado!'],
   ['Coloca las tildes', 'El pajaro llevo una ramita al arbol.', 'El pájaro llevó una ramita al árbol.'],
   ['Completa con y o i', 'La _glesia está junto al ra_o.', 'La iglesia está junto al rayo.']
 ];
@@ -738,15 +786,15 @@ spellingActivities.push(
   ['Completa con ll o y', 'La _ave está cerca de la _egua.', 'La llave está cerca de la yegua.'],
   ['Completa con r o rr', 'El pe_o siguió el ca_o.', 'El perro siguió el carro.'],
   ['Completa con m o n', 'El i_vierno llegó con mucho _ieve.', 'El invierno llegó con mucha nieve.'],
-  ['Completa con mp o mb', 'La ta_bora sonó junto al ca_po.', 'La tambora sonó junto al campo.'],
-  ['Completa con güe o gue', 'El para_as está junto a la ci_eña.', 'El paraguas está junto a la cigüeña.'],
-  ['Completa con qu o c', 'El _ilómetro empieza junto al _amino.', 'El kilómetro empieza junto al camino.'],
+  ['Completa con mp o mb', 'La ta__ora sonó junto al ca__o.', 'La tambora sonó junto al campo.'],
+  ['Completa con gü o gu', 'El para_as está junto a la ci_eña.', 'El paraguas está junto a la cigüeña.'],
+  ['Completa con qu o c', 'El pa__ete llegó a la _iudad.', 'El paquete llegó a la ciudad.'],
   ['Completa con s o x', 'La e_cursión pasó junto al e_tanque.', 'La excursión pasó junto al estanque.'],
   ['Coloca las tildes', 'El lapiz quedo junto al sofa.', 'El lápiz quedó junto al sofá.'],
-  ['Coloca los signos', 'que dia tan bonito', '¡Qué día tan bonito!'],
-  ['Coloca las mayúsculas', 'ana vive en toledo y estudia musica.', 'Ana vive en Toledo y estudia música.'],
+  ['Coloca los signos', 'Has terminado la actividad', '¿Has terminado la actividad?'],
+  ['Coloca las mayúsculas', 'ana vive en toledo y escucha canciones.', 'Ana vive en Toledo y escucha canciones.'],
   ['Completa con y o i', 'La _glesia tiene un ra_o en la torre.', 'La iglesia tiene un rayo en la torre.'],
-  ['Completa con b o v', 'La _entana tiene un _isillo.', 'La ventana tiene un visillo.']
+  ['Completa con b o v', 'La _aca bebe agua junto al _arco.', 'La vaca bebe agua junto al barco.']
 );
 
 const practicalActivities = {
@@ -832,7 +880,7 @@ const practicalActivities = {
 };
 
 spellingActivities.push(
-  ['Completa con b o v', 'El _arco navega junto a la _oya.', 'El barco navega junto a la boya.'],
+  ['Completa con b o v', 'La _aca bebe agua junto al _arco.', 'La vaca bebe agua junto al barco.'],
   ['Completa con g o j', 'La _irafa come ho_as del árbol.', 'La jirafa come hojas del árbol.'],
   ['Completa con h', 'Mi _ermano _izo una tarta.', 'Mi hermano hizo una tarta.'],
   ['Coloca las tildes', 'La musica sono en el salon.', 'La música sonó en el salón.'],
@@ -850,16 +898,16 @@ logicActivities.push(
 );
 
 spellingActivities.push(
-  ['Completa con b o v', 'El _úho vive en un ár_ol.', 'El búho vive en un árbol.'],
+  ['Completa con b o v', 'El _urro vive junto al _osque.', 'El burro vive junto al bosque.'],
   ['Completa con g o j', 'La _elatina está en la nevera.', 'La gelatina está en la nevera.'],
   ['Completa con h', 'El _ielo cubría la _ierba.', 'El hielo cubría la hierba.'],
   ['Coloca las tildes', 'El camion paso junto al rio.', 'El camión pasó junto al río.'],
-  ['Coloca los signos', 'cuando comienza la pelicula', '¿Cuándo comienza la película?'],
+  ['Coloca los signos', 'Has terminado la actividad', '¿Has terminado la actividad?'],
   ['Completa con ll o y', 'El _ate navega cerca de la _egua.', 'El yate navega cerca de la yegua.'],
   ['Completa con r o rr', 'La to_uga cruza el ca_il.', 'La tortuga cruza el carril.'],
   ['Coloca las mayúsculas', 'lucas viaja a madrid en verano.', 'Lucas viaja a Madrid en verano.'],
-  ['Completa con c o z', 'El _iervo corre por el bos_que.', 'El ciervo corre por el bosque.'],
-  ['Completa con qu o c', 'El _into tiene una _uerda.', 'El quinto tiene una cuerda.']
+  ['Completa con c o z', 'La _ebra corre por la _ona.', 'La cebra corre por la zona.'],
+  ['Completa con qu o c', 'El pa__ete llegó a la _iudad.', 'El paquete llegó a la ciudad.']
 );
 
 logicActivities.push(
@@ -927,6 +975,11 @@ const additionalPracticalActivities = {
   ]
 };
 Object.entries(additionalPracticalActivities).forEach(([type, items]) => practicalActivities[type].push(...items));
+
+const practicalActivitiesByDifficulty = {
+  Inicial: Object.fromEntries(Object.entries(practicalActivities).map(([type, items]) => [type, items.slice(0, items.length - additionalPracticalActivities[type].length)])),
+  Medio: Object.fromEntries(Object.entries(additionalPracticalActivities).map(([type, items]) => [type, [...items]]))
+};
 
 const expandedPracticalActivities = {
   reloj: [
@@ -1040,6 +1093,51 @@ const finalPracticalExpansion = {
   ]
 };
 Object.entries(finalPracticalExpansion).forEach(([type, items]) => practicalActivities[type].push(...items));
+Object.entries(expandedPracticalActivities).forEach(([type, items]) => {
+  practicalActivitiesByDifficulty.Avanzado ??= {};
+  practicalActivitiesByDifficulty.Avanzado[type] = [...items, ...(finalPracticalExpansion[type] || [])];
+});
+
+function activityQuestionPool(items, difficulty, type) {
+  const level = difficultyTier(difficulty);
+  if (type === 'ortografia') {
+    const skillGroups = {
+      Inicial: /b o v|g o j|con h|c o z|mayúsculas|ll o y|r o rr/i,
+      Medio: /m o n|mp o mb|qu o c|tildes|signos/i,
+      Avanzado: /gü o gu|s o x|y o i|tildes|signos/i
+    };
+    const selected = items.filter(item => skillGroups[level].test(item[0]));
+    return selected.length ? selected : items;
+  }
+  if (type === 'logica') {
+    const scored = items.map(item => {
+      const values = item[0].match(/\d+/g).map(Number);
+      const differences = values.slice(1).map((value, index) => value - values[index]);
+      const constantStep = differences.every(value => value === differences[0]);
+      const step = Math.abs(differences[0] || 0);
+      const geometric = values.slice(2).every((value, index) => value * values[index] === values[index + 1] ** 2);
+      const complexity = geometric || !constantStep ? 2 : step <= 3 && Math.max(...values) <= 30 ? 0 : step <= 10 && Math.max(...values) <= 100 ? 1 : 2;
+      return { item, complexity };
+    });
+    const target = { Inicial: 0, Medio: 1, Avanzado: 2 }[level];
+    const selected = scored.filter(entry => entry.complexity === target).map(entry => entry.item);
+    return selected.length ? selected : scored.filter(entry => Math.abs(entry.complexity - target) === Math.min(...scored.map(candidate => Math.abs(candidate.complexity - target)))).map(entry => entry.item);
+  }
+  return items;
+}
+
+function copyingSequencePool(difficulty) {
+  const ranked = copyingSequences.map((sequence, index) => {
+    const text = sequence.join(' ');
+    const sentences = text.split(/[.!?]+/).filter(Boolean);
+    const averageWords = sentences.reduce((total, sentence) => total + sentence.trim().split(/\s+/).length, 0) / Math.max(1, sentences.length);
+    return { index, averageWords };
+  }).sort((first, second) => first.averageWords - second.averageWords);
+  const tier = { Inicial: 0, Medio: 1, Avanzado: 2 }[difficultyTier(difficulty)];
+  const start = Math.floor(ranked.length * tier / 3);
+  const end = Math.max(start + 1, Math.floor(ranked.length * (tier + 1) / 3));
+  return ranked.slice(start, end).map(entry => entry.index);
+}
 
 const geometryFigureFor = question => {
   const text = question.toLowerCase();
@@ -1072,38 +1170,47 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
   if (type === 'lectura') return [{ kind: 'reading', ...randomReadingActivity(difficulty) }];
   if (type === 'caligrafia') {
     const samples = calligraphySamples[options.calligraphyMode] || calligraphySamples.sentences;
-    return Array.from({ length: Math.max(3, paragraphs * 2) }, (_, index) => ({ kind: 'copying', text: samples[index % samples.length] }));
+    const tier = { Inicial: 0, Medio: 1, Avanzado: 2 }[difficultyTier(difficulty)];
+    const chunkSize = Math.max(1, Math.ceil(samples.length / 3));
+    const levelSamples = samples.slice(tier * chunkSize, (tier + 1) * chunkSize);
+    const selectedSamples = levelSamples.length ? levelSamples : samples;
+    const order = shuffledIndexes(selectedSamples.length);
+    return Array.from({ length: Math.max(3, paragraphs * 2) }, (_, index) => ({ kind: 'copying', text: selectedSamples[order[index % order.length]] }));
   }
   if (type === 'copiado') {
-    const available = copyingSequences.map((_, index) => index).filter(index => index !== lastCopyingSequence);
+    const levelSequences = copyingSequencePool(difficulty);
+    const available = levelSequences.filter(index => index !== lastCopyingSequence);
     const sequenceIndex = available[randomInt(0, available.length - 1)] ?? 0;
     lastCopyingSequence = sequenceIndex;
-    const sequence = [...copyingSequences[sequenceIndex], ...copyingExtraParagraphs];
-    return sequence.slice(0, paragraphs).map(text => ({ kind: 'copying', text }));
+    return copyingSequences[sequenceIndex].slice(0, paragraphs).map(text => ({ kind: 'copying', text }));
   }
   if (type === 'ortografia') {
-    const order = shuffledIndexes(spellingActivities.length);
+    const pool = activityQuestionPool(spellingActivities, difficulty, type);
+    const order = shuffledIndexes(pool.length);
     return Array.from({ length: count }, (_, index) => {
-      const item = spellingActivities[order[index % order.length]];
+      const item = pool[order[index % order.length]];
       return { question: `${item[0]}: ${item[1]}`, answer: item[2] };
     });
   }
   if (type === 'logica') {
-    const order = shuffledIndexes(logicActivities.length);
+    const pool = activityQuestionPool(logicActivities, difficulty, type);
+    const order = shuffledIndexes(pool.length);
     return Array.from({ length: count }, (_, index) => {
-      const item = logicActivities[order[index % order.length]];
+      const item = pool[order[index % order.length]];
       return { question: `Completa la serie: ${item[0]}`, answer: item[1] };
     });
   }
   if (practicalActivities[type]) {
-    const order = shuffledIndexes(practicalActivities[type].length);
+    const pool = practicalActivitiesByDifficulty[difficultyTier(difficulty)]?.[type] || practicalActivities[type];
+    const order = shuffledIndexes(pool.length);
     return Array.from({ length: count }, (_, index) => {
-      const item = practicalActivities[type][order[index % order.length]];
+      const item = pool[order[index % order.length]];
       return { question: item[0], answer: item[1], ...(type === 'geometria' ? { figure: geometryFigureFor(item[0]) } : {}) };
     });
   }
   if (type === 'mixta' || type === 'diaria') {
-    const mixed = [
+    const mixedByDifficulty = {
+      Inicial: [
       { question: 'Calcula: 7 + 8 =', answer: '15' },
       { question: 'Completa con b o v: La _icicleta es _erde.', answer: 'La bicicleta es verde.' },
       { question: 'Completa la serie: 3, 6, 9, 12, __', answer: '15' },
@@ -1112,22 +1219,32 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
       { question: 'Una entrada cuesta 4 € y pagas con 5 €. ¿Qué cambio recibes?', answer: '1 €.' },
       { question: '¿Qué hora será una hora después de las 10:30?', answer: 'Las 11:30.' },
       { question: 'Lee: “Marta plantó una semilla y la regó”. ¿Qué hizo Marta después de plantar?', answer: 'La regó.' },
-      { question: '¿Cuántos centímetros hay en medio metro?', answer: '50 centímetros.' },
-      { question: 'Escribe el antónimo de “oscuro”.', answer: 'Claro.' },
-      { question: 'Ordena: parque / al / vamos / Hoy.', answer: 'Hoy vamos al parque.' },
-      { question: '¿Qué fracción representa una de cuatro partes iguales?', answer: '1/4.' },
-      { question: 'Una caja tiene 6 lápices y compras 2 cajas. ¿Cuántos lápices tienes?', answer: '12 lápices.' },
-      { question: 'Completa: 12, 15, 18, __.', answer: '21.' },
-      { question: '¿Qué figura tiene tres lados?', answer: 'El triángulo.' },
-      { question: '¿Cuántos minutos hay en una hora?', answer: '60 minutos.' },
-      { question: 'Completa con h: _oy _ace sol.', answer: 'Hoy hace sol.' },
-      { question: 'Escribe un sinónimo de “feliz”.', answer: 'Contento.' },
-      { question: 'Ordena: mochila / mi / preparada / está.', answer: 'Mi mochila está preparada.' },
-      { question: '¿Qué fracción es mayor: 1/2 o 1/4?', answer: '1/2.' },
-      { question: 'Una entrada cuesta 6 € y pagas con 10 €. ¿Qué cambio recibes?', answer: '4 €.' },
-      { question: 'Completa: 50, 45, 40, __.', answer: '35.' },
-      { question: '¿Cuántos vértices tiene un cuadrado?', answer: '4 vértices.' }
-    ];
+      { question: '¿Cuántos centímetros hay en medio metro?', answer: '50 centímetros.' }
+      ],
+      Medio: [
+        { question: 'Calcula: 248 + 376 =', answer: '624' },
+        { question: 'Calcula: 805 − 267 =', answer: '538' },
+        { question: 'Calcula: 24 × 13 =', answer: '312' },
+        { question: 'Calcula: 864 ÷ 8 =', answer: '108' },
+        { question: 'Completa la serie: 7, 12, 17, 22, __', answer: '27' },
+        { question: 'Coloca las tildes: El camion llego al almacen.', answer: 'El camión llegó al almacén.' },
+        { question: '¿Cuánto son 2 metros y 35 centímetros en centímetros?', answer: '235 centímetros.' },
+        { question: '¿Qué fracción es mayor: 3/8 o 5/8?', answer: '5/8.' },
+        { question: 'Una película empieza a las 16:35 y dura 50 minutos. ¿A qué hora termina?', answer: 'A las 17:25.' }
+      ],
+      Avanzado: [
+        { question: 'Calcula: 4.875 + 2.968 =', answer: '7.843' },
+        { question: 'Calcula: 8.002 − 3.756 =', answer: '4.246' },
+        { question: 'Calcula: 236 × 48 =', answer: '11.328' },
+        { question: 'Calcula: 9.576 ÷ 24 =', answer: '399' },
+        { question: 'Completa la serie: 2, 6, 18, 54, __', answer: '162' },
+        { question: 'Escribe el antónimo de “efímero”.', answer: 'Duradero o permanente.' },
+        { question: '¿Cuánto son 3/4 de 120?', answer: '90.' },
+        { question: 'Un artículo cuesta 48,50 € y tiene un descuento de 12,75 €. ¿Cuál es el precio final?', answer: '35,75 €.' },
+        { question: 'Una excursión sale a las 8:45 y termina a las 13:20. ¿Cuánto dura?', answer: '4 horas y 35 minutos.' }
+      ]
+    };
+    const mixed = mixedByDifficulty[difficultyTier(difficulty)];
     if (type === 'diaria') {
       const dailyOrder = shuffledIndexes(mixed.length);
       return dailyOrder.slice(0, 5).map(index => mixed[index]);

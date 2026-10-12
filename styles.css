@@ -182,3 +182,18 @@ input::placeholder{color:#8995a8;opacity:1}
 
 .repeat-last{border-color:#b9c9e5!important;background:#eef5ff!important;color:var(--navy)!important;font-weight:800}.repeat-last:hover,.repeat-last:focus-visible{border-color:var(--navy)!important;background:#fff!important}
 @media(max-width:650px){.activity-tools{flex-wrap:wrap}.repeat-last{width:100%;text-align:left}}
+
+/* La portada ya no reserva una columna vacía para una vista previa. */
+.intro-inner{grid-template-columns:1fr;width:min(1200px,100%)}
+.hero-copy{max-width:1000px}
+.intro h1{max-width:1000px}
+.intro-copy{max-width:740px}
+.hero-preview{display:none}
+
+/* El generador cabe mejor en pantalla: sin maqueta ni pasos redundantes. */
+.modal-header{margin-bottom:14px}
+.form-grid{gap:12px 14px}
+.check-label{margin:10px 0}
+.form-actions{margin-top:14px}
+.generator-modal{scrollbar-width:none}
+.generator-modal::-webkit-scrollbar{display:none}

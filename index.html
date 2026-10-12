@@ -33,7 +33,7 @@
     <link rel="icon" href="favicon.svg?v=20261011-17" type="image/svg+xml" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="apple-touch-icon" href="pwa-icon.svg?v=20261011-17" />
-    <link rel="stylesheet" href="styles.css?v=20261012-83" />
+    <link rel="stylesheet" href="styles.css?v=20261012-85" />
   </head>
   <body>
     <a class="skip-link" href="#actividades">Saltar a las actividades</a>
@@ -54,9 +54,6 @@
             <div class="hero-actions"><a class="hero-cta" href="#actividades">Crear mi primera ficha <span>→</span></a><a class="hero-secondary" href="#como-funciona">Ver cómo funciona <span>↓</span></a></div>
             <div class="intro-meta" aria-label="Ventajas de FichasFacil"><span>19 actividades</span><span>3 niveles</span><span>A4 · PDF</span><span>Sin registro</span></div>
             <button id="install-app" class="install-button" type="button" hidden>Instalar FichasFacil en este dispositivo</button>
-          </div>
-          <div class="hero-preview" aria-label="Ejemplo de una ficha educativa">
-            <img class="preview-real-sheets" src="portada-fichas-reales-v2.svg?v=20261011-3" alt="Varias fichas escolares imprimibles: restas, geometría y caligrafía" decoding="async" fetchpriority="high" />
           </div>
         </div>
       </section>
@@ -163,14 +160,12 @@
 
     </main>
 
-    <footer class="site-footer"><span>FichasFacil</span><span>Fichas educativas para practicar, imprimir y compartir.</span><span class="site-version" aria-label="Versión de la web">v89</span><nav aria-label="Enlaces de la página"><a href="#recursos">Recursos</a><a href="#preguntas">Preguntas frecuentes</a><a href="guia.html">Guía para usar fichas</a><a href="blog.html">Blog educativo</a><a href="aviso-legal.html">Aviso legal</a><a href="privacidad.html">Privacidad</a><a href="cookies.html">Cookies</a><a href="mailto:fichasfaciles@gmail.com" aria-label="Escribir a FichasFacil por correo">Contacto</a></nav></footer>
+    <footer class="site-footer"><span>FichasFacil</span><span>Fichas educativas para practicar, imprimir y compartir.</span><span class="site-version" aria-label="Versión de la web">v90</span><nav aria-label="Enlaces de la página"><a href="#recursos">Recursos</a><a href="#preguntas">Preguntas frecuentes</a><a href="guia.html">Guía para usar fichas</a><a href="blog.html">Blog educativo</a><a href="aviso-legal.html">Aviso legal</a><a href="privacidad.html">Privacidad</a><a href="cookies.html">Cookies</a><a href="mailto:fichasfaciles@gmail.com" aria-label="Escribir a FichasFacil por correo">Contacto</a></nav></footer>
 
     <div class="modal-backdrop" id="generator" aria-hidden="true">
       <section class="generator-modal" role="dialog" aria-modal="true" aria-labelledby="generator-title" aria-describedby="generator-help">
         <button class="modal-close" aria-label="Cerrar" aria-keyshortcuts="Escape"><span aria-hidden="true">×</span><span class="close-label">Cerrar</span></button>
         <div class="modal-header"><p class="kicker">Crea tu ficha</p><div class="activity-summary"><span class="summary-dot" aria-hidden="true"></span><span id="activity-summary">Sumas</span></div><h2 id="generator-title">Prepara una ficha</h2><p id="generator-help">Ajusta las opciones y elige si quieres imprimir, guardar como PDF o compartir el enlace.</p><p class="configuration-summary" id="configuration-summary" role="status">Inicial · 20 ejercicios · Según la dificultad</p></div>
-        <ol class="generator-steps" aria-label="Pasos para crear la ficha"><li class="is-current" aria-current="step"><span>1</span>Configura</li><li><span>2</span>Genera</li><li><span>3</span>Imprime o guarda</li></ol>
-        <section class="live-preview" aria-labelledby="live-preview-title"><div class="live-preview-heading"><span>Vista previa</span><small>Ejemplo aproximado</small></div><div class="live-preview-sheet"><strong id="live-preview-title">Sumas</strong><span id="live-preview-level">Nivel Inicial · 20 ejercicios</span><div class="live-preview-example" id="live-preview-example">7 + 5 =</div><div class="live-preview-answer" aria-hidden="true"></div></div></section>
         <form id="generator-form">
           <div class="form-grid">
             <label for="activity">Actividad<select id="activity"><option value="sumas">Sumas</option><option value="restas">Restas</option><option value="multiplicaciones">Multiplicaciones</option><option value="divisiones">Divisiones</option><option value="problemas">Problemas matemáticos</option><option value="lectura">Lectura comprensiva</option><option value="copiado">Copiado</option><option value="ortografia">Ortografía</option><option value="logica">Lógica</option><option value="reloj">Horas y reloj</option><option value="dinero">Dinero</option><option value="medidas">Medidas</option><option value="fracciones">Fracciones</option><option value="geometria">Geometría</option><option value="vocabulario">Vocabulario</option><option value="ordenar">Ordenar frases</option><option value="caligrafia">Caligrafía</option><option value="mixta">Ficha mixta</option><option value="diaria">Ficha diaria</option></select></label>
@@ -195,7 +190,7 @@
       </section>
     </div>
     <script src="assets/jspdf.umd.min.js?v=20261012-1"></script>
-    <script src="app.js?v=20261012-88"></script>
+    <script src="app.js?v=20261012-90"></script>
     <script type="application/ld+json">
       {"@context":"https://schema.org","@type":"WebSite","name":"FichasFacil","url":"https://joseguerreromariscal.github.io/fichas/","description":"Generador gratuito de fichas educativas para primaria: matemáticas, lengua, lectura, escritura y lógica.","inLanguage":"es-ES","publisher":{"@type":"Organization","name":"FichasFacil","url":"https://joseguerreromariscal.github.io/fichas/","logo":"https://joseguerreromariscal.github.io/fichas/pwa-icon.svg"}}
     </script>

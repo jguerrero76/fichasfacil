@@ -58,7 +58,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261012-89', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261012-90', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -71,25 +71,6 @@ const updateConfigurationSummary = () => {
     const extra = activity.value === 'sumas' || activity.value === 'restas' ? document.querySelector('#carryMode').selectedOptions[0].textContent : activity.value === 'multiplicaciones' ? document.querySelector('#tableNumber').value === 'all' ? 'Todas las tablas' : `Tabla del ${document.querySelector('#tableNumber').value}` : activity.value === 'divisiones' ? `${document.querySelector('#divisionMode').selectedOptions[0].textContent}${document.querySelector('#specificDivisor').value === 'all' ? '' : ` · entre ${document.querySelector('#specificDivisor').value}`}` : '';
     summary.textContent = `${document.querySelector('#difficulty').value}${countSummary}${digits ? ` · ${digits}` : ''}${paragraphSummary}${extra ? ` · ${extra}` : ''}`;
   }
-  updateLivePreview();
-};
-const updateLivePreview = () => {
-  const previewTitle = document.querySelector('#live-preview-title');
-  const previewLevel = document.querySelector('#live-preview-level');
-  const previewExample = document.querySelector('#live-preview-example');
-  if (!previewTitle || !previewLevel || !previewExample) return;
-  const examples = {
-    sumas: '7 + 5 =', restas: '9 − 4 =', multiplicaciones: '6 × 3 =', divisiones: '24 ÷ 4 =',
-    problemas: 'Lee, piensa y responde.', lectura: 'Lee el texto y contesta.', copiado: 'El sábado salimos al parque.',
-    ortografia: 'La _icicleta es _erde.', logica: 'Completa la serie: 2, 4, 6, __', reloj: '¿Qué hora marca el reloj?',
-    dinero: '2 € + 1 € =', medidas: '1 m = __ cm', fracciones: '¿Qué fracción está coloreada?', geometria: '△ ¿Cuántos lados tiene?',
-    vocabulario: 'Sinónimo de “contento”: ______', ordenar: 'Ordena las palabras.', caligrafia: 'Mi familia prepara la merienda.',
-    mixta: 'Repaso de varias materias.', diaria: 'Práctica breve del día.'
-  };
-  previewTitle.textContent = labels[activity.value];
-  previewLevel.textContent = `Nivel ${document.querySelector('#difficulty').value} · ${document.querySelector('#count').value} ejercicios`;
-  previewExample.textContent = examples[activity.value] || 'Ficha preparada para imprimir.';
-  document.querySelector('.live-preview-sheet').classList.toggle('writing-preview', ['copiado', 'caligrafia'].includes(activity.value));
 };
 const updateDigitLabels = () => {
   const names = { multiplicaciones: ['Multiplicando', 'Multiplicador'], divisiones: ['Dividendo', 'Divisor'] }[activity.value] || ['Primer número', 'Segundo número'];
@@ -185,11 +166,6 @@ if (countSelect && !countSelect.querySelector('option[value="20"]')) {
 }
 
 const generatorTitle = type => ({ mixta: 'Prepara tu ficha mixta', diaria: 'Prepara tu ficha diaria' }[type] || `Prepara tu ficha de ${labels[type].toLowerCase()}`);
-const setGeneratorStep = currentIndex => document.querySelectorAll('.generator-steps li').forEach((step, index) => {
-  step.classList.toggle('is-current', index === currentIndex);
-  if (index === currentIndex) step.setAttribute('aria-current', 'step');
-  else step.removeAttribute('aria-current');
-});
 const openGenerator = type => {
   lastTrigger = document.querySelector(`[data-type="${type}"]`);
   document.querySelectorAll('[data-type]').forEach(card => card.setAttribute('aria-expanded', String(card === lastTrigger)));
@@ -211,7 +187,6 @@ const openGenerator = type => {
     const selected = card.dataset.type === type;
     card.classList.toggle('is-selected', selected);
   });
-  setGeneratorStep(0);
   document.querySelector('#print-direct').textContent = isMobileDevice() ? 'Descargar PDF' : 'Imprimir ficha';
   setTimeout(() => activity.focus(), 50);
 };
@@ -1199,14 +1174,15 @@ function exerciseMarkup(config, item, index, solutions) {
     if (config.type === 'divisiones') {
       const division = item.question.match(/^(\d+)\s+÷\s+(\d+)\s*=/);
       if (division) {
-        const answer = solutions
-          ? `<strong style="min-width:70px;color:#20283f">${item.answer}</strong>`
-          : '<span aria-label="espacio para responder" style="display:inline-block;width:58px;height:24px;border-bottom:1.5px solid #7f8998"></span>';
-        return `<div class="division-exercise" style="display:flex;align-items:baseline;justify-content:center;gap:7px;min-height:70px;padding:10px 2px;font:700 18px/1.15 Arial,Helvetica,sans-serif;color:#20283f;white-space:nowrap"><span>${division[1]}</span><span aria-hidden="true">÷</span><span>${division[2]}</span><span aria-hidden="true">=</span>${answer}</div>`;
+        const dividend = String(division[1]).split('').join('&nbsp;');
+        const divisor = String(division[2]).split('').join('&nbsp;');
+        const quotient = solutions ? `<span style="position:absolute;left:0;right:0;top:-22px;text-align:center;font-size:14px;font-weight:700">${item.answer}</span>` : '';
+        return `<div class="division-exercise" style="display:flex;align-items:center;justify-content:center;min-height:76px;padding:10px 2px 16px;font:700 18px/1.2 Arial,Helvetica,sans-serif;color:#20283f;white-space:nowrap"><span style="display:block;min-width:42px;text-align:right;padding-right:8px;letter-spacing:1px">${dividend}</span><span style="position:relative;display:grid;grid-template-rows:26px 2px;min-width:46px;padding-left:8px;border-left:2px solid #20283f;text-align:center">${quotient}<span style="letter-spacing:1px">${divisor}</span><span style="display:block;width:100%;border-bottom:1.5px solid #20283f"></span></span></div>`;
       }
     }
     const threeTermMatch = item.question.match(/^(\d+)\s+([+−])\s+(\d+)\s+([+−])\s+(\d+)\s*=/);
-    const numberRow = (operator, value) => `<tr><td width="20%" align="center" valign="middle"><font face="Arial,Helvetica,sans-serif" size="4"><b>${operator || '&nbsp;'}</b></font></td><td width="80%" align="right" valign="middle"><font face="Arial,Helvetica,sans-serif" size="4"><b>${String(value).split('').join('&nbsp;')}</b></font></td></tr>`;
+    const digitMarkup = value => [...String(value)].map(digit => `<span style="display:inline-block;width:1ch;text-align:center">${digit}</span>`).join('');
+    const numberRow = (operator, value) => `<tr><td width="20%" align="center" valign="middle" style="font:700 14pt 'Courier New',monospace">${operator || '&nbsp;'}</td><td width="80%" align="right" valign="middle" style="font:700 14pt 'Courier New',monospace"><span style="display:inline-flex;justify-content:flex-end">${digitMarkup(value)}</span></td></tr>`;
     const answerRows = solutions
       ? `<tr><td colspan="2" height="8mm" align="right" valign="middle" style="font:700 13pt Arial,Helvetica,sans-serif;padding-right:2mm;color:#20283f">${item.answer}</td></tr>`
       : config.type === 'multiplicaciones'
@@ -1232,7 +1208,8 @@ function printableHtml(config, items, solutions) {
   const arithmetic = ['sumas', 'restas', 'multiplicaciones', 'divisiones'].includes(config.type);
   const rows = items.map((item, index) => exerciseMarkup(config, item, index, solutions)).join('');
   const copyingGuide = ['copiado', 'caligrafia'].includes(config.type) ? `<section class="copying-final-guide" style="display:block;break-before:auto;page-break-before:auto;break-inside:avoid;page-break-inside:avoid;width:180mm;margin:7mm auto 0"><h3 style="font-size:14px;margin:0 0 7px;color:#697772">Escribe el texto</h3><div class="lamela-guide" aria-label="Pauta Lamela para copiar el texto" style="display:block;width:100%;height:108mm;border-top:1.2px solid #647b9b">${Array.from({ length: 12 }, (_, index) => `<div class="lamela-line lamela-line-${index % 3}" aria-hidden="true" style="display:block;width:100%;height:9mm;border-bottom:${index % 3 === 0 ? '1.2px solid #7890af' : index % 3 === 1 ? '1px dashed #b7c4d2' : '1.2px solid #ef9b9b'}"></div>`).join('')}</div></section>` : '';
-  const simpleWritingGuide = ['copiado', 'caligrafia'].includes(config.type) ? `<section class="copying-final-guide" style="display:block;break-inside:avoid;page-break-inside:avoid;width:180mm;margin:7mm auto 0"><h3 style="font-size:14px;margin:0 0 7px;color:#697772">Escribe el texto</h3><div aria-label="Pauta de renglones para copiar el texto" style="display:grid;grid-template-rows:repeat(10,9mm);width:100%;height:90mm">${Array.from({ length: 10 }, () => '<div style="height:9mm;border-top:1px solid #192330;border-bottom:1px solid #192330"></div>').join('')}</div></section>` : '';
+  const guideIsCopying = config.type === 'copiado';
+  const simpleWritingGuide = ['copiado', 'caligrafia'].includes(config.type) ? `<section class="copying-final-guide" style="display:block;break-inside:avoid;page-break-inside:avoid;width:180mm;margin:7mm auto 0"><h3 style="font-size:14px;margin:0 0 7px;color:#697772">Escribe el texto</h3><svg role="img" aria-label="${guideIsCopying ? 'Pauta Lamela para copiar el texto' : 'Renglones normales para practicar caligrafía'}" viewBox="0 0 1000 360" preserveAspectRatio="none" style="display:block;width:100%;height:95mm">${Array.from({ length: guideIsCopying ? 12 : 10 }, (_, index) => guideIsCopying ? `<line x1="8" y1="${14 + index * 28}" x2="992" y2="${14 + index * 28}" stroke="${index % 3 === 0 ? '#7890af' : index % 3 === 1 ? '#b7c4d2' : '#ef9b9b'}" stroke-width="${index % 3 === 1 ? '2' : '3'}" ${index % 3 === 1 ? 'stroke-dasharray="8 8"' : ''}/>` : `<line x1="8" y1="${18 + index * 35}" x2="992" y2="${18 + index * 35}" stroke="#8b98a8" stroke-width="2"/>`).join('')}</svg></section>` : '';
   const worksheetHeader = `<table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0"><tbody><tr><td width="12%" align="left" valign="middle"><font face="Arial,Helvetica,sans-serif" size="2">Nombre:</font></td><td width="65%" align="left" valign="bottom"><font face="Arial,Helvetica,sans-serif" size="2">${name ? escapeHtml(name) : '&nbsp;'}</font><hr width="100%" size="1" color="#20283f" noshade></td><td width="8%" align="right" valign="middle"><font face="Arial,Helvetica,sans-serif" size="2">Fecha:</font></td><td width="15%" align="left" valign="bottom"><hr width="100%" size="1" color="#20283f" noshade></td></tr></tbody></table>`;
   let worksheetContent;
   if (arithmetic) {
@@ -1315,8 +1292,9 @@ function downloadPdf(config, items, solutions = false) {
     const second = operation[3];
     const operator = operation[2] === '−' ? '-' : operation[2] === '×' ? 'x' : operation[2];
     const third = operation[5];
-    const numberRight = x + 11;
-    const operatorX = x - 9;
+    const numberWidth = Math.max(doc.getTextWidth(first), doc.getTextWidth(second), third ? doc.getTextWidth(third) : 0);
+    const numberRight = x + numberWidth / 2 + 2;
+    const operatorX = x - numberWidth / 2 - 2;
     doc.text(first, numberRight, topY, { align: 'right' });
     doc.text(operator, operatorX, topY + 7, { align: 'center' });
     doc.text(second, numberRight, topY + 7, { align: 'right' });
@@ -1326,7 +1304,7 @@ function downloadPdf(config, items, solutions = false) {
       doc.text(third, numberRight, topY + 14, { align: 'right' });
       lineY = topY + 16;
     }
-    doc.line(x - 13, lineY, x + 14, lineY);
+    doc.line(operatorX - 3, lineY, numberRight + 1, lineY);
     if (solutions) doc.text(String(item.answer), numberRight, lineY + 8, { align: 'right' });
   };
   const drawGeometryFigure = (figure, x, topY) => {
@@ -1392,6 +1370,49 @@ function downloadPdf(config, items, solutions = false) {
     doc.setDrawColor(0, 0, 0);
     y += 3;
   };
+  const writeLamelaGuide = () => {
+    const lineCount = 12;
+    ensureSpace(12 + lineCount * 7 + 6);
+    write('Escribe el texto', 12, { bold: true, gap: 3 });
+    const startX = margin + 4;
+    const endX = pageWidth - margin - 4;
+    for (let row = 0; row < lineCount; row += 1) {
+      const lineY = y + row * 7;
+      if (row % 3 === 0) {
+        doc.setDrawColor(120, 144, 175);
+        doc.setLineWidth(0.35);
+        doc.line(startX, lineY, endX, lineY);
+      } else if (row % 3 === 1) {
+        doc.setDrawColor(183, 196, 210);
+        doc.setLineDashPattern([1, 1], 0);
+        doc.setLineWidth(0.2);
+        doc.line(startX, lineY, endX, lineY);
+        doc.setLineDashPattern([], 0);
+      } else {
+        doc.setDrawColor(239, 155, 155);
+        doc.setLineWidth(0.35);
+        doc.line(startX, lineY, endX, lineY);
+      }
+    }
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(0.2);
+    y += lineCount * 7 + 6;
+  };
+  const writeRuledGuide = () => {
+    const lineCount = 10;
+    const spacing = 9;
+    ensureSpace(12 + lineCount * spacing + 6);
+    write('Escribe el texto', 12, { bold: true, gap: 3 });
+    doc.setDrawColor(139, 152, 168);
+    doc.setLineWidth(0.35);
+    for (let row = 0; row < lineCount; row += 1) {
+      const lineY = y + row * spacing;
+      doc.line(margin + 4, lineY, pageWidth - margin - 4, lineY);
+    }
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(0.2);
+    y += lineCount * spacing + 6;
+  };
   if (isMath) {
     drawHeader(mathTitle);
     if (config.type === 'divisiones') {
@@ -1456,7 +1477,6 @@ function downloadPdf(config, items, solutions = false) {
     if (item.kind === 'copying') {
       write(`${index + 1}. ${item.text}`, 12, { bold: true, gap: 4 });
       if (solutions) write(`Respuesta: ${item.answer || item.text}`, 10, { gap: 4 });
-      else writeAnswerLines(4);
       return;
     }
     const answerLineCount = config.type === 'problemas' ? 2 : 3;
@@ -1469,6 +1489,8 @@ function downloadPdf(config, items, solutions = false) {
     if (solutions) write(`Respuesta: ${item.answer}`, 10, { gap: 5 });
     else writeAnswerLines(answerLineCount);
     });
+    if (!solutions && config.type === 'copiado') writeLamelaGuide();
+    if (!solutions && config.type === 'caligrafia') writeRuledGuide();
   }
   const footerPages = doc.getNumberOfPages();
   for (let page = 1; page <= footerPages; page += 1) {
@@ -1476,7 +1498,22 @@ function downloadPdf(config, items, solutions = false) {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(137, 149, 143);
-    doc.text('FichasFacil', pageWidth / 2, pageHeight - 8, { align: 'center' });
+    const logoX = pageWidth / 2 - 17;
+    const logoY = pageHeight - 14;
+    doc.setFillColor(32, 56, 95);
+    doc.roundedRect(logoX, logoY, 6, 6, 1.4, 1.4, 'F');
+    doc.setFillColor(244, 201, 28);
+    doc.roundedRect(logoX + 1, logoY + 1, 1.6, 1.6, 0.35, 0.35, 'F');
+    doc.setFillColor(237, 126, 53);
+    doc.roundedRect(logoX + 3.4, logoY + 1, 1.6, 1.6, 0.35, 0.35, 'F');
+    doc.setFillColor(126, 185, 255);
+    doc.roundedRect(logoX + 1, logoY + 3.4, 1.6, 1.6, 0.35, 0.35, 'F');
+    doc.setFillColor(139, 209, 170);
+    doc.roundedRect(logoX + 3.4, logoY + 3.4, 1.6, 1.6, 0.35, 0.35, 'F');
+    doc.setTextColor(32, 56, 95);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.text('FichasFácil', logoX + 8, logoY + 4.2);
   }
   const fileSuffix = solutions ? '-soluciones' : '';
   doc.save(`FichasFacil-${labels[config.type].toLowerCase().replaceAll(' ', '-')}${fileSuffix}.pdf`);
@@ -1523,7 +1560,7 @@ function createSheets(config) {
       .replaceAll('class="operation-rule"', 'class="operation-rule" style="width:116px;border-bottom:1.5px solid #20283f;margin-top:5px"')
       .replaceAll('class="answer-space"', 'class="answer-space" style="display:block;height:20px;border-bottom:1px solid #9aaabd"');
     return inlineLayout
-    .replace('</body>', '<div aria-hidden="true" style="position:fixed;left:0;bottom:8mm;width:100%;text-align:center;font:10px Arial,sans-serif;color:#89958f">FichasFacil</div></body>')
+    .replace('</body>', '<div role="img" aria-label="FichasFácil" style="position:fixed!important;left:0!important;right:0!important;top:auto!important;bottom:7mm!important;width:100%!important;z-index:1000;display:flex;align-items:center;justify-content:center;gap:2mm;color:#20385f;font:700 9px Arial,sans-serif"><svg aria-hidden="true" width="6mm" height="6mm" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#20385f"/><rect x="10" y="10" width="19" height="19" rx="5" fill="#f4c91c"/><rect x="35" y="10" width="19" height="19" rx="5" fill="#ed7e35"/><rect x="10" y="35" width="19" height="19" rx="5" fill="#7eb9ff"/><rect x="35" y="35" width="19" height="19" rx="5" fill="#8bd1aa"/></svg><span>FichasFácil</span></div></body>')
     .replace('<style>', `<style>@page{size:A4;margin:0}${simpleMath ? 'h1{display:block!important;font-size:15px;letter-spacing:0;margin:0 0 19px}.worksheet-header{display:flex!important;justify-content:space-between;gap:20px;margin-bottom:24px;padding:0 8px;border:0;font-size:10px}.worksheet-header>div:first-child{flex:1}.worksheet-header>div:last-child{min-width:72px}.worksheet-header span{min-width:100px;height:13px}.worksheet-header>div:last-child span{min-width:62px}.math-grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr));gap:0 22px;min-height:246mm;align-items:center;padding:0 2mm}.arithmetic{width:100%;min-height:0;justify-content:center;align-items:center;padding:0}.arithmetic-three .operation{min-height:54px}.print-row .number{display:none}.arithmetic .operation{display:block!important;flex:0 0 116px!important;width:116px!important;min-width:116px!important;max-width:116px!important;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:17px;line-height:1.15}.digit-value{display:inline-flex;gap:3px;letter-spacing:0}.digit-value b{letter-spacing:0}.top-number,.extra-number{padding-right:0;letter-spacing:0;font-variant-numeric:tabular-nums;white-space:nowrap;min-height:23px}.bottom-number{grid-template-columns:18px 1fr;gap:0;padding-right:0;letter-spacing:0;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1.15}.bottom-number .operator{text-align:center;letter-spacing:0}.bottom-number .digit-value{justify-self:end}.arithmetic .operation-rule{display:block!important;width:116px!important;max-width:116px!important;margin-top:5px}.answer-space{display:none}' : textStyles}`)
     .replaceAll('@media(max-width:650px)', simpleMath ? '@media print and (max-width:0px)' : '@media screen and (max-width:650px)')
     .replace('</head>', `${printPolish}${screenLayout}${finalPdfLayout}</head>`);
@@ -1587,7 +1624,6 @@ form.addEventListener('submit', event => {
   const config = readConfig();
   form.setAttribute('aria-busy', 'true');
   const { worksheet, answerSheet, print, items } = createSheets(config);
-  setGeneratorStep(1);
   const mobile = isMobileDevice();
   const printed = mobile ? downloadPdf(config, items) : print(worksheet);
   setTimeout(() => { submitButton.disabled = false; form.setAttribute('aria-busy', 'false'); }, 500);
@@ -1595,7 +1631,6 @@ form.addEventListener('submit', event => {
     ? `${config.paragraphs} ${config.paragraphs === 1 ? 'párrafo' : 'párrafos'}`
     : config.type === 'lectura' ? '1 lectura' : `${config.count} ejercicios`;
   result.innerHTML = `<div class="success-box"><strong>${printed ? (mobile ? 'PDF descargado' : 'Ficha lista para imprimir') : 'No se ha podido preparar la ficha'}</strong><span class="print-hint">${printed ? `${labels[config.type]} · ${contentSummary}${mobile ? ' · Abre el PDF para imprimirlo o compartirlo.' : ''}` : (mobile ? 'El navegador no ha podido generar el PDF.' : 'El navegador ha bloqueado la ventana de impresión.')}</span>${config.solutions ? `<button class="solutions-link" id="print-solutions" type="button">${mobile ? 'Descargar soluciones' : 'Imprimir soluciones'}</button>` : ''}${printed ? '<button class="solutions-link new-sheet" id="new-sheet" type="button">Crear otra ficha</button>' : ''}</div>`;
-  if (printed) setGeneratorStep(2);
   document.querySelector('#print-solutions')?.addEventListener('click', () => mobile ? downloadPdf(config, items, true) : print(answerSheet));
   if (printed) {
     saveLastConfig(config);
@@ -1603,7 +1638,6 @@ form.addEventListener('submit', event => {
   }
   document.querySelector('#new-sheet')?.addEventListener('click', () => {
     result.innerHTML = '';
-    setGeneratorStep(0);
     document.querySelector('#print-direct').focus();
   });
 });

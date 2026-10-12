@@ -58,7 +58,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261012-90', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261012-95', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -85,7 +85,7 @@ const updateActivityFields = () => {
   const isReading = activity.value === 'lectura';
   document.querySelector('#operands-field').classList.toggle('hidden-field', !usesMultipleTerms);
   ['first-digits-field', 'second-digits-field'].forEach(id => document.querySelector(`#${id}`).classList.toggle('hidden-field', !isMath));
-  document.querySelector('#count-field').classList.toggle('hidden-field', isReading || isCopying);
+  document.querySelector('#count-field').classList.toggle('hidden-field', isReading || isCopying || activity.value === 'diaria');
   document.querySelector('#paragraphs-field').classList.toggle('hidden-field', !isCopying);
   document.querySelector('#calligraphy-field').classList.toggle('hidden-field', activity.value !== 'caligrafia');
   document.querySelector('#solutions-field').classList.toggle('hidden-field', isCopying);
@@ -1128,7 +1128,58 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
       { question: 'Completa: 50, 45, 40, __.', answer: '35.' },
       { question: '¿Cuántos vértices tiene un cuadrado?', answer: '4 vértices.' }
     ];
-    return Array.from({ length: type === 'diaria' ? 5 : Math.max(8, count) }, (_, index) => mixed[index % mixed.length]);
+    if (type === 'diaria') {
+      const dailyOrder = shuffledIndexes(mixed.length);
+      return dailyOrder.slice(0, 5).map(index => mixed[index]);
+    }
+    return Array.from({ length: Math.max(8, count) }, (_, index) => mixed[index % mixed.length]);
+  }
+  if (type === 'problemas') {
+    const grade = difficultyIndex(difficulty);
+    const operationOrder = shuffledIndexes(4).map(index => ['sumas', 'restas', 'multiplicaciones', 'divisiones'][index]);
+    const people = ['Lucía', 'Mario', 'Sara', 'Leo', 'Amina', 'Hugo', 'Nora', 'Diego', 'Clara', 'Pablo', 'Irene', 'Mateo'];
+    const objects = ['libros', 'lápices', 'pegatinas', 'cuadernos', 'semillas', 'tarjetas', 'piezas', 'cromos'];
+    const feminineObjects = new Set(['pegatinas', 'semillas', 'tarjetas', 'piezas']);
+    return Array.from({ length: count }, (_, index) => {
+      const operation = operationOrder[index % operationOrder.length];
+      const person = people[index % people.length];
+      const object = objects[index % objects.length];
+      const howMany = feminineObjects.has(object) ? 'Cuántas' : 'Cuántos';
+      let first;
+      let second;
+      let question;
+      let answer;
+      if (operation === 'sumas') {
+        const minimum = grade <= 1 ? 1 : grade <= 3 ? 10 : 100;
+        const maximum = grade <= 1 ? 20 : grade <= 3 ? 999 : 9999;
+        first = randomInt(minimum, maximum);
+        second = randomInt(minimum, maximum);
+        question = `${person} tenía ${first} ${object} y recibió ${second} más. ¿${howMany} ${object} tiene ahora?`;
+        answer = first + second;
+      } else if (operation === 'restas') {
+        const minimum = grade <= 1 ? 2 : grade <= 3 ? 20 : 100;
+        const maximum = grade <= 1 ? 20 : grade <= 3 ? 999 : 9999;
+        first = randomInt(minimum, maximum);
+        second = randomInt(1, first - 1);
+        question = `En el aula había ${first} ${object}. Se utilizaron ${second}. ¿${howMany} ${object} quedan?`;
+        answer = first - second;
+      } else if (operation === 'multiplicaciones') {
+        const firstRange = grade <= 1 ? [2, 10] : grade <= 3 ? [2, 20] : [12, 99];
+        const secondRange = grade <= 1 ? [2, 5] : grade <= 3 ? [2, 12] : [10, 99];
+        first = randomInt(firstRange[0], firstRange[1]);
+        second = randomInt(secondRange[0], secondRange[1]);
+        question = `Se prepararon ${first} cajas con ${second} ${object} en cada una. ¿Cuántos ${object} hay en total?`;
+        answer = first * second;
+      } else {
+        const divisorRange = grade <= 1 ? [2, 5] : grade <= 3 ? [2, 12] : [11, 99];
+        const quotientRange = grade <= 1 ? [2, 10] : grade <= 3 ? [10, 99] : [10, 99];
+        second = randomInt(divisorRange[0], divisorRange[1]);
+        answer = randomInt(quotientRange[0], quotientRange[1]);
+        first = second * answer;
+        question = `Se reparten ${first} ${object} por igual entre ${second} grupos. ¿Cuántos recibe cada grupo?`;
+      }
+      return { question, answer, operation };
+    });
   }
   const people = ['Lucía', 'Mario', 'Sara', 'Leo', 'Amina', 'Hugo', 'Nora', 'Diego', 'Clara', 'Pablo', 'Irene', 'Mateo', 'Valeria', 'Álvaro', 'Marta', 'Elena', 'Bruno', 'Inés', 'Óscar', 'Sofía'];
   const objects = ['pegatinas', 'lápices', 'canicas', 'cromos', 'libros', 'rotuladores', 'cuadernos', 'cartas', 'piezas', 'semillas', 'botones', 'monedas', 'figuras', 'fotografías', 'globos', 'caracolas', 'tarjetas', 'pinceles', 'borradores', 'hojas'];
@@ -1168,7 +1219,13 @@ function exerciseMarkup(config, item, index, solutions) {
     const questions = item.questions.map((question, questionIndex) => `<div class="reading-question"><span>${questionIndex + 1}.</span><strong>${question}</strong>${solutions ? `<b>${item.answers[questionIndex]}</b>` : '<i aria-label="espacio para responder"></i>'}</div>`).join('');
     return `<article class="reading-sheet"><h3>${item.title}</h3><p class="reading-text">${item.text}</p><h4>Responde a las preguntas</h4>${questions}</article>`;
   }
-  if (config.type === 'geometria') return `<div class="geometry-exercise" style="display:flex;align-items:flex-start;gap:10px;min-height:118px;padding:10px 4px;break-inside:avoid;page-break-inside:avoid"><span style="font-size:11px;color:#6b7486;padding-top:3px;flex:0 0 18px">${index + 1}.</span>${geometrySvg(item.figure)}<div style="flex:1;font-size:15px;line-height:1.35"><strong style="display:block">${item.question}</strong>${solutions ? `<b style="display:block;margin-top:8px;color:#275fac">${item.answer}</b>` : '<span aria-label="espacio para responder" style="display:block;height:46px;margin-top:8px;background:linear-gradient(to bottom,transparent 0,transparent 10px,#7890af 10px,#7890af 11px,transparent 11px,transparent 24px,#b7c4d2 24px,#b7c4d2 25px,transparent 25px,transparent 38px,#ef9b9b 38px,#ef9b9b 39px)"></span>'}</div></div>`;
+  if (config.type === 'diaria') {
+    const response = solutions
+      ? `<font face="Arial,Helvetica,sans-serif" size="3"><b>${escapeHtml(item.answer)}</b></font>`
+      : `<table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0"><tbody>${Array.from({ length: 3 }, () => '<tr><td height="20" valign="bottom"><hr width="100%" size="1" color="#aeb6bf" noshade></td></tr>').join('')}</tbody></table>`;
+    return `<table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0"><tbody><tr><td width="7%" valign="top"><font face="Arial,Helvetica,sans-serif" size="3" color="#315c9b"><b>${index + 1}.</b></font></td><td valign="top"><font face="Arial,Helvetica,sans-serif" size="3" color="#20283f">${escapeHtml(item.question)}</font></td></tr><tr><td>&nbsp;</td><td>${response}</td></tr><tr><td colspan="2" height="12">&nbsp;</td></tr></tbody></table>`;
+  }
+  if (config.type === 'geometria') return `<div class="geometry-exercise" style="display:flex;align-items:flex-start;gap:10px;min-height:118px;padding:10px 4px;break-inside:avoid;page-break-inside:avoid"><span style="font-size:11px;color:#6b7486;padding-top:3px;flex:0 0 18px">${index + 1}.</span>${geometrySvg(item.figure)}<div style="flex:1;font-size:15px;line-height:1.35"><strong style="display:block">${item.question}</strong>${solutions ? `<b style="display:block;margin-top:8px;color:#275fac">${item.answer}</b>` : '<span aria-label="espacio para responder" style="display:block;height:46px;margin-top:8px;background:repeating-linear-gradient(to bottom,#aeb6bf 0,#aeb6bf 1px,transparent 1px,transparent 17px,#aeb6bf 17px,#aeb6bf 18px,transparent 18px,transparent 24px)"></span>'}</div></div>`;
   const arithmetic = ['sumas', 'restas', 'multiplicaciones', 'divisiones'].includes(config.type);
   if (arithmetic) {
     if (config.type === 'divisiones') {
@@ -1196,9 +1253,10 @@ function exerciseMarkup(config, item, index, solutions) {
       })();
     if (operationRows) return `<table role="presentation" width="120" align="center" border="0" cellspacing="0" cellpadding="0"><tbody>${operationRows}<tr><td colspan="2" align="center"><hr width="100%" size="1" color="#20283f" noshade></td></tr>${answerRows}</tbody></table>`;
   }
+  const responseRows = config.type === 'problemas' ? 6 : 3;
   const answerSpace = solutions
     ? `<b>${item.answer}</b>`
-    : `<div class="answer-lines" aria-label="espacio para responder" style="grid-column:2;display:grid;grid-template-rows:repeat(3,22px);gap:4px;width:100%;height:74px"><i></i><i></i><i></i></div>`;
+    : `<div class="answer-lines" aria-label="espacio para responder" style="grid-column:2;display:grid;grid-template-rows:repeat(${responseRows},22px);gap:4px;width:100%;height:${responseRows * 22 + (responseRows - 1) * 4}px">${Array.from({ length: responseRows }, () => '<i></i>').join('')}</div>`;
   return `<div class="print-row text-exercise" style="grid-template-rows:auto auto;min-height:110px;align-items:start"><span class="number">${index + 1}.</span><strong>${item.question}</strong>${answerSpace}</div>`;
 }
 
@@ -1207,9 +1265,8 @@ function printableHtml(config, items, solutions) {
   const title = labels[config.type];
   const arithmetic = ['sumas', 'restas', 'multiplicaciones', 'divisiones'].includes(config.type);
   const rows = items.map((item, index) => exerciseMarkup(config, item, index, solutions)).join('');
-  const copyingGuide = ['copiado', 'caligrafia'].includes(config.type) ? `<section class="copying-final-guide" style="display:block;break-before:auto;page-break-before:auto;break-inside:avoid;page-break-inside:avoid;width:180mm;margin:7mm auto 0"><h3 style="font-size:14px;margin:0 0 7px;color:#697772">Escribe el texto</h3><div class="lamela-guide" aria-label="Pauta Lamela para copiar el texto" style="display:block;width:100%;height:108mm;border-top:1.2px solid #647b9b">${Array.from({ length: 12 }, (_, index) => `<div class="lamela-line lamela-line-${index % 3}" aria-hidden="true" style="display:block;width:100%;height:9mm;border-bottom:${index % 3 === 0 ? '1.2px solid #7890af' : index % 3 === 1 ? '1px dashed #b7c4d2' : '1.2px solid #ef9b9b'}"></div>`).join('')}</div></section>` : '';
   const guideIsCopying = config.type === 'copiado';
-  const simpleWritingGuide = ['copiado', 'caligrafia'].includes(config.type) ? `<section class="copying-final-guide" style="display:block;break-inside:avoid;page-break-inside:avoid;width:180mm;margin:7mm auto 0"><h3 style="font-size:14px;margin:0 0 7px;color:#697772">Escribe el texto</h3><svg role="img" aria-label="${guideIsCopying ? 'Pauta Lamela para copiar el texto' : 'Renglones normales para practicar caligrafía'}" viewBox="0 0 1000 360" preserveAspectRatio="none" style="display:block;width:100%;height:95mm">${Array.from({ length: guideIsCopying ? 12 : 10 }, (_, index) => guideIsCopying ? `<line x1="8" y1="${14 + index * 28}" x2="992" y2="${14 + index * 28}" stroke="${index % 3 === 0 ? '#7890af' : index % 3 === 1 ? '#b7c4d2' : '#ef9b9b'}" stroke-width="${index % 3 === 1 ? '2' : '3'}" ${index % 3 === 1 ? 'stroke-dasharray="8 8"' : ''}/>` : `<line x1="8" y1="${18 + index * 35}" x2="992" y2="${18 + index * 35}" stroke="#8b98a8" stroke-width="2"/>`).join('')}</svg></section>` : '';
+  const simpleWritingGuide = ['copiado', 'caligrafia'].includes(config.type) ? `<section class="copying-final-guide" style="display:block;break-inside:avoid;page-break-inside:avoid;width:180mm;margin:7mm auto 0"><h3 style="font-size:14px;margin:0 0 7px;color:#697772">Escribe el texto</h3><svg role="img" aria-label="Pauta de renglones con dos líneas grises por renglón" viewBox="0 0 1000 360" preserveAspectRatio="none" style="display:block;width:100%;height:95mm">${Array.from({ length: 10 }, (_, index) => `<line x1="8" y1="${10 + index * 35}" x2="992" y2="${10 + index * 35}" stroke="#aeb6bf" stroke-width="2"/><line x1="8" y1="${28 + index * 35}" x2="992" y2="${28 + index * 35}" stroke="#aeb6bf" stroke-width="2"/>`).join('')}</svg></section>` : '';
   const worksheetHeader = `<table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0"><tbody><tr><td width="12%" align="left" valign="middle"><font face="Arial,Helvetica,sans-serif" size="2">Nombre:</font></td><td width="65%" align="left" valign="bottom"><font face="Arial,Helvetica,sans-serif" size="2">${name ? escapeHtml(name) : '&nbsp;'}</font><hr width="100%" size="1" color="#20283f" noshade></td><td width="8%" align="right" valign="middle"><font face="Arial,Helvetica,sans-serif" size="2">Fecha:</font></td><td width="15%" align="left" valign="bottom"><hr width="100%" size="1" color="#20283f" noshade></td></tr></tbody></table>`;
   let worksheetContent;
   if (arithmetic) {
@@ -1362,7 +1419,7 @@ function downloadPdf(config, items, solutions = false) {
   const writeAnswerLines = (count = 3) => {
     ensureSpace(count * 10 + 8);
     for (let row = 0; row < count; row += 1) {
-      doc.setDrawColor(25, 35, 50);
+      doc.setDrawColor(174, 182, 191);
       doc.line(margin + 4, y, pageWidth - margin - 4, y);
       doc.line(margin + 4, y + 6, pageWidth - margin - 4, y + 6);
       y += 8;
@@ -1370,46 +1427,19 @@ function downloadPdf(config, items, solutions = false) {
     doc.setDrawColor(0, 0, 0);
     y += 3;
   };
-  const writeLamelaGuide = () => {
-    const lineCount = 12;
-    ensureSpace(12 + lineCount * 7 + 6);
-    write('Escribe el texto', 12, { bold: true, gap: 3 });
-    const startX = margin + 4;
-    const endX = pageWidth - margin - 4;
-    for (let row = 0; row < lineCount; row += 1) {
-      const lineY = y + row * 7;
-      if (row % 3 === 0) {
-        doc.setDrawColor(120, 144, 175);
-        doc.setLineWidth(0.35);
-        doc.line(startX, lineY, endX, lineY);
-      } else if (row % 3 === 1) {
-        doc.setDrawColor(183, 196, 210);
-        doc.setLineDashPattern([1, 1], 0);
-        doc.setLineWidth(0.2);
-        doc.line(startX, lineY, endX, lineY);
-        doc.setLineDashPattern([], 0);
-      } else {
-        doc.setDrawColor(239, 155, 155);
-        doc.setLineWidth(0.35);
-        doc.line(startX, lineY, endX, lineY);
-      }
-    }
-    doc.setDrawColor(0, 0, 0);
-    doc.setLineWidth(0.2);
-    y += lineCount * 7 + 6;
-  };
-  const writeRuledGuide = () => {
+  const writeWritingGuide = () => {
     const lineCount = 10;
     const spacing = 9;
+    const rowHeight = 7;
     ensureSpace(12 + lineCount * spacing + 6);
     write('Escribe el texto', 12, { bold: true, gap: 3 });
-    doc.setDrawColor(139, 152, 168);
+    doc.setDrawColor(174, 182, 191);
     doc.setLineWidth(0.35);
     for (let row = 0; row < lineCount; row += 1) {
       const lineY = y + row * spacing;
       doc.line(margin + 4, lineY, pageWidth - margin - 4, lineY);
+      doc.line(margin + 4, lineY + rowHeight, pageWidth - margin - 4, lineY + rowHeight);
     }
-    doc.setDrawColor(0, 0, 0);
     doc.setLineWidth(0.2);
     y += lineCount * spacing + 6;
   };
@@ -1479,7 +1509,7 @@ function downloadPdf(config, items, solutions = false) {
       if (solutions) write(`Respuesta: ${item.answer || item.text}`, 10, { gap: 4 });
       return;
     }
-    const answerLineCount = config.type === 'problemas' ? 2 : 3;
+    const answerLineCount = config.type === 'problemas' ? 6 : 3;
     if (!solutions) {
       const questionLines = doc.splitTextToSize(`${index + 1}. ${item.question}`, pageWidth - margin * 2);
       const questionHeight = questionLines.length * (12 * 0.48 + 2) + 3;
@@ -1489,8 +1519,7 @@ function downloadPdf(config, items, solutions = false) {
     if (solutions) write(`Respuesta: ${item.answer}`, 10, { gap: 5 });
     else writeAnswerLines(answerLineCount);
     });
-    if (!solutions && config.type === 'copiado') writeLamelaGuide();
-    if (!solutions && config.type === 'caligrafia') writeRuledGuide();
+    if (!solutions && ['copiado', 'caligrafia'].includes(config.type)) writeWritingGuide();
   }
   const footerPages = doc.getNumberOfPages();
   for (let page = 1; page <= footerPages; page += 1) {
@@ -1545,6 +1574,7 @@ function createSheets(config) {
   const printPolish = '<style>html,body{width:210mm!important;min-width:210mm!important;max-width:210mm!important}body{font-family:ui-rounded,"Arial Rounded MT Bold","Trebuchet MS",Arial,sans-serif!important;color:#20283f!important;background:#fff!important;padding:13mm 12mm!important;overflow:visible!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}h1{text-align:center!important;font-size:15px!important;font-weight:700!important;line-height:1.2!important;color:#20283f!important;margin:0 0 19px!important}.worksheet-header{display:flex!important;justify-content:space-between!important;gap:20px!important;margin-bottom:24px!important;padding:0 8px!important;border:0!important;font-size:10px!important;font-weight:700!important}.worksheet-header>div:first-child{flex:1}.worksheet-header>div:last-child{min-width:72px}.worksheet-header span{min-width:100px;height:13px}.worksheet-header>div:last-child span{min-width:62px}.math-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-template-rows:repeat(5,minmax(0,1fr))!important;gap:0 22px!important;min-height:246mm!important;padding:0 2mm!important}.math-grid .arithmetic{width:100%!important;min-height:0!important;justify-content:center!important;align-items:center!important;padding:0!important}.math-grid .operation{display:block!important;flex:0 0 116px!important;width:116px!important;min-width:116px!important;max-width:116px!important;font-family:ui-monospace,SFMono-Regular,Menlo,monospace!important;font-size:17px!important;line-height:1.15!important}.math-grid .digit-value{display:inline-flex!important;gap:3px!important;letter-spacing:0!important}.math-grid .digit-value b{letter-spacing:0!important}.math-grid .top-number,.math-grid .extra-number{padding-right:0!important;letter-spacing:0!important;min-height:23px!important;white-space:nowrap!important}.math-grid .bottom-number{grid-template-columns:18px 1fr!important;gap:0!important;padding-right:0!important;letter-spacing:0!important;line-height:1.15!important;white-space:nowrap!important}.math-grid .bottom-number .operator{text-align:center!important;letter-spacing:0!important}.math-grid .bottom-number .digit-value{justify-self:end!important}.math-grid .operation-rule{display:block!important;width:116px!important;max-width:116px!important;margin-top:5px!important}.math-grid .answer-space{display:none!important}@media print{h1{letter-spacing:-.02em}.worksheet-header{break-inside:avoid;page-break-inside:avoid}.text-exercise,.reading-question{break-inside:avoid;page-break-inside:avoid}.reading-sheet{break-inside:avoid;page-break-inside:avoid}.copying-sheet{break-inside:avoid;page-break-inside:avoid}p,h1,h2,h3,h4{orphans:3;widows:3}}</style>';
   const screenLayout = '<style>body{width:210mm!important;min-width:210mm!important;max-width:210mm!important;padding:13mm 12mm!important;overflow:visible!important}.worksheet-header{display:flex!important;align-items:flex-end!important;justify-content:space-between!important;gap:18px!important}.worksheet-header>div:first-child{flex:1}.worksheet-header>div{white-space:nowrap!important}.worksheet-header strong{color:#315c9b!important}.math-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-template-rows:repeat(5,minmax(0,1fr))!important;gap:0 22px!important;min-height:246mm!important;align-items:center!important}.math-grid .arithmetic{min-height:0!important;justify-content:center!important}.math-grid .operation{display:block!important;flex:0 0 116px!important;width:116px!important;min-width:116px!important;max-width:116px!important;font-family:ui-monospace,SFMono-Regular,Menlo,monospace!important;font-size:17px!important;line-height:1.15!important}.math-grid .extra-number{display:grid!important;grid-template-columns:18px 1fr!important;gap:0!important;white-space:nowrap!important}.math-grid .extra-number .operator{text-align:center!important}.math-grid .extra-number .digit-value{justify-self:end!important}.math-grid .print-row .number{display:none!important}.math-grid .answer-space{display:block!important;height:20px!important;border-bottom:1px solid #9aaabd!important}@media(max-width:650px){body{padding:18px 14px!important}.math-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:0 22px!important}}</style>';
   const finalPdfLayout = '<style>.math-grid{min-height:198mm!important}</style>';
+  const writingGuideLayout = '<style>.text-exercise i{height:18px!important;border:0!important;border-top:1px solid #aeb6bf!important;border-bottom:1px solid #aeb6bf!important;background:none!important}.reading-question i{height:48px!important;border:0!important;background:repeating-linear-gradient(to bottom,#aeb6bf 0,#aeb6bf 1px,transparent 1px,transparent 18px,#aeb6bf 18px,#aeb6bf 19px,transparent 19px,transparent 24px)!important}</style>';
   const preparePrint = html => {
     const inlineLayout = html
       .replace('<body>', '<body style="margin:0;background:#fff;color:#20283f;font-family:Arial,Helvetica,sans-serif;width:210mm;min-height:297mm;padding:13mm 12mm;box-sizing:border-box;overflow:visible;-webkit-print-color-adjust:exact;print-color-adjust:exact">')
@@ -1563,7 +1593,7 @@ function createSheets(config) {
     .replace('</body>', '<div role="img" aria-label="FichasFácil" style="position:fixed!important;left:0!important;right:0!important;top:auto!important;bottom:7mm!important;width:100%!important;z-index:1000;display:flex;align-items:center;justify-content:center;gap:2mm;color:#20385f;font:700 9px Arial,sans-serif"><svg aria-hidden="true" width="6mm" height="6mm" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#20385f"/><rect x="10" y="10" width="19" height="19" rx="5" fill="#f4c91c"/><rect x="35" y="10" width="19" height="19" rx="5" fill="#ed7e35"/><rect x="10" y="35" width="19" height="19" rx="5" fill="#7eb9ff"/><rect x="35" y="35" width="19" height="19" rx="5" fill="#8bd1aa"/></svg><span>FichasFácil</span></div></body>')
     .replace('<style>', `<style>@page{size:A4;margin:0}${simpleMath ? 'h1{display:block!important;font-size:15px;letter-spacing:0;margin:0 0 19px}.worksheet-header{display:flex!important;justify-content:space-between;gap:20px;margin-bottom:24px;padding:0 8px;border:0;font-size:10px}.worksheet-header>div:first-child{flex:1}.worksheet-header>div:last-child{min-width:72px}.worksheet-header span{min-width:100px;height:13px}.worksheet-header>div:last-child span{min-width:62px}.math-grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr));gap:0 22px;min-height:246mm;align-items:center;padding:0 2mm}.arithmetic{width:100%;min-height:0;justify-content:center;align-items:center;padding:0}.arithmetic-three .operation{min-height:54px}.print-row .number{display:none}.arithmetic .operation{display:block!important;flex:0 0 116px!important;width:116px!important;min-width:116px!important;max-width:116px!important;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:17px;line-height:1.15}.digit-value{display:inline-flex;gap:3px;letter-spacing:0}.digit-value b{letter-spacing:0}.top-number,.extra-number{padding-right:0;letter-spacing:0;font-variant-numeric:tabular-nums;white-space:nowrap;min-height:23px}.bottom-number{grid-template-columns:18px 1fr;gap:0;padding-right:0;letter-spacing:0;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1.15}.bottom-number .operator{text-align:center;letter-spacing:0}.bottom-number .digit-value{justify-self:end}.arithmetic .operation-rule{display:block!important;width:116px!important;max-width:116px!important;margin-top:5px}.answer-space{display:none}' : textStyles}`)
     .replaceAll('@media(max-width:650px)', simpleMath ? '@media print and (max-width:0px)' : '@media screen and (max-width:650px)')
-    .replace('</head>', `${printPolish}${screenLayout}${finalPdfLayout}</head>`);
+    .replace('</head>', `${printPolish}${screenLayout}${finalPdfLayout}${writingGuideLayout}</head>`);
   };
   const worksheet = preparePrint(printableHtml(config, items, false));
   const answerSheet = preparePrint(printableHtml(config, items, true));
@@ -1627,7 +1657,8 @@ form.addEventListener('submit', event => {
   const mobile = isMobileDevice();
   const printed = mobile ? downloadPdf(config, items) : print(worksheet);
   setTimeout(() => { submitButton.disabled = false; form.setAttribute('aria-busy', 'false'); }, 500);
-  const contentSummary = ['copiado', 'caligrafia'].includes(config.type)
+  const contentSummary = config.type === 'diaria' ? '5 actividades breves'
+    : ['copiado', 'caligrafia'].includes(config.type)
     ? `${config.paragraphs} ${config.paragraphs === 1 ? 'párrafo' : 'párrafos'}`
     : config.type === 'lectura' ? '1 lectura' : `${config.count} ejercicios`;
   result.innerHTML = `<div class="success-box"><strong>${printed ? (mobile ? 'PDF descargado' : 'Ficha lista para imprimir') : 'No se ha podido preparar la ficha'}</strong><span class="print-hint">${printed ? `${labels[config.type]} · ${contentSummary}${mobile ? ' · Abre el PDF para imprimirlo o compartirlo.' : ''}` : (mobile ? 'El navegador no ha podido generar el PDF.' : 'El navegador ha bloqueado la ventana de impresión.')}</span>${config.solutions ? `<button class="solutions-link" id="print-solutions" type="button">${mobile ? 'Descargar soluciones' : 'Imprimir soluciones'}</button>` : ''}${printed ? '<button class="solutions-link new-sheet" id="new-sheet" type="button">Crear otra ficha</button>' : ''}</div>`;

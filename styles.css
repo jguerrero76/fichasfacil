@@ -197,3 +197,55 @@ input::placeholder{color:#8995a8;opacity:1}
 .form-actions{margin-top:14px}
 .generator-modal{scrollbar-width:none}
 .generator-modal::-webkit-scrollbar{display:none}
+
+/* El configurador completo permanece a la vista; los campos se compactan en columnas. */
+.modal-backdrop{padding:12px}
+.generator-modal{width:min(1040px,calc(100vw - 24px));max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overflow:hidden;padding:22px 28px 18px}
+.modal-header{margin:0 32px 12px 0;padding:0}
+.modal-header .kicker{margin:0 0 6px;font-size:10px}
+.activity-summary{margin-bottom:5px;font-size:12px}
+.modal-header h2{margin:0 0 5px;font-size:25px;line-height:1.08}
+.modal-header #generator-help{margin:0;font-size:13px;line-height:1.3}
+.configuration-summary{margin:5px 0 0!important;font-size:11px!important;line-height:1.25}
+.form-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px 14px}
+.form-grid label{min-width:0;font-size:11px;line-height:1.2}
+.form-grid select,.form-grid input{margin-top:4px;min-height:38px;padding:8px 10px;font-size:13px}
+.form-grid .full-field{grid-column:1/-1}
+.modal-note{display:none}
+.check-label{margin:7px 0;font-size:12px}
+.form-actions{margin-top:9px;padding-top:9px;gap:9px}
+.form-actions .reset-button,.form-actions .print-button,.form-actions .share-button{min-height:42px;padding-top:9px;padding-bottom:9px}
+.preview-result{margin-top:8px}
+@media(max-width:900px){
+  .generator-modal{width:min(820px,calc(100vw - 24px));padding:20px 22px 16px}
+  .form-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}
+}
+@media(max-width:650px){
+  .modal-backdrop{align-items:stretch;padding:0}
+  .generator-modal{display:flex;flex-direction:column;width:100%;height:100vh;height:100dvh;max-height:100vh;max-height:100dvh;padding:calc(12px + env(safe-area-inset-top)) 16px calc(10px + env(safe-area-inset-bottom));border-radius:0;overflow:hidden}
+  .modal-close{right:12px;top:10px;width:36px;height:36px;font-size:25px}
+  .modal-header{flex:none;margin:0 38px 9px 0}
+  .modal-header .kicker{font-size:9px;margin-bottom:3px}
+  .activity-summary{margin-bottom:3px;font-size:11px}
+  .modal-header h2{font-size:21px;line-height:1.06;margin-bottom:4px}
+  .modal-header #generator-help{font-size:11px;line-height:1.25}
+  .configuration-summary{font-size:10px!important;margin-top:4px!important}
+  #generator-form{display:flex;flex:1;min-height:0;flex-direction:column;justify-content:flex-start}
+  .form-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:7px 9px}
+  .form-grid label{font-size:10px;line-height:1.15}
+  .form-grid select,.form-grid input{min-height:36px;margin-top:3px;padding:7px 8px;font-size:12px}
+  .check-label{flex:none;margin:7px 0;font-size:11px}
+  .form-actions{flex:none;grid-template-columns:1fr 1fr;margin:7px -16px 0;padding:8px 16px 0;gap:7px}
+  .form-actions .reset-button{grid-column:1/-1;grid-row:2;min-height:34px;padding:6px 10px;font-size:11px}
+  .form-actions .print-button,.form-actions .share-button{min-height:42px;padding:8px 6px;font-size:12px}
+  .preview-result{flex:none;max-height:70px;overflow:auto;margin-top:6px;font-size:11px}
+}
+@media(max-height:700px){
+  .generator-modal{padding-top:14px;padding-bottom:12px}
+  .modal-header{margin-bottom:7px}
+  .modal-header .kicker{display:none}
+  .form-grid{gap:6px 10px}
+  .form-grid select,.form-grid input{min-height:33px;padding-top:6px;padding-bottom:6px}
+  .check-label{margin:5px 0}
+  .form-actions{margin-top:6px;padding-top:7px}
+}

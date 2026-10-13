@@ -12,6 +12,39 @@ const mathApi = new Function(`let lastReadingTitle = ''; let lastCopyingSequence
 const markupStart = source.indexOf('function exerciseMarkup(');
 const markupEnd = source.indexOf('\nfunction printableHtml(', markupStart);
 const markupApi = new Function('labels', 'escapeHtml', 'geometrySvg', `${source.slice(markupStart, markupEnd)}; return exerciseMarkup;`)({ sumas: 'Sumas', restas: 'Restas', multiplicaciones: 'Multiplicaciones', divisiones: 'Divisiones' }, value => String(value), () => '');
+const printableStart = markupEnd + 1;
+const printableEnd = source.indexOf('\nconst readConfig', printableStart);
+const printableApi = new Function('labels', 'escapeHtml', 'exerciseMarkup', `${source.slice(printableStart, printableEnd)}; return printableHtml;`)({ sumas: 'Sumas', restas: 'Restas', multiplicaciones: 'Multiplicaciones', divisiones: 'Divisiones', problemas: 'Problemas matemáticos', lectura: 'Lectura comprensiva', copiado: 'Copiado', ortografia: 'Ortografía', logica: 'Lógica', reloj: 'Horas y reloj', dinero: 'Dinero', medidas: 'Medidas', fracciones: 'Fracciones', geometria: 'Geometría', vocabulario: 'Vocabulario', ordenar: 'Ordenar frases', caligrafia: 'Caligrafía', mixta: 'Ficha mixta', diaria: 'Ficha diaria' }, value => String(value), markupApi);
+const pdfStart = source.indexOf('function downloadPdf(');
+const pdfEnd = source.indexOf('\nfunction isMobileDevice(', pdfStart);
+const labelsMatch = source.match(/const labels = (\{[\s\S]*?\n\});/);
+assert.ok(labelsMatch, 'no se encuentran los nombres de actividades');
+const labels = new Function(`return (${labelsMatch[1]});`)();
+
+class PdfProbe {
+  constructor() { this.page = 1; this.texts = []; this.pages = [this.texts]; this.pageCount = 1; PdfProbe.latest = this; }
+  setProperties() {} setTextColor() {} setFont() {} setFontSize() {} setDrawColor() {} setFillColor() {} setLineWidth() {}
+  text(value, _x, y) { this.texts.push({ value: Array.isArray(value) ? value.join(' ') : String(value), y }); }
+  line() {} circle() {} rect() {} arc() {} roundedRect() {}
+  getTextWidth(value) { return String(value).length * 2.4; }
+  splitTextToSize(value, width) {
+    const maxCharacters = Math.max(12, Math.floor(width / 2.4));
+    const words = String(value).split(/\s+/);
+    const lines = [];
+    let line = '';
+    for (const word of words) {
+      if (line && `${line} ${word}`.length > maxCharacters) { lines.push(line); line = word; }
+      else line = line ? `${line} ${word}` : word;
+    }
+    if (line) lines.push(line);
+    return lines;
+  }
+  addPage() { this.page += 1; this.texts = []; this.pages.push(this.texts); this.pageCount += 1; }
+  setPage(page) { this.page = page; this.texts = this.pages[page - 1]; }
+  getNumberOfPages() { return this.pageCount; }
+  save() { this.saved = { pages: this.pages, pageCount: this.pageCount }; }
+}
+const makePdf = new Function('window', 'labels', `${source.slice(pdfStart, pdfEnd)}; return downloadPdf;`)({ jspdf: { jsPDF: PdfProbe } }, labels);
 
 const poolStart = source.indexOf('function difficultyTier(');
 const poolEnd = source.indexOf('const geometryFigureFor =');
@@ -183,6 +216,43 @@ test('las fichas imprimibles incluyen respuestas en soluciones y espacio para re
     const worksheet = markupApi(config, item, 0, false);
     if (type === 'sumas' || type === 'restas') assert.ok(worksheet.includes('color="#c4cbd4"'), `${type}: falta línea de respuesta`);
     if (type === 'multiplicaciones') assert.equal((worksheet.match(/color="#c4cbd4"/g) || []).length, 3, 'multiplicación: faltan líneas de espacio de trabajo');
+  }
+});
+
+test('las 19 actividades producen PDF y sus hojas de soluciones sin respuestas vacías', () => {
+  const types = ['sumas', 'restas', 'multiplicaciones', 'divisiones', 'problemas', 'lectura', 'copiado', 'ortografia', 'logica', 'reloj', 'dinero', 'medidas', 'fracciones', 'geometria', 'vocabulario', 'ordenar', 'caligrafia', 'mixta', 'diaria'];
+  for (const type of types) {
+    const config = { type, difficulty: 'Avanzado', carryMode: 'yes', divisionMode: 'remainder', calligraphyMode: 'sentences' };
+    const items = mathApi.makeContent(type, 20, config.difficulty, '', 2, 'auto', 'auto', 5, config);
+    assert.ok(items.length > 0, `${type}: no genera ejercicios`);
+    for (const solutions of [false, true]) {
+      assert.equal(makePdf(config, items, solutions), true, `${type}: no se pudo crear el PDF`);
+      const pdf = PdfProbe.latest;
+      assert.ok(pdf.saved?.pageCount >= 1, `${type}: PDF sin páginas`);
+      const printed = pdf.saved.pages.flat().map(entry => entry.value).join(' ');
+      if (solutions) {
+        const expectedAnswers = items.flatMap(item => item.kind === 'reading' ? item.answers : [item.answer ?? item.text]);
+        for (const answer of expectedAnswers) assert.ok(printed.includes(String(answer)), `${type}: falta respuesta «${answer}»`);
+      }
+    }
+  }
+});
+
+test('la ruta de impresión del navegador prepara HTML A4 válido para las 19 actividades', () => {
+  const types = ['sumas', 'restas', 'multiplicaciones', 'divisiones', 'problemas', 'lectura', 'copiado', 'ortografia', 'logica', 'reloj', 'dinero', 'medidas', 'fracciones', 'geometria', 'vocabulario', 'ordenar', 'caligrafia', 'mixta', 'diaria'];
+  for (const type of types) {
+    const config = { type, difficulty: 'Medio', carryMode: 'any', divisionMode: 'exact', calligraphyMode: 'sentences', student: '' };
+    const items = mathApi.makeContent(type, 20, config.difficulty, '', 2, 'auto', 'auto', 5, config);
+    for (const solutions of [false, true]) {
+      const html = printableApi(config, items, solutions);
+      assert.match(html, /^<!doctype html><html lang="es">/, `${type}: HTML incompleto`);
+      assert.match(html, /@page\{size:A4;margin:0\}/, `${type}: falta tamaño de impresión A4`);
+      assert.ok(html.includes(`<title>${labels[type]}`), `${type}: falta título de ficha`);
+      if (solutions && items[0].kind !== 'copying') {
+        const answer = items[0].kind === 'reading' ? items[0].answers[0] : items[0].answer;
+        assert.ok(html.includes(String(answer)), `${type}: faltan respuestas en la vista de impresión`);
+      }
+    }
   }
 });
 

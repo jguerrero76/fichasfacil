@@ -18,7 +18,7 @@ FichasFacil permite crear fichas de matemáticas, lengua, lectura, escritura y l
 - Divisiones: dividendo y divisor configurables; se generan divisiones exactas.
 - Problemas matemáticos: situaciones breves para leer, elegir una operación y responder.
 - Comprensión lectora: texto breve con preguntas de comprensión.
-- Copiado: uno a cinco párrafos con pauta de escritura tipo Lamela.
+- Copiado: uno a cinco párrafos con renglones pautados para practicar la escritura.
 - Ortografía: completar palabras y practicar b/v, g/j, h, c/z, ll/y, r/rr, mayúsculas y tildes.
 - Lógica: series numéricas y patrones.
 - Horas y reloj: lectura de horas y problemas sencillos de tiempo.

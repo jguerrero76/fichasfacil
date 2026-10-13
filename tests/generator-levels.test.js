@@ -214,8 +214,8 @@ test('las fichas imprimibles incluyen respuestas en soluciones y espacio para re
     const solution = markupApi(config, item, 0, true);
     assert.ok(type === 'divisiones' ? solution.includes('>42</span>') : solution.includes('>42</td>'), `${type}: no muestra la respuesta en la ficha de soluciones`);
     const worksheet = markupApi(config, item, 0, false);
-    if (type === 'sumas' || type === 'restas') assert.ok(worksheet.includes('color="#c4cbd4"'), `${type}: falta línea de respuesta`);
-    if (type === 'multiplicaciones') assert.equal((worksheet.match(/color="#c4cbd4"/g) || []).length, 3, 'multiplicación: faltan líneas de espacio de trabajo');
+    if (type === 'sumas' || type === 'restas') assert.ok(worksheet.includes('border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf'), `${type}: falta el renglón pautado gris`);
+    if (type === 'multiplicaciones') assert.equal((worksheet.match(/border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf/g) || []).length, 3, 'multiplicación: faltan los tres renglones pautados para trabajar');
   }
 });
 
@@ -248,7 +248,10 @@ test('las 19 actividades producen PDF y sus hojas de soluciones sin respuestas v
       assert.equal(makePdf(config, items, solutions), true, `${type}: no se pudo crear el PDF`);
       const pdf = PdfProbe.latest;
       assert.ok(pdf.saved?.pageCount >= 1, `${type}: PDF sin páginas`);
-      const printed = pdf.saved.pages.flat().map(entry => entry.value).join(' ');
+      const pdfTexts = pdf.saved.pages.flat().map(entry => entry.value);
+      assert.ok(pdfTexts.includes('FichasFácil'), `${type}: falta la marca del pie de página`);
+      assert.ok(pdf.roundedRects.length >= 5, `${type}: falta el icono de marca del pie`);
+      const printed = pdfTexts.join(' ');
       if (solutions) {
         const expectedAnswers = items.flatMap(item => item.kind === 'reading' ? item.answers : [item.answer ?? item.text]);
         for (const answer of expectedAnswers) assert.ok(printed.includes(String(answer)), `${type}: falta respuesta «${answer}»`);
@@ -267,11 +270,22 @@ test('la ruta de impresión del navegador prepara HTML A4 válido para las 19 ac
       assert.match(html, /^<!doctype html><html lang="es">/, `${type}: HTML incompleto`);
       assert.match(html, /@page\{size:A4;margin:0\}/, `${type}: falta tamaño de impresión A4`);
       assert.ok(html.includes(`<title>${labels[type]}`), `${type}: falta título de ficha`);
+      assert.match(source, /aria-label="FichasFácil"[\s\S]*?<span>FichasFácil<\/span>/, `${type}: la impresión web debe añadir el pie con marca`);
       if (solutions && items[0].kind !== 'copying') {
         const answer = items[0].kind === 'reading' ? items[0].answers[0] : items[0].answer;
         assert.ok(html.includes(String(answer)), `${type}: faltan respuestas en la vista de impresión`);
       }
     }
   }
+});
+
+test('las páginas y textos públicos no mencionan las pautas por la marca anterior', () => {
+  for (const file of ['index.html', 'blog.html', 'guia.html', 'caligrafia.html', 'comprension-lectora.html', 'llms.txt', 'llms-full.txt']) {
+    const content = fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
+    assert.doesNotMatch(content, /lamela/i, `${file}: quitar la mención de la web`);
+  }
+  assert.match(source, /border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf/, 'las pautas deben tener dos líneas grises');
+  assert.match(source, /aria-label="Tres renglones pautados para responder"/, 'la ficha diaria debe usar el mismo tipo de renglón');
+  assert.match(source, /Pauta de renglones con dos líneas grises por renglón/, 'copiado y caligrafía deben tener pauta de dos líneas');
 });
 

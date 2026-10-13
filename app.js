@@ -1342,7 +1342,7 @@ function exerciseMarkup(config, item, index, solutions) {
       : `<table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0"><tbody>${Array.from({ length: 3 }, () => '<tr><td height="20" valign="bottom"><hr width="100%" size="1" color="#aeb6bf" noshade></td></tr>').join('')}</tbody></table>`;
     return `<table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0"><tbody><tr><td width="7%" valign="top"><font face="Arial,Helvetica,sans-serif" size="3" color="#315c9b"><b>${index + 1}.</b></font></td><td valign="top"><font face="Arial,Helvetica,sans-serif" size="3" color="#20283f">${escapeHtml(item.question)}</font></td></tr><tr><td>&nbsp;</td><td>${response}</td></tr><tr><td colspan="2" height="12">&nbsp;</td></tr></tbody></table>`;
   }
-  if (config.type === 'geometria') return `<div class="geometry-exercise" style="display:flex;align-items:flex-start;gap:10px;min-height:118px;padding:10px 4px;break-inside:avoid;page-break-inside:avoid"><span style="font-size:11px;color:#6b7486;padding-top:3px;flex:0 0 18px">${index + 1}.</span>${geometrySvg(item.figure)}<div style="flex:1;font-size:15px;line-height:1.35"><strong style="display:block">${item.question}</strong>${solutions ? `<b style="display:block;margin-top:8px;color:#275fac">${item.answer}</b>` : '<span aria-label="espacio para responder" style="display:block;height:46px;margin-top:8px;background:repeating-linear-gradient(to bottom,#aeb6bf 0,#aeb6bf 1px,transparent 1px,transparent 17px,#aeb6bf 17px,#aeb6bf 18px,transparent 18px,transparent 24px)"></span>'}</div></div>`;
+  if (config.type === 'geometria') return `<div class="geometry-exercise" style="display:block;min-height:0;padding:10px 4px 14px;break-inside:avoid;page-break-inside:avoid"><strong style="display:block;font-size:15px;line-height:1.35">${index + 1}. ${item.question}</strong>${geometrySvg(item.figure)}${solutions ? `<b style="display:block;margin-top:6px;color:#275fac">${item.answer}</b>` : '<span aria-label="espacio para responder, dos renglones pautados" style="display:block;width:100%;height:38px;margin-top:5px;background:linear-gradient(to bottom,#aeb6bf 0,#aeb6bf 1px,transparent 1px,transparent 16px,#aeb6bf 16px,#aeb6bf 17px,transparent 17px,transparent 20px,#aeb6bf 20px,#aeb6bf 21px,transparent 21px,transparent 36px,#aeb6bf 36px,#aeb6bf 37px,transparent 37px)"></span>'}</div>`;
   const arithmetic = ['sumas', 'restas', 'multiplicaciones', 'divisiones'].includes(config.type);
   if (arithmetic) {
     if (config.type === 'divisiones') {
@@ -1611,13 +1611,16 @@ function downloadPdf(config, items, solutions = false) {
     drawHeader(labels[config.type]);
     items.forEach((item, index) => {
     if (config.type === 'geometria') {
-      const questionLines = doc.splitTextToSize(`${index + 1}. ${item.question}`, pageWidth - margin * 2 - 34);
-      ensureSpace(Math.max(42, questionLines.length * 6 + (solutions ? 14 : 42)));
-      drawGeometryFigure(item.figure, margin + 12, y + 2);
+      const questionLines = doc.splitTextToSize(`${index + 1}. ${item.question}`, pageWidth - margin * 2);
+      const figureHeight = 22;
+      const answerHeight = solutions ? 12 : 24;
+      ensureSpace(questionLines.length * 6 + figureHeight + answerHeight + 12);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
-      doc.text(questionLines, margin + 30, y + 5);
-      y += questionLines.length * 6 + 8;
+      doc.text(questionLines, margin, y + 5);
+      y += questionLines.length * 6 + 4;
+      drawGeometryFigure(item.figure, margin + 12, y + 1);
+      y += figureHeight;
       if (solutions) {
         const answerLines = doc.splitTextToSize(`Respuesta: ${item.answer}`, pageWidth - margin * 2 - 34);
         ensureSpace(answerLines.length * 5 + 5);

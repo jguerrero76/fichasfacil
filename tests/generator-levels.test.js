@@ -11,7 +11,7 @@ assert.notEqual(mathEnd, -1);
 const mathApi = new Function(`let lastReadingTitle = ''; let lastCopyingSequence = -1; ${source.slice(mathStart, mathEnd)}; return { makeOperation, makeContent };`)();
 const markupStart = source.indexOf('function exerciseMarkup(');
 const markupEnd = source.indexOf('\nfunction printableHtml(', markupStart);
-const markupApi = new Function('labels', 'escapeHtml', 'geometrySvg', `${source.slice(markupStart, markupEnd)}; return exerciseMarkup;`)({ sumas: 'Sumas', restas: 'Restas', multiplicaciones: 'Multiplicaciones', divisiones: 'Divisiones' }, value => String(value), () => '');
+const markupApi = new Function('labels', 'escapeHtml', 'geometrySvg', `${source.slice(markupStart, markupEnd)}; return exerciseMarkup;`)({ sumas: 'Sumas', restas: 'Restas', multiplicaciones: 'Multiplicaciones', divisiones: 'Divisiones' }, value => String(value), figure => `<svg data-figure="${figure}"></svg>`);
 const printableStart = markupEnd + 1;
 const printableEnd = source.indexOf('\nconst readConfig', printableStart);
 const printableApi = new Function('labels', 'escapeHtml', 'exerciseMarkup', `${source.slice(printableStart, printableEnd)}; return printableHtml;`)({ sumas: 'Sumas', restas: 'Restas', multiplicaciones: 'Multiplicaciones', divisiones: 'Divisiones', problemas: 'Problemas matemáticos', lectura: 'Lectura comprensiva', copiado: 'Copiado', ortografia: 'Ortografía', logica: 'Lógica', reloj: 'Horas y reloj', dinero: 'Dinero', medidas: 'Medidas', fracciones: 'Fracciones', geometria: 'Geometría', vocabulario: 'Vocabulario', ordenar: 'Ordenar frases', caligrafia: 'Caligrafía', mixta: 'Ficha mixta', diaria: 'Ficha diaria' }, value => String(value), markupApi);
@@ -217,6 +217,19 @@ test('las fichas imprimibles incluyen respuestas en soluciones y espacio para re
     if (type === 'sumas' || type === 'restas') assert.ok(worksheet.includes('color="#c4cbd4"'), `${type}: falta línea de respuesta`);
     if (type === 'multiplicaciones') assert.equal((worksheet.match(/color="#c4cbd4"/g) || []).length, 3, 'multiplicación: faltan líneas de espacio de trabajo');
   }
+});
+
+test('geometría muestra primero el enunciado, después la figura y dos renglones pautados', () => {
+  const item = { question: 'Observa la figura. ¿Cuántos lados tiene?', answer: 'Tiene tres lados.', figure: 'triangle' };
+  const worksheet = markupApi({ type: 'geometria' }, item, 0, false);
+  assert.ok(worksheet.indexOf('<strong') < worksheet.indexOf('<svg data-figure="triangle">'));
+  assert.ok(worksheet.indexOf('<svg data-figure="triangle">') < worksheet.indexOf('aria-label="espacio para responder, dos renglones pautados"'));
+  assert.equal((worksheet.match(/#aeb6bf/g) || []).length, 8, 'debe dibujar las cuatro líneas grises que delimitan dos renglones');
+  const solution = markupApi({ type: 'geometria' }, item, 0, true);
+  assert.ok(solution.indexOf('<strong') < solution.indexOf('<svg data-figure="triangle">'));
+  assert.ok(solution.indexOf('<svg data-figure="triangle">') < solution.indexOf(item.answer));
+  assert.equal(makePdf({ type: 'geometria', difficulty: 'Medio' }, [item], false), true);
+  assert.ok(PdfProbe.latest.saved.pageCount >= 1, 'geometría debe producir un PDF');
 });
 
 test('las 19 actividades producen PDF y sus hojas de soluciones sin respuestas vacías', () => {

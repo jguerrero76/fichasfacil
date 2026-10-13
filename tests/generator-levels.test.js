@@ -25,7 +25,7 @@ class PdfProbe {
   constructor() { this.page = 1; this.texts = []; this.pages = [this.texts]; this.pageCount = 1; PdfProbe.latest = this; }
   setProperties() {} setTextColor() {} setFont() {} setFontSize() {} setDrawColor() {} setFillColor() {} setLineWidth() {}
   text(value, _x, y) { this.texts.push({ value: Array.isArray(value) ? value.join(' ') : String(value), y }); }
-  line() {} circle() {} rect() {} arc() {} roundedRect() {}
+  line(x1, y1, x2, y2) { this.lines ||= []; this.lines.push({ x1, y1, x2, y2 }); } circle() {} rect() {} arc() {} roundedRect() {}
   getTextWidth(value) { return String(value).length * 2.4; }
   splitTextToSize(value, width) {
     const maxCharacters = Math.max(12, Math.floor(width / 2.4));
@@ -230,6 +230,9 @@ test('geometría muestra primero el enunciado, después la figura y dos renglone
   assert.ok(solution.indexOf('<svg data-figure="triangle">') < solution.indexOf(item.answer));
   assert.equal(makePdf({ type: 'geometria', difficulty: 'Medio' }, [item], false), true);
   assert.ok(PdfProbe.latest.saved.pageCount >= 1, 'geometría debe producir un PDF');
+  const writingRules = PdfProbe.latest.lines.filter(line => line.x2 - line.x1 > 100).slice(-4);
+  assert.deepEqual(writingRules.map(line => line.y2 - line.y1), [0, 0, 0, 0]);
+  assert.deepEqual(writingRules.slice(1).map((line, index) => line.y1 - writingRules[index].y1), [6, 4, 6], 'las dos pautas deben tener línea superior/inferior con separación entre renglones');
 });
 
 test('las 19 actividades producen PDF y sus hojas de soluciones sin respuestas vacías', () => {

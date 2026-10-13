@@ -1313,7 +1313,7 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
 const digitMarkup = value => `<span class="digit-value">${String(value).split('').map(digit => `<b>${digit}</b>`).join('')}</span>`;
 
 const geometrySvg = figure => {
-  const common = 'width="76" height="58" viewBox="0 0 76 58" aria-hidden="true" style="display:block;flex:0 0 76px"';
+  const common = 'width="104" height="80" viewBox="0 0 76 58" aria-hidden="true" style="display:block;flex:0 0 104px"';
   const stroke = 'fill="none" stroke="#315c9b" stroke-width="2.4" stroke-linejoin="round"';
   const shapes = {
     triangle: `<polygon points="38,7 8,51 68,51" ${stroke}/>`,
@@ -1504,34 +1504,34 @@ function downloadPdf(config, items, solutions = false) {
     doc.setDrawColor(49, 92, 155);
     doc.setLineWidth(0.8);
     if (figure === 'circle') {
-      doc.circle(x, topY + 9, 9);
+      doc.circle(x, topY + 14, 14);
       doc.setFillColor(239, 142, 105);
-      doc.circle(x, topY + 9, 1.2, 'F');
+      doc.circle(x, topY + 14, 1.8, 'F');
     } else if (figure === 'triangle') {
-      doc.line(x, topY, x - 10, topY + 17);
-      doc.line(x - 10, topY + 17, x + 10, topY + 17);
-      doc.line(x + 10, topY + 17, x, topY);
+      doc.line(x, topY, x - 15, topY + 25);
+      doc.line(x - 15, topY + 25, x + 15, topY + 25);
+      doc.line(x + 15, topY + 25, x, topY);
     } else if (figure === 'rectangle') {
-      doc.rect(x - 12, topY + 3, 24, 12);
+      doc.rect(x - 18, topY + 5, 36, 18);
     } else if (figure === 'pentagon' || figure === 'hexagon' || figure === 'heptagon' || figure === 'octagon') {
       const sides = figure === 'pentagon' ? 5 : figure === 'hexagon' ? 6 : figure === 'heptagon' ? 7 : 8;
       const points = Array.from({ length: sides }, (_, index) => {
         const angle = -Math.PI / 2 + (index * Math.PI * 2) / sides;
-        return [x + Math.cos(angle) * 10, topY + 9 + Math.sin(angle) * 10];
+        return [x + Math.cos(angle) * 15, topY + 14 + Math.sin(angle) * 15];
       });
       points.forEach((point, index) => {
         const next = points[(index + 1) % points.length];
         doc.line(point[0], point[1], next[0], next[1]);
       });
     } else if (figure === 'angle') {
-      doc.line(x - 10, topY + 16, x - 10, topY);
-      doc.line(x - 10, topY + 16, x + 11, topY + 16);
+      doc.line(x - 15, topY + 24, x - 15, topY);
+      doc.line(x - 15, topY + 24, x + 16, topY + 24);
       doc.setDrawColor(239, 142, 105);
-      doc.arc?.(x - 10, topY + 16, 6, 270, 360);
+      doc.arc?.(x - 15, topY + 24, 9, 270, 360);
     } else if (figure === 'line') {
-      doc.line(x - 12, topY + 14, x + 12, topY + 14);
-      doc.circle(x - 12, topY + 14, 1, 'F');
-      doc.circle(x + 12, topY + 14, 1, 'F');
+      doc.line(x - 18, topY + 21, x + 18, topY + 21);
+      doc.circle(x - 18, topY + 21, 1.5, 'F');
+      doc.circle(x + 18, topY + 21, 1.5, 'F');
     } else {
       doc.rect(x - 9, topY, 18, 18);
     }
@@ -1553,12 +1553,12 @@ function downloadPdf(config, items, solutions = false) {
     y += lines.length * lineHeight + (options.gap ?? 2);
   };
   const writeAnswerLines = (count = 3) => {
-    ensureSpace(count * 10 + 8);
+    ensureSpace(count * 10 + 9);
     for (let row = 0; row < count; row += 1) {
       doc.setDrawColor(174, 182, 191);
       doc.line(margin + 4, y, pageWidth - margin - 4, y);
       doc.line(margin + 4, y + 6, pageWidth - margin - 4, y + 6);
-      y += 8;
+      y += 10;
     }
     doc.setDrawColor(0, 0, 0);
     y += 3;
@@ -1612,8 +1612,8 @@ function downloadPdf(config, items, solutions = false) {
     items.forEach((item, index) => {
     if (config.type === 'geometria') {
       const questionLines = doc.splitTextToSize(`${index + 1}. ${item.question}`, pageWidth - margin * 2);
-      const figureHeight = 22;
-      const answerHeight = solutions ? 12 : 24;
+      const figureHeight = 30;
+      const answerHeight = solutions ? 12 : 22;
       ensureSpace(questionLines.length * 6 + figureHeight + answerHeight + 12);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
@@ -1717,7 +1717,7 @@ function createSheets(config) {
   const printPolish = '<style>html,body{width:210mm!important;min-width:210mm!important;max-width:210mm!important}body{font-family:ui-rounded,"Arial Rounded MT Bold","Trebuchet MS",Arial,sans-serif!important;color:#20283f!important;background:#fff!important;padding:13mm 12mm!important;overflow:visible!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}h1{text-align:center!important;font-size:15px!important;font-weight:700!important;line-height:1.2!important;color:#20283f!important;margin:0 0 19px!important}.worksheet-header{display:flex!important;justify-content:space-between!important;gap:20px!important;margin-bottom:24px!important;padding:0 8px!important;border:0!important;font-size:10px!important;font-weight:700!important}.worksheet-header>div:first-child{flex:1}.worksheet-header>div:last-child{min-width:72px}.worksheet-header span{min-width:100px;height:13px}.worksheet-header>div:last-child span{min-width:62px}.math-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-template-rows:repeat(5,minmax(0,1fr))!important;gap:0 22px!important;min-height:246mm!important;padding:0 2mm!important}.math-grid .arithmetic{width:100%!important;min-height:0!important;justify-content:center!important;align-items:center!important;padding:0!important}.math-grid .operation{display:block!important;flex:0 0 116px!important;width:116px!important;min-width:116px!important;max-width:116px!important;font-family:ui-monospace,SFMono-Regular,Menlo,monospace!important;font-size:17px!important;line-height:1.15!important}.math-grid .digit-value{display:inline-flex!important;gap:3px!important;letter-spacing:0!important}.math-grid .digit-value b{letter-spacing:0!important}.math-grid .top-number,.math-grid .extra-number{padding-right:0!important;letter-spacing:0!important;min-height:23px!important;white-space:nowrap!important}.math-grid .bottom-number{grid-template-columns:18px 1fr!important;gap:0!important;padding-right:0!important;letter-spacing:0!important;line-height:1.15!important;white-space:nowrap!important}.math-grid .bottom-number .operator{text-align:center!important;letter-spacing:0!important}.math-grid .bottom-number .digit-value{justify-self:end!important}.math-grid .operation-rule{display:block!important;width:116px!important;max-width:116px!important;margin-top:5px!important}.math-grid .answer-space{display:none!important}@media print{h1{letter-spacing:-.02em}.worksheet-header{break-inside:avoid;page-break-inside:avoid}.text-exercise,.reading-question{break-inside:avoid;page-break-inside:avoid}.reading-sheet{break-inside:avoid;page-break-inside:avoid}.copying-sheet{break-inside:avoid;page-break-inside:avoid}p,h1,h2,h3,h4{orphans:3;widows:3}}</style>';
   const screenLayout = '<style>body{width:210mm!important;min-width:210mm!important;max-width:210mm!important;padding:13mm 12mm!important;overflow:visible!important}.worksheet-header{display:flex!important;align-items:flex-end!important;justify-content:space-between!important;gap:18px!important}.worksheet-header>div:first-child{flex:1}.worksheet-header>div{white-space:nowrap!important}.worksheet-header strong{color:#315c9b!important}.math-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-template-rows:repeat(5,minmax(0,1fr))!important;gap:0 22px!important;min-height:246mm!important;align-items:center!important}.math-grid .arithmetic{min-height:0!important;justify-content:center!important}.math-grid .operation{display:block!important;flex:0 0 116px!important;width:116px!important;min-width:116px!important;max-width:116px!important;font-family:ui-monospace,SFMono-Regular,Menlo,monospace!important;font-size:17px!important;line-height:1.15!important}.math-grid .extra-number{display:grid!important;grid-template-columns:18px 1fr!important;gap:0!important;white-space:nowrap!important}.math-grid .extra-number .operator{text-align:center!important}.math-grid .extra-number .digit-value{justify-self:end!important}.math-grid .print-row .number{display:none!important}.math-grid .answer-space{display:block!important;height:20px!important;border-bottom:1px solid #9aaabd!important}@media(max-width:650px){body{padding:18px 14px!important}.math-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:0 22px!important}}</style>';
   const finalPdfLayout = '<style>.math-grid{min-height:198mm!important}</style>';
-  const writingGuideLayout = '<style>.text-exercise i{height:18px!important;border:0!important;border-top:1px solid #aeb6bf!important;border-bottom:1px solid #aeb6bf!important;background:none!important}.reading-question i{height:48px!important;border:0!important;background:repeating-linear-gradient(to bottom,#aeb6bf 0,#aeb6bf 1px,transparent 1px,transparent 18px,#aeb6bf 18px,#aeb6bf 19px,transparent 19px,transparent 24px)!important}</style>';
+  const writingGuideLayout = '<style>.text-exercise i{height:18px!important;border:0!important;border-top:1px solid #aeb6bf!important;border-bottom:1px solid #aeb6bf!important;background:none!important}.reading-question i{height:48px!important;border:0!important;background:repeating-linear-gradient(to bottom,#aeb6bf 0,#aeb6bf 1px,transparent 1px,transparent 18px,#aeb6bf 18px,#aeb6bf 19px,transparent 19px,transparent 24px)!important}.geometry-exercise>span{height:46px!important;background:linear-gradient(to bottom,#aeb6bf 0,#aeb6bf 1px,transparent 1px,transparent 16px,#aeb6bf 16px,#aeb6bf 17px,transparent 17px,transparent 24px,#aeb6bf 24px,#aeb6bf 25px,transparent 25px,transparent 40px,#aeb6bf 40px,#aeb6bf 41px,transparent 41px)!important}</style>';
   const preparePrint = html => {
     const inlineLayout = html
       .replace('<body>', '<body style="margin:0;background:#fff;color:#20283f;font-family:Arial,Helvetica,sans-serif;width:210mm;min-height:297mm;padding:13mm 12mm;box-sizing:border-box;overflow:visible;-webkit-print-color-adjust:exact;print-color-adjust:exact">')

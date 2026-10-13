@@ -1342,7 +1342,12 @@ function exerciseMarkup(config, item, index, solutions) {
       : `<table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0"><tbody>${Array.from({ length: 3 }, () => '<tr><td height="20" valign="bottom"><hr width="100%" size="1" color="#aeb6bf" noshade></td></tr>').join('')}</tbody></table>`;
     return `<table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0"><tbody><tr><td width="7%" valign="top"><font face="Arial,Helvetica,sans-serif" size="3" color="#315c9b"><b>${index + 1}.</b></font></td><td valign="top"><font face="Arial,Helvetica,sans-serif" size="3" color="#20283f">${escapeHtml(item.question)}</font></td></tr><tr><td>&nbsp;</td><td>${response}</td></tr><tr><td colspan="2" height="12">&nbsp;</td></tr></tbody></table>`;
   }
-  if (config.type === 'geometria') return `<div class="geometry-exercise" style="display:block;min-height:0;padding:10px 4px 14px;break-inside:avoid;page-break-inside:avoid"><strong style="display:block;font-size:15px;line-height:1.35">${index + 1}. ${item.question}</strong>${geometrySvg(item.figure)}${solutions ? `<b style="display:block;margin-top:6px;color:#275fac">${item.answer}</b>` : '<span aria-label="espacio para responder, dos renglones pautados" style="display:block;width:100%;height:38px;margin-top:5px;background:linear-gradient(to bottom,#aeb6bf 0,#aeb6bf 1px,transparent 1px,transparent 16px,#aeb6bf 16px,#aeb6bf 17px,transparent 17px,transparent 20px,#aeb6bf 20px,#aeb6bf 21px,transparent 21px,transparent 36px,#aeb6bf 36px,#aeb6bf 37px,transparent 37px)"></span>'}</div>`;
+  if (config.type === 'geometria') {
+    const answerArea = solutions
+      ? '<b style="display:block;margin-top:6px;color:#275fac">' + item.answer + '</b>'
+      : '<table role="presentation" aria-label="Dos renglones pautados para responder" style="width:100%;margin-top:5px;border-collapse:separate;border-spacing:0 3mm"><tbody>' + Array.from({ length: 2 }, () => '<tr><td height="8mm" style="height:8mm;padding:0;border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf">&nbsp;</td></tr>').join('') + '</tbody></table>';
+    return '<div class="geometry-exercise" style="display:block;min-height:0;padding:10px 4px 14px;break-inside:avoid;page-break-inside:avoid"><strong style="display:block;font-size:15px;line-height:1.35">' + (index + 1) + '. ' + item.question + '</strong>' + geometrySvg(item.figure) + answerArea + '</div>';
+  }
   const arithmetic = ['sumas', 'restas', 'multiplicaciones', 'divisiones'].includes(config.type);
   if (arithmetic) {
     if (config.type === 'divisiones') {
@@ -1553,12 +1558,12 @@ function downloadPdf(config, items, solutions = false) {
     y += lines.length * lineHeight + (options.gap ?? 2);
   };
   const writeAnswerLines = (count = 3) => {
-    ensureSpace(count * 10 + 9);
+    ensureSpace(count * 11 + 4);
     for (let row = 0; row < count; row += 1) {
       doc.setDrawColor(174, 182, 191);
       doc.line(margin + 4, y, pageWidth - margin - 4, y);
-      doc.line(margin + 4, y + 6, pageWidth - margin - 4, y + 6);
-      y += 10;
+      doc.line(margin + 4, y + 8, pageWidth - margin - 4, y + 8);
+      y += 11;
     }
     doc.setDrawColor(0, 0, 0);
     y += 3;
@@ -1670,22 +1675,22 @@ function downloadPdf(config, items, solutions = false) {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(137, 149, 143);
-    const logoX = pageWidth / 2 - 17;
-    const logoY = pageHeight - 14;
+    const logoX = pageWidth / 2 - 16;
+    const logoY = pageHeight - 20;
     doc.setFillColor(32, 56, 95);
-    doc.roundedRect(logoX, logoY, 6, 6, 1.4, 1.4, 'F');
+    doc.roundedRect(logoX, logoY, 9, 9, 1.8, 1.8, 'F');
     doc.setFillColor(244, 201, 28);
-    doc.roundedRect(logoX + 1, logoY + 1, 1.6, 1.6, 0.35, 0.35, 'F');
+    doc.roundedRect(logoX + 1.4, logoY + 1.4, 2.4, 2.4, 0.45, 0.45, 'F');
     doc.setFillColor(237, 126, 53);
-    doc.roundedRect(logoX + 3.4, logoY + 1, 1.6, 1.6, 0.35, 0.35, 'F');
+    doc.roundedRect(logoX + 5.2, logoY + 1.4, 2.4, 2.4, 0.45, 0.45, 'F');
     doc.setFillColor(126, 185, 255);
-    doc.roundedRect(logoX + 1, logoY + 3.4, 1.6, 1.6, 0.35, 0.35, 'F');
+    doc.roundedRect(logoX + 1.4, logoY + 5.2, 2.4, 2.4, 0.45, 0.45, 'F');
     doc.setFillColor(139, 209, 170);
-    doc.roundedRect(logoX + 3.4, logoY + 3.4, 1.6, 1.6, 0.35, 0.35, 'F');
+    doc.roundedRect(logoX + 5.2, logoY + 5.2, 2.4, 2.4, 0.45, 0.45, 'F');
     doc.setTextColor(32, 56, 95);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(8);
-    doc.text('FichasFácil', logoX + 8, logoY + 4.2);
+    doc.setFontSize(9);
+    doc.text('FichasFácil', logoX + 12, logoY + 6.2);
   }
   const fileSuffix = solutions ? '-soluciones' : '';
   doc.save(`FichasFacil-${labels[config.type].toLowerCase().replaceAll(' ', '-')}${fileSuffix}.pdf`);
@@ -1717,7 +1722,7 @@ function createSheets(config) {
   const printPolish = '<style>html,body{width:210mm!important;min-width:210mm!important;max-width:210mm!important}body{font-family:ui-rounded,"Arial Rounded MT Bold","Trebuchet MS",Arial,sans-serif!important;color:#20283f!important;background:#fff!important;padding:13mm 12mm!important;overflow:visible!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}h1{text-align:center!important;font-size:15px!important;font-weight:700!important;line-height:1.2!important;color:#20283f!important;margin:0 0 19px!important}.worksheet-header{display:flex!important;justify-content:space-between!important;gap:20px!important;margin-bottom:24px!important;padding:0 8px!important;border:0!important;font-size:10px!important;font-weight:700!important}.worksheet-header>div:first-child{flex:1}.worksheet-header>div:last-child{min-width:72px}.worksheet-header span{min-width:100px;height:13px}.worksheet-header>div:last-child span{min-width:62px}.math-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-template-rows:repeat(5,minmax(0,1fr))!important;gap:0 22px!important;min-height:246mm!important;padding:0 2mm!important}.math-grid .arithmetic{width:100%!important;min-height:0!important;justify-content:center!important;align-items:center!important;padding:0!important}.math-grid .operation{display:block!important;flex:0 0 116px!important;width:116px!important;min-width:116px!important;max-width:116px!important;font-family:ui-monospace,SFMono-Regular,Menlo,monospace!important;font-size:17px!important;line-height:1.15!important}.math-grid .digit-value{display:inline-flex!important;gap:3px!important;letter-spacing:0!important}.math-grid .digit-value b{letter-spacing:0!important}.math-grid .top-number,.math-grid .extra-number{padding-right:0!important;letter-spacing:0!important;min-height:23px!important;white-space:nowrap!important}.math-grid .bottom-number{grid-template-columns:18px 1fr!important;gap:0!important;padding-right:0!important;letter-spacing:0!important;line-height:1.15!important;white-space:nowrap!important}.math-grid .bottom-number .operator{text-align:center!important;letter-spacing:0!important}.math-grid .bottom-number .digit-value{justify-self:end!important}.math-grid .operation-rule{display:block!important;width:116px!important;max-width:116px!important;margin-top:5px!important}.math-grid .answer-space{display:none!important}@media print{h1{letter-spacing:-.02em}.worksheet-header{break-inside:avoid;page-break-inside:avoid}.text-exercise,.reading-question{break-inside:avoid;page-break-inside:avoid}.reading-sheet{break-inside:avoid;page-break-inside:avoid}.copying-sheet{break-inside:avoid;page-break-inside:avoid}p,h1,h2,h3,h4{orphans:3;widows:3}}</style>';
   const screenLayout = '<style>body{width:210mm!important;min-width:210mm!important;max-width:210mm!important;padding:13mm 12mm!important;overflow:visible!important}.worksheet-header{display:flex!important;align-items:flex-end!important;justify-content:space-between!important;gap:18px!important}.worksheet-header>div:first-child{flex:1}.worksheet-header>div{white-space:nowrap!important}.worksheet-header strong{color:#315c9b!important}.math-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-template-rows:repeat(5,minmax(0,1fr))!important;gap:0 22px!important;min-height:246mm!important;align-items:center!important}.math-grid .arithmetic{min-height:0!important;justify-content:center!important}.math-grid .operation{display:block!important;flex:0 0 116px!important;width:116px!important;min-width:116px!important;max-width:116px!important;font-family:ui-monospace,SFMono-Regular,Menlo,monospace!important;font-size:17px!important;line-height:1.15!important}.math-grid .extra-number{display:grid!important;grid-template-columns:18px 1fr!important;gap:0!important;white-space:nowrap!important}.math-grid .extra-number .operator{text-align:center!important}.math-grid .extra-number .digit-value{justify-self:end!important}.math-grid .print-row .number{display:none!important}.math-grid .answer-space{display:block!important;height:20px!important;border-bottom:1px solid #9aaabd!important}@media(max-width:650px){body{padding:18px 14px!important}.math-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:0 22px!important}}</style>';
   const finalPdfLayout = '<style>.math-grid{min-height:198mm!important}</style>';
-  const writingGuideLayout = '<style>.text-exercise i{height:18px!important;border:0!important;border-top:1px solid #aeb6bf!important;border-bottom:1px solid #aeb6bf!important;background:none!important}.reading-question i{height:48px!important;border:0!important;background:repeating-linear-gradient(to bottom,#aeb6bf 0,#aeb6bf 1px,transparent 1px,transparent 18px,#aeb6bf 18px,#aeb6bf 19px,transparent 19px,transparent 24px)!important}.geometry-exercise>span{height:46px!important;background:linear-gradient(to bottom,#aeb6bf 0,#aeb6bf 1px,transparent 1px,transparent 16px,#aeb6bf 16px,#aeb6bf 17px,transparent 17px,transparent 24px,#aeb6bf 24px,#aeb6bf 25px,transparent 25px,transparent 40px,#aeb6bf 40px,#aeb6bf 41px,transparent 41px)!important}</style>';
+  const writingGuideLayout = '<style>.text-exercise i{height:18px!important;border:0!important;border-top:1px solid #aeb6bf!important;border-bottom:1px solid #aeb6bf!important;background:none!important}.reading-question i{height:48px!important;border:0!important;background:repeating-linear-gradient(to bottom,#aeb6bf 0,#aeb6bf 1px,transparent 1px,transparent 18px,#aeb6bf 18px,#aeb6bf 19px,transparent 19px,transparent 24px)!important}.geometry-exercise>table td{border-top:1px solid #aeb6bf!important;border-bottom:1px solid #aeb6bf!important}.geometry-exercise>table{border-spacing:0 3mm!important}div[role="img"][aria-label="FichasFácil"]{bottom:9mm!important;font-size:11px!important}div[role="img"][aria-label="FichasFácil"] svg{width:9mm!important;height:9mm!important}</style>';
   const preparePrint = html => {
     const inlineLayout = html
       .replace('<body>', '<body style="margin:0;background:#fff;color:#20283f;font-family:Arial,Helvetica,sans-serif;width:210mm;min-height:297mm;padding:13mm 12mm;box-sizing:border-box;overflow:visible;-webkit-print-color-adjust:exact;print-color-adjust:exact">')

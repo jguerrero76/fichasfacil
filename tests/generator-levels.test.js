@@ -25,7 +25,7 @@ class PdfProbe {
   constructor() { this.page = 1; this.texts = []; this.pages = [this.texts]; this.pageCount = 1; PdfProbe.latest = this; }
   setProperties() {} setTextColor() {} setFont() {} setFontSize() {} setDrawColor() {} setFillColor() {} setLineWidth() {}
   text(value, _x, y) { this.texts.push({ value: Array.isArray(value) ? value.join(' ') : String(value), y }); }
-  line(x1, y1, x2, y2) { this.lines ||= []; this.lines.push({ x1, y1, x2, y2 }); } circle() {} rect() {} arc() {} roundedRect() {}
+  line(x1, y1, x2, y2) { this.lines ||= []; this.lines.push({ x1, y1, x2, y2 }); } circle() {} rect() {} arc() {} roundedRect(...args) { this.roundedRects ||= []; this.roundedRects.push(args); }
   getTextWidth(value) { return String(value).length * 2.4; }
   splitTextToSize(value, width) {
     const maxCharacters = Math.max(12, Math.floor(width / 2.4));
@@ -223,8 +223,9 @@ test('geometría muestra primero el enunciado, después la figura y dos renglone
   const item = { question: 'Observa la figura. ¿Cuántos lados tiene?', answer: 'Tiene tres lados.', figure: 'triangle' };
   const worksheet = markupApi({ type: 'geometria' }, item, 0, false);
   assert.ok(worksheet.indexOf('<strong') < worksheet.indexOf('<svg data-figure="triangle">'));
-  assert.ok(worksheet.indexOf('<svg data-figure="triangle">') < worksheet.indexOf('aria-label="espacio para responder, dos renglones pautados"'));
-  assert.equal((worksheet.match(/#aeb6bf/g) || []).length, 8, 'debe dibujar las cuatro líneas grises que delimitan dos renglones');
+  assert.ok(worksheet.indexOf('<svg data-figure="triangle">') < worksheet.indexOf('aria-label="Dos renglones pautados para responder"'));
+  assert.equal((worksheet.match(/<tr>/g) || []).length, 2, 'debe dibujar dos bandas pautadas');
+  assert.equal((worksheet.match(/border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf/g) || []).length, 2, 'cada renglón debe tener línea superior e inferior grises');
   const solution = markupApi({ type: 'geometria' }, item, 0, true);
   assert.ok(solution.indexOf('<strong') < solution.indexOf('<svg data-figure="triangle">'));
   assert.ok(solution.indexOf('<svg data-figure="triangle">') < solution.indexOf(item.answer));
@@ -232,7 +233,9 @@ test('geometría muestra primero el enunciado, después la figura y dos renglone
   assert.ok(PdfProbe.latest.saved.pageCount >= 1, 'geometría debe producir un PDF');
   const writingRules = PdfProbe.latest.lines.filter(line => line.x2 - line.x1 > 100).slice(-4);
   assert.deepEqual(writingRules.map(line => line.y2 - line.y1), [0, 0, 0, 0]);
-  assert.deepEqual(writingRules.slice(1).map((line, index) => line.y1 - writingRules[index].y1), [6, 4, 6], 'las dos pautas deben tener línea superior/inferior con separación entre renglones');
+  assert.deepEqual(writingRules.slice(1).map((line, index) => line.y1 - writingRules[index].y1), [8, 3, 8], 'las dos pautas deben tener línea superior/inferior con separación entre renglones');
+  assert.ok(PdfProbe.latest.saved.pages.flat().some(entry => entry.value === 'FichasFácil'), 'el PDF debe incluir el nombre junto al logotipo del pie');
+  assert.equal(PdfProbe.latest.roundedRects.length, 5, 'el pie debe incluir el icono de cuatro colores y su contenedor');
 });
 
 test('las 19 actividades producen PDF y sus hojas de soluciones sin respuestas vacías', () => {

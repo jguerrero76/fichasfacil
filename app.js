@@ -58,7 +58,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261012-97', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261017-1', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -1219,7 +1219,10 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
       { question: 'Una entrada cuesta 4 € y pagas con 5 €. ¿Qué cambio recibes?', answer: '1 €.' },
       { question: '¿Qué hora será una hora después de las 10:30?', answer: 'Las 11:30.' },
       { question: 'Lee: “Marta plantó una semilla y la regó”. ¿Qué hizo Marta después de plantar?', answer: 'La regó.' },
-      { question: '¿Cuántos centímetros hay en medio metro?', answer: '50 centímetros.' }
+      { question: '¿Cuántos centímetros hay en medio metro?', answer: '50 centímetros.' },
+      { question: 'Completa: 5, 10, 15, __', answer: '20' },
+      { question: 'Escribe una palabra que empiece por ma-.', answer: 'Respuesta libre: por ejemplo, mano.' },
+      { question: '¿Qué necesitas para medir la hora?', answer: 'Un reloj.' }
       ],
       Medio: [
         { question: 'Calcula: 248 + 376 =', answer: '624' },
@@ -1230,7 +1233,10 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
         { question: 'Coloca las tildes: El camion llego al almacen.', answer: 'El camión llegó al almacén.' },
         { question: '¿Cuánto son 2 metros y 35 centímetros en centímetros?', answer: '235 centímetros.' },
         { question: '¿Qué fracción es mayor: 3/8 o 5/8?', answer: '5/8.' },
-        { question: 'Una película empieza a las 16:35 y dura 50 minutos. ¿A qué hora termina?', answer: 'A las 17:25.' }
+        { question: 'Una película empieza a las 16:35 y dura 50 minutos. ¿A qué hora termina?', answer: 'A las 17:25.' },
+        { question: 'Completa la serie: 3, 9, 27, __', answer: '81' },
+        { question: 'Corrige la frase: La niña yego temprano.', answer: 'La niña llegó temprano.' },
+        { question: 'Una caja tiene 6 filas de 8 lápices. ¿Cuántos lápices hay?', answer: '48 lápices.' }
       ],
       Avanzado: [
         { question: 'Calcula: 4.875 + 2.968 =', answer: '7.843' },
@@ -1241,7 +1247,10 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
         { question: 'Escribe el antónimo de “efímero”.', answer: 'Duradero o permanente.' },
         { question: '¿Cuánto son 3/4 de 120?', answer: '90.' },
         { question: 'Un artículo cuesta 48,50 € y tiene un descuento de 12,75 €. ¿Cuál es el precio final?', answer: '35,75 €.' },
-        { question: 'Una excursión sale a las 8:45 y termina a las 13:20. ¿Cuánto dura?', answer: '4 horas y 35 minutos.' }
+        { question: 'Una excursión sale a las 8:45 y termina a las 13:20. ¿Cuánto dura?', answer: '4 horas y 35 minutos.' },
+        { question: 'Calcula: 2/3 de 90.', answer: '60.' },
+        { question: 'Una biblioteca recibe 4 cajas de 125 libros y presta 86. ¿Cuántos libros quedan?', answer: '414 libros.' },
+        { question: 'Explica una ventaja de revisar una fuente antes de compartirla.', answer: 'Respuesta orientativa: ayuda a comprobar que la información es fiable.' }
       ]
     };
     const mixed = mixedByDifficulty[difficultyTier(difficulty)];
@@ -1333,7 +1342,8 @@ const geometrySvg = figure => {
 function exerciseMarkup(config, item, index, solutions) {
   if (item.kind === 'copying') return `<article class="copying-sheet"><p class="copying-text">${item.text}</p></article>`;
   if (item.kind === 'reading') {
-    const questions = item.questions.map((question, questionIndex) => `<div class="reading-question"><span>${questionIndex + 1}.</span><strong>${question}</strong>${solutions ? `<b>${item.answers[questionIndex]}</b>` : `<i aria-label="espacio para responder">${Array.from({ length: 3 }, () => '<span></span>').join('')}</i>`}</div>`).join('');
+    const ruledLines = '<i aria-label="espacio para responder" style="display:grid;gap:3mm;height:auto;border:0;background:none">' + Array.from({ length: 4 }, () => '<span style="display:block;height:8mm;box-sizing:border-box;border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf"></span>').join('') + '</i>';
+    const questions = item.questions.map((question, questionIndex) => `<div class="reading-question"><span>${questionIndex + 1}.</span><strong>${question}</strong>${solutions ? `<b>${item.answers[questionIndex]}</b>` : ruledLines}</div>`).join('');
     return `<article class="reading-sheet"><h3>${item.title}</h3><p class="reading-text">${item.text}</p><h4>Responde a las preguntas</h4>${questions}</article>`;
   }
   if (config.type === 'diaria') {
@@ -1345,7 +1355,7 @@ function exerciseMarkup(config, item, index, solutions) {
   if (config.type === 'geometria') {
     const answerArea = solutions
       ? '<b style="display:block;margin-top:6px;color:#275fac">' + item.answer + '</b>'
-      : '<table role="presentation" aria-label="Dos renglones pautados para responder" style="width:100%;margin-top:5px;border-collapse:separate;border-spacing:0 3mm"><tbody>' + Array.from({ length: 2 }, () => '<tr><td height="8mm" style="height:8mm;padding:0;border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf">&nbsp;</td></tr>').join('') + '</tbody></table>';
+      : '<table role="presentation" aria-label="Tres renglones pautados para responder" style="width:100%;margin-top:5px;border-collapse:separate;border-spacing:0 3mm"><tbody>' + Array.from({ length: 3 }, () => '<tr><td height="8mm" style="height:8mm;padding:0;border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf">&nbsp;</td></tr>').join('') + '</tbody></table>';
     return '<div class="geometry-exercise" style="display:block;min-height:0;padding:10px 4px 14px;break-inside:avoid;page-break-inside:avoid"><strong style="display:block;font-size:15px;line-height:1.35">' + (index + 1) + '. ' + item.question + '</strong>' + geometrySvg(item.figure) + answerArea + '</div>';
   }
   const arithmetic = ['sumas', 'restas', 'multiplicaciones', 'divisiones'].includes(config.type);
@@ -1366,7 +1376,7 @@ function exerciseMarkup(config, item, index, solutions) {
       ? `<tr><td colspan="2" height="8mm" align="right" valign="middle" style="font:700 13pt Arial,Helvetica,sans-serif;padding-right:2mm;color:#20283f">${escapeHtml(String(item.answer))}</td></tr>`
       : config.type === 'multiplicaciones'
         ? Array.from({ length: 3 }, () => '<tr><td colspan="2" height="8mm" style="height:8mm;padding:0;border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf">&nbsp;</td></tr><tr><td colspan="2" height="3mm" style="height:3mm;padding:0">&nbsp;</td></tr>').join('')
-        : config.type === 'sumas' || config.type === 'restas'
+        : config.type === 'sumas' || config.type === 'restas' || config.type === 'divisiones'
           ? '<tr><td colspan="2" height="8mm" style="height:8mm;padding:0;border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf">&nbsp;</td></tr>'
           : '';
     const operationRows = threeTermMatch
@@ -1377,10 +1387,10 @@ function exerciseMarkup(config, item, index, solutions) {
       })();
     if (operationRows) return `<table role="presentation" width="120" align="center" border="0" cellspacing="0" cellpadding="0"><tbody>${operationRows}<tr><td colspan="2" align="center"><hr width="100%" size="1" color="#20283f" noshade></td></tr>${answerRows}</tbody></table>`;
   }
-  const responseRows = config.type === 'problemas' ? 6 : 3;
+  const responseRows = config.type === 'problemas' ? 6 : 4;
   const answerSpace = solutions
     ? `<b>${item.answer}</b>`
-    : `<div class="answer-lines" aria-label="espacio para responder" style="grid-column:2;display:grid;grid-template-rows:repeat(${responseRows},22px);gap:4px;width:100%;height:${responseRows * 22 + (responseRows - 1) * 4}px">${Array.from({ length: responseRows }, () => '<i></i>').join('')}</div>`;
+    : `<div class="answer-lines" aria-label="espacio para responder" style="grid-column:2;display:grid;grid-template-rows:repeat(${responseRows},8mm);gap:3mm;width:100%;height:${responseRows * 8 + (responseRows - 1) * 3}mm">${Array.from({ length: responseRows }, () => '<i style="display:block;height:8mm;box-sizing:border-box;border-top:1px solid #aeb6bf!important;border-bottom:1px solid #aeb6bf!important"></i>').join('')}</div>`;
   return `<div class="print-row text-exercise" style="grid-template-rows:auto auto;min-height:110px;align-items:start"><span class="number">${index + 1}.</span><strong>${item.question}</strong>${answerSpace}</div>`;
 }
 
@@ -1428,7 +1438,8 @@ function downloadPdf(config, items, solutions = false) {
   const margin = 15;
   const pageWidth = 210;
   const pageHeight = 297;
-  const contentBottom = pageHeight - margin - 10;
+  // Reservar una franja fija para el pie evita que el último ejercicio lo tape.
+  const contentBottom = pageHeight - margin - 28;
   let y = 17;
   doc.setTextColor(32, 40, 63);
   const mathTypes = ['sumas', 'restas', 'multiplicaciones', 'divisiones'];
@@ -1444,11 +1455,13 @@ function downloadPdf(config, items, solutions = false) {
     author: 'FichasFacil',
     creator: 'FichasFacil'
   });
+  const headerTitle = `${mathTitle}${solutions ? ' · Soluciones' : ''}`;
   const drawHeader = title => {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     doc.text('Nombre:', margin, 17);
     doc.line(margin + 16, 17.5, 135, 17.5);
+    if (config.student) doc.text(config.student, margin + 18, 17);
     doc.text('Fecha:', 166, 17);
     doc.line(180, 17.5, pageWidth - margin, 17.5);
     doc.setTextColor(32, 40, 63);
@@ -1497,10 +1510,11 @@ function downloadPdf(config, items, solutions = false) {
       [lineY + 8, lineY + 15, lineY + 22].forEach(answerY => doc.line(operatorX - 3, answerY, numberRight + 1, answerY));
       doc.setDrawColor(0, 0, 0);
       doc.setLineWidth(0.2);
-    } else if (config.type === 'sumas' || config.type === 'restas') {
+    } else if (config.type === 'sumas' || config.type === 'restas' || config.type === 'divisiones') {
       doc.setDrawColor(196, 203, 212);
       doc.setLineWidth(0.25);
       doc.line(operatorX - 3, lineY + 8, numberRight + 1, lineY + 8);
+      doc.line(operatorX - 3, lineY + 16, numberRight + 1, lineY + 16);
       doc.setDrawColor(0, 0, 0);
       doc.setLineWidth(0.2);
     }
@@ -1546,7 +1560,7 @@ function downloadPdf(config, items, solutions = false) {
   const ensureSpace = height => {
     if (y + height <= contentBottom) return;
     doc.addPage();
-    y = margin;
+    drawHeader(headerTitle);
   };
   const write = (text, size = 11, options = {}) => {
     doc.setFont('helvetica', options.bold ? 'bold' : 'normal');
@@ -1585,7 +1599,7 @@ function downloadPdf(config, items, solutions = false) {
     y += lineCount * spacing + 6;
   };
   if (isMath) {
-    drawHeader(mathTitle);
+    drawHeader(headerTitle);
     if (config.type === 'divisiones') {
       const columns = 3;
       const columnWidth = (pageWidth - margin * 2) / columns;
@@ -1594,7 +1608,7 @@ function downloadPdf(config, items, solutions = false) {
       items.forEach((item, index) => {
         if (index > 0 && index % 10 === 0) {
           doc.addPage();
-          drawHeader(mathTitle);
+          drawHeader(headerTitle);
         }
         const localIndex = index % 10;
         const column = localIndex % columns;
@@ -1613,12 +1627,12 @@ function downloadPdf(config, items, solutions = false) {
       });
     }
   } else {
-    drawHeader(labels[config.type]);
+    drawHeader(headerTitle);
     items.forEach((item, index) => {
     if (config.type === 'geometria') {
       const questionLines = doc.splitTextToSize(`${index + 1}. ${item.question}`, pageWidth - margin * 2);
       const figureHeight = 30;
-      const answerHeight = solutions ? 12 : 22;
+      const answerHeight = solutions ? 12 : 34;
       ensureSpace(questionLines.length * 6 + figureHeight + answerHeight + 12);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
@@ -1635,7 +1649,7 @@ function downloadPdf(config, items, solutions = false) {
         doc.text(answerLines, margin + 30, y);
         doc.setTextColor(32, 40, 63);
         y += answerLines.length * 5 + 5;
-      } else writeAnswerLines(2);
+      } else writeAnswerLines(3);
       return;
     }
     if (item.kind === 'reading') {
@@ -1648,7 +1662,7 @@ function downloadPdf(config, items, solutions = false) {
         }
         write(`${questionIndex + 1}. ${question}`, 11, { bold: true, gap: 2 });
         if (solutions) write(`Respuesta: ${item.answers[questionIndex]}`, 10, { gap: 5 });
-        else writeAnswerLines(3);
+        else writeAnswerLines(4);
       });
       return;
     }
@@ -1657,7 +1671,7 @@ function downloadPdf(config, items, solutions = false) {
       if (solutions) write(`Respuesta: ${item.answer || item.text}`, 10, { gap: 4 });
       return;
     }
-    const answerLineCount = config.type === 'problemas' ? 6 : 3;
+    const answerLineCount = config.type === 'problemas' ? 6 : 4;
     if (!solutions) {
       const questionLines = doc.splitTextToSize(`${index + 1}. ${item.question}`, pageWidth - margin * 2);
       const questionHeight = questionLines.length * (12 * 0.48 + 2) + 3;
@@ -1676,7 +1690,11 @@ function downloadPdf(config, items, solutions = false) {
     doc.setFontSize(8);
     doc.setTextColor(137, 149, 143);
     const logoX = pageWidth / 2 - 16;
-    const logoY = pageHeight - 20;
+    const footerRuleY = pageHeight - 25;
+    const logoY = pageHeight - 18;
+    doc.setDrawColor(220, 228, 236);
+    doc.setLineWidth(0.25);
+    doc.line(margin, footerRuleY, pageWidth - margin, footerRuleY);
     doc.setFillColor(32, 56, 95);
     doc.roundedRect(logoX, logoY, 9, 9, 1.8, 1.8, 'F');
     doc.setFillColor(244, 201, 28);
@@ -1690,7 +1708,10 @@ function downloadPdf(config, items, solutions = false) {
     doc.setTextColor(32, 56, 95);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9);
-    doc.text('FichasFácil', logoX + 12, logoY + 6.2);
+    doc.text('FichasFácil', logoX + 15, logoY + 6.2);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.text(`Página ${page}/${footerPages}`, pageWidth - margin, logoY + 6.2, { align: 'right' });
   }
   const fileSuffix = solutions ? '-soluciones' : '';
   doc.save(`FichasFacil-${labels[config.type].toLowerCase().replaceAll(' ', '-')}${fileSuffix}.pdf`);
@@ -1721,7 +1742,8 @@ function createSheets(config) {
   const textStyles = '.text-exercise i{grid-column:2;width:100%}.text-exercise strong{font-size:17px;line-height:1.35}.reading-sheet{max-width:180mm;margin:0 auto}.reading-sheet h3{font-size:24px;margin:0 0 14px}.reading-text{font-size:16px;line-height:1.55;margin:0 0 20px}.reading-sheet h4{font-size:14px;margin:0 0 10px}.reading-question{display:grid;grid-template-columns:22px 1fr;gap:5px 7px;min-height:78px;align-items:start;margin-bottom:9px;break-inside:avoid;page-break-inside:avoid}.reading-question span{font-weight:700}.reading-question strong{font-size:15px;line-height:1.35}.reading-question i{grid-column:2;height:48px;border-bottom:1px solid #82958b;background:repeating-linear-gradient(to bottom,transparent 0,transparent 22px,#d9e2ea 22px,#d9e2ea 23px)}.reading-question b{grid-column:2;color:#275fac}.copying-sheet{break-inside:avoid;page-break-inside:avoid;margin:0 auto 9mm;max-width:180mm}.copying-text{font-size:17px;line-height:1.55;margin:0}.copying-final-guide{break-inside:avoid;page-break-inside:avoid;max-width:180mm;margin:7mm auto 0}.copying-final-guide h3{font-size:14px;margin:0 0 7px;color:#697772}.lamela-guide{height:108mm;border-top:1.2px solid #647b9b}.lamela-guide span{display:block;height:9mm;border-bottom:1px solid #9aaabd}.lamela-line-0{border-bottom:1.2px solid #7890af!important}.lamela-line-1{border-bottom:1px dashed #b7c4d2!important}.lamela-line-2{border-bottom:1.2px solid #ef9b9b!important}';
   const printPolish = '<style>html,body{width:210mm!important;min-width:210mm!important;max-width:210mm!important}body{font-family:ui-rounded,"Arial Rounded MT Bold","Trebuchet MS",Arial,sans-serif!important;color:#20283f!important;background:#fff!important;padding:13mm 12mm!important;overflow:visible!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}h1{text-align:center!important;font-size:15px!important;font-weight:700!important;line-height:1.2!important;color:#20283f!important;margin:0 0 19px!important}.worksheet-header{display:flex!important;justify-content:space-between!important;gap:20px!important;margin-bottom:24px!important;padding:0 8px!important;border:0!important;font-size:10px!important;font-weight:700!important}.worksheet-header>div:first-child{flex:1}.worksheet-header>div:last-child{min-width:72px}.worksheet-header span{min-width:100px;height:13px}.worksheet-header>div:last-child span{min-width:62px}.math-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-template-rows:repeat(5,minmax(0,1fr))!important;gap:0 22px!important;min-height:246mm!important;padding:0 2mm!important}.math-grid .arithmetic{width:100%!important;min-height:0!important;justify-content:center!important;align-items:center!important;padding:0!important}.math-grid .operation{display:block!important;flex:0 0 116px!important;width:116px!important;min-width:116px!important;max-width:116px!important;font-family:ui-monospace,SFMono-Regular,Menlo,monospace!important;font-size:17px!important;line-height:1.15!important}.math-grid .digit-value{display:inline-flex!important;gap:3px!important;letter-spacing:0!important}.math-grid .digit-value b{letter-spacing:0!important}.math-grid .top-number,.math-grid .extra-number{padding-right:0!important;letter-spacing:0!important;min-height:23px!important;white-space:nowrap!important}.math-grid .bottom-number{grid-template-columns:18px 1fr!important;gap:0!important;padding-right:0!important;letter-spacing:0!important;line-height:1.15!important;white-space:nowrap!important}.math-grid .bottom-number .operator{text-align:center!important;letter-spacing:0!important}.math-grid .bottom-number .digit-value{justify-self:end!important}.math-grid .operation-rule{display:block!important;width:116px!important;max-width:116px!important;margin-top:5px!important}.math-grid .answer-space{display:none!important}@media print{h1{letter-spacing:-.02em}.worksheet-header{break-inside:avoid;page-break-inside:avoid}.text-exercise,.reading-question{break-inside:avoid;page-break-inside:avoid}.reading-sheet{break-inside:avoid;page-break-inside:avoid}.copying-sheet{break-inside:avoid;page-break-inside:avoid}p,h1,h2,h3,h4{orphans:3;widows:3}}</style>';
   const screenLayout = '<style>body{width:210mm!important;min-width:210mm!important;max-width:210mm!important;padding:13mm 12mm!important;overflow:visible!important}.worksheet-header{display:flex!important;align-items:flex-end!important;justify-content:space-between!important;gap:18px!important}.worksheet-header>div:first-child{flex:1}.worksheet-header>div{white-space:nowrap!important}.worksheet-header strong{color:#315c9b!important}.math-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-template-rows:repeat(5,minmax(0,1fr))!important;gap:0 22px!important;min-height:246mm!important;align-items:center!important}.math-grid .arithmetic{min-height:0!important;justify-content:center!important}.math-grid .operation{display:block!important;flex:0 0 116px!important;width:116px!important;min-width:116px!important;max-width:116px!important;font-family:ui-monospace,SFMono-Regular,Menlo,monospace!important;font-size:17px!important;line-height:1.15!important}.math-grid .extra-number{display:grid!important;grid-template-columns:18px 1fr!important;gap:0!important;white-space:nowrap!important}.math-grid .extra-number .operator{text-align:center!important}.math-grid .extra-number .digit-value{justify-self:end!important}.math-grid .print-row .number{display:none!important}.math-grid .answer-space{display:block!important;height:20px!important;border-bottom:1px solid #9aaabd!important}@media(max-width:650px){body{padding:18px 14px!important}.math-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:0 22px!important}}</style>';
-  const finalPdfLayout = '<style>.math-grid{min-height:198mm!important}</style>';
+  // La altura mínima del body puede crear una página fantasma cuando el pie es fijo.
+  const finalPdfLayout = '<style>html,body{height:auto!important;min-height:0!important}.math-grid{min-height:198mm!important}.text-exercise{min-height:160px!important}.reading-question{min-height:145px!important}</style>';
   const writingGuideLayout = '<style>.text-exercise i{height:8mm!important;min-height:8mm!important;box-sizing:border-box!important;border:0!important;border-top:1px solid #aeb6bf!important;border-bottom:1px solid #aeb6bf!important;background:none!important}.reading-question i{grid-column:2!important;display:grid!important;gap:3mm!important;height:auto!important;border:0!important;background:none!important}.reading-question i span{display:block!important;height:8mm!important;box-sizing:border-box!important;border-top:1px solid #aeb6bf!important;border-bottom:1px solid #aeb6bf!important}.geometry-exercise>table td{border-top:1px solid #aeb6bf!important;border-bottom:1px solid #aeb6bf!important}.geometry-exercise>table{border-spacing:0 3mm!important}div[role="img"][aria-label="FichasFácil"]{bottom:9mm!important;font-size:11px!important}div[role="img"][aria-label="FichasFácil"] svg{width:9mm!important;height:9mm!important}</style>';
   const preparePrint = html => {
     const inlineLayout = html
@@ -1738,7 +1760,7 @@ function createSheets(config) {
       .replaceAll('class="operation-rule"', 'class="operation-rule" style="width:116px;border-bottom:1.5px solid #20283f;margin-top:5px"')
       .replaceAll('class="answer-space"', 'class="answer-space" style="display:block;height:20px;border-bottom:1px solid #9aaabd"');
     return inlineLayout
-    .replace('</body>', '<div role="img" aria-label="FichasFácil" style="position:fixed!important;left:0!important;right:0!important;top:auto!important;bottom:7mm!important;width:100%!important;z-index:1000;display:flex;align-items:center;justify-content:center;gap:2mm;color:#20385f;font:700 9px Arial,sans-serif"><svg aria-hidden="true" width="6mm" height="6mm" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#20385f"/><rect x="10" y="10" width="19" height="19" rx="5" fill="#f4c91c"/><rect x="35" y="10" width="19" height="19" rx="5" fill="#ed7e35"/><rect x="10" y="35" width="19" height="19" rx="5" fill="#7eb9ff"/><rect x="35" y="35" width="19" height="19" rx="5" fill="#8bd1aa"/></svg><span>FichasFácil</span></div></body>')
+    .replace('</body>', '<div role="img" aria-label="FichasFácil" style="position:fixed!important;left:0!important;right:0!important;top:auto!important;bottom:5mm!important;height:10mm!important;box-sizing:border-box!important;border-top:1px solid #dce4ec!important;padding-top:2mm!important;width:100%!important;z-index:1000;display:flex;align-items:center;justify-content:center;gap:4mm;color:#20385f;font:700 9px Arial,sans-serif;background:#fff"><svg aria-hidden="true" width="6mm" height="6mm" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#20385f"/><rect x="10" y="10" width="19" height="19" rx="5" fill="#f4c91c"/><rect x="35" y="10" width="19" height="19" rx="5" fill="#ed7e35"/><rect x="10" y="35" width="19" height="19" rx="5" fill="#7eb9ff"/><rect x="35" y="35" width="19" height="19" rx="5" fill="#8bd1aa"/></svg><span>FichasFácil</span></div></body>')
     .replace('<style>', `<style>@page{size:A4;margin:0}${simpleMath ? 'h1{display:block!important;font-size:15px;letter-spacing:0;margin:0 0 19px}.worksheet-header{display:flex!important;justify-content:space-between;gap:20px;margin-bottom:24px;padding:0 8px;border:0;font-size:10px}.worksheet-header>div:first-child{flex:1}.worksheet-header>div:last-child{min-width:72px}.worksheet-header span{min-width:100px;height:13px}.worksheet-header>div:last-child span{min-width:62px}.math-grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr));gap:0 22px;min-height:246mm;align-items:center;padding:0 2mm}.arithmetic{width:100%;min-height:0;justify-content:center;align-items:center;padding:0}.arithmetic-three .operation{min-height:54px}.print-row .number{display:none}.arithmetic .operation{display:block!important;flex:0 0 116px!important;width:116px!important;min-width:116px!important;max-width:116px!important;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:17px;line-height:1.15}.digit-value{display:inline-flex;gap:3px;letter-spacing:0}.digit-value b{letter-spacing:0}.top-number,.extra-number{padding-right:0;letter-spacing:0;font-variant-numeric:tabular-nums;white-space:nowrap;min-height:23px}.bottom-number{grid-template-columns:18px 1fr;gap:0;padding-right:0;letter-spacing:0;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1.15}.bottom-number .operator{text-align:center;letter-spacing:0}.bottom-number .digit-value{justify-self:end}.arithmetic .operation-rule{display:block!important;width:116px!important;max-width:116px!important;margin-top:5px}.answer-space{display:none}' : textStyles}`)
     .replaceAll('@media(max-width:650px)', simpleMath ? '@media print and (max-width:0px)' : '@media screen and (max-width:650px)')
     .replace('</head>', `${printPolish}${screenLayout}${finalPdfLayout}${writingGuideLayout}</head>`);
@@ -1793,6 +1815,18 @@ document.querySelector('#share-direct').addEventListener('click', async () => {
     else result.innerHTML = fallbackMarkup('El navegador no permite compartir automáticamente. Puedes abrir el enlace directamente.');
   }
   finally { shareButton.disabled = false; }
+});
+
+document.querySelector('#download-direct')?.addEventListener('click', () => {
+  const config = readConfig();
+  const button = document.querySelector('#download-direct');
+  button.disabled = true;
+  const items = makeContent(config.type, config.count, config.difficulty, config.level, config.operands, config.firstDigits, config.secondDigits, config.paragraphs, config);
+  const downloaded = downloadPdf(config, items, false);
+  result.innerHTML = `<div class="success-box"><strong>${downloaded ? 'PDF descargado' : 'No se ha podido crear el PDF'}</strong><span class="print-hint">${downloaded ? `${labels[config.type]} · Puedes abrirlo, imprimirlo o compartirlo.` : 'Comprueba que el navegador permite descargas y vuelve a intentarlo.'}</span>${downloaded && config.solutions ? '<button class="solutions-link" id="download-solutions" type="button">Descargar soluciones</button>' : ''}</div>`;
+  document.querySelector('#download-solutions')?.addEventListener('click', () => downloadPdf(config, items, true));
+  if (downloaded) { saveLastConfig(config); notifyTelegram(config); }
+  setTimeout(() => { button.disabled = false; }, 500);
 });
 
 form.addEventListener('submit', event => {

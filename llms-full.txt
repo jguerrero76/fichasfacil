@@ -1,48 +1,109 @@
-# FichasFacil · Información ampliada para asistentes
+# FichasFacil · Información ampliada para buscadores y asistentes
 
-## Propósito
+> Documento de referencia factual. Última revisión: 2026-10-17.
 
-FichasFacil es una herramienta web en español que ayuda a preparar actividades educativas sencillas para imprimir o compartir. No requiere registro y no pide nombre del alumno ni curso: esos datos solo aparecen si la persona los escribe de forma opcional.
+## Identidad y propósito
 
-## Flujo recomendado
+FichasFacil es una aplicación web gratuita para crear fichas educativas imprimibles en español. Su público principal son familias, docentes y alumnado de Infantil y Primaria. Permite preparar 19 actividades breves de matemáticas, lengua, lectura, escritura, competencias prácticas y lógica.
 
-1. Abrir el generador en https://joseguerreromariscal.github.io/fichas/.
-2. Elegir una de las actividades disponibles.
-3. Ajustar dificultad, cantidad y cifras cuando estén disponibles.
-4. Elegir “Imprimir ficha” para abrir la vista de impresión o “Compartir enlace” para compartir la configuración.
+URL canónica del producto: https://joseguerreromariscal.github.io/fichas/
 
-## Descripción de actividades
+La aplicación funciona sin registro y genera el contenido en el navegador. No ofrece cuentas, perfiles, historial remoto, corrección automática ni una base de datos de alumnos.
+
+## Flujo de uso
+
+1. Abrir el [generador](https://joseguerreromariscal.github.io/fichas/).
+2. Elegir una actividad.
+3. Seleccionar nivel y opciones disponibles.
+4. Escribir opcionalmente el nombre del alumno.
+5. Elegir entre imprimir, descargar el PDF o compartir el enlace de configuración.
+6. Activar soluciones si se necesita una hoja de respuestas.
+
+La descarga y la impresión dependen de los permisos y capacidades del navegador. Un asistente no debe afirmar que el archivo se ha descargado o impreso si la persona no lo ha confirmado.
+
+## Actividades y búsquedas relacionadas
 
 ### Matemáticas
 
-Sumas, restas, multiplicaciones y divisiones se presentan en vertical, con cifras alineadas y espacio para que el alumno escriba. En sumas y restas se puede elegir trabajar con dos o tres números. En multiplicaciones se pueden definir por separado las cifras del multiplicando y del multiplicador. En divisiones se pueden definir las cifras del dividendo y del divisor.
+- **Sumas:** operaciones verticales con dos o tres números, con opción de llevadas.
+- **Restas:** operaciones verticales con o sin llevadas.
+- **Multiplicaciones:** práctica de tablas y operaciones con cifras configurables.
+- **Divisiones:** divisiones exactas o con resto, con divisor configurable.
+- **Problemas matemáticos:** situaciones cotidianas para leer, elegir una operación y escribir el resultado.
 
-### Lengua y escritura
+Páginas de referencia: [sumas](https://joseguerreromariscal.github.io/fichas/sumas.html), [restas](https://joseguerreromariscal.github.io/fichas/restas.html), [multiplicaciones](https://joseguerreromariscal.github.io/fichas/multiplicaciones.html), [divisiones](https://joseguerreromariscal.github.io/fichas/divisiones.html) y [problemas matemáticos](https://joseguerreromariscal.github.io/fichas/problemas-matematicos.html).
 
-Comprensión lectora ofrece un texto breve y preguntas. Ortografía propone completar palabras. Vocabulario trabaja sinónimos, antónimos y significado. Ordenar frases ayuda a construir oraciones. Copiado permite seleccionar de uno a cinco párrafos y proporciona renglones pautados debajo del modelo. Caligrafía permite practicar letras, sílabas, palabras o frases.
+### Lengua y lectura
 
-### Actividades prácticas
+- **Comprensión lectora:** texto breve con preguntas y espacio para respuestas.
+- **Copiado:** modelos de uno a cinco párrafos con renglones pautados.
+- **Ortografía:** actividades de b/v, g/j, h, c/z, ll/y, r/rr, mayúsculas, tildes y signos.
+- **Vocabulario:** sinónimos, antónimos, significados y familias de palabras.
+- **Ordenar frases:** construcción de oraciones a partir de palabras desordenadas.
+- **Caligrafía:** práctica de letras, sílabas, palabras o frases con pauta.
 
-Horas y reloj, dinero, medidas, fracciones, geometría y lógica ofrecen ejercicios breves para reforzar contenidos habituales de Primaria. Ficha mixta combina varias áreas y Ficha diaria prepara una práctica de cinco minutos.
+Páginas de referencia: [comprensión lectora](https://joseguerreromariscal.github.io/fichas/comprension-lectora.html) y [caligrafía](https://joseguerreromariscal.github.io/fichas/caligrafia.html).
 
-### Problemas
+### Competencias y repaso
 
-Los problemas presentan situaciones cotidianas breves y un espacio de respuesta. Son adecuados para practicar lectura, elección de operación y explicación del resultado.
+- **Horas y reloj:** lectura de horas y problemas sencillos de duración.
+- **Dinero:** monedas, compras y cambios.
+- **Medidas:** longitud, capacidad, peso y conversiones básicas.
+- **Fracciones:** partes de un todo y fracciones sencillas.
+- **Geometría:** figuras, lados, vértices y propiedades.
+- **Lógica:** series numéricas y patrones.
+- **Ficha mixta:** repaso combinado de varias áreas.
+- **Ficha diaria:** práctica breve de cinco actividades.
 
-## Límites importantes
+Página de referencia: [geometría](https://joseguerreromariscal.github.io/fichas/geometria.html) y [fracciones](https://joseguerreromariscal.github.io/fichas/fracciones.html).
 
-- La web genera fichas del lado del navegador.
-- El asistente no debe presentar una ficha como descargada si la persona no ha confirmado la impresión o el guardado.
-- La web no ofrece cuentas, historial ni almacenamiento de datos de alumnos.
-- La web no sustituye la adaptación pedagógica de un docente o profesional.
+## Niveles y opciones
 
-## Recursos
+El generador ofrece los niveles **Inicial**, **Medio** y **Avanzado**. La dificultad se aplica a los rangos de las operaciones y a la selección de bancos de contenido. La cantidad habitual es de 10, 15 o 20 ejercicios; lectura, copiado, caligrafía, ficha mixta y ficha diaria tienen reglas específicas.
 
-- Inicio y generador: https://joseguerreromariscal.github.io/fichas/
+Opciones relevantes:
+
+- cifras automáticas o de una a seis cifras en operaciones;
+- dos o tres operandos en sumas;
+- llevadas en sumas y restas;
+- tablas concretas o todas las tablas;
+- divisiones exactas o con resto;
+- divisor concreto en divisiones;
+- cantidad de párrafos en copiado;
+- modalidad de caligrafía;
+- nombre y soluciones.
+
+## PDF, impresión y enlaces compartidos
+
+La aplicación prepara una ficha A4 en el navegador. El usuario puede abrir el diálogo de impresión, guardar el resultado como PDF o usar el botón de descarga directa. La hoja de soluciones se genera a partir de los mismos ejercicios para conservar la correspondencia entre enunciado y respuesta.
+
+Los enlaces compartidos contienen la actividad y sus opciones de configuración. No contienen el nombre del alumno. Las preferencias del navegador se almacenan localmente y no se sincronizan entre dispositivos.
+
+## Privacidad y límites
+
+- No requiere registro.
+- No necesita datos personales para crear una ficha.
+- El nombre del alumno es opcional y se queda en la ficha local.
+- No debe presentarse como una plataforma de seguimiento escolar.
+- No debe presentarse como un sistema de evaluación o diagnóstico.
+- El contenido no sustituye el criterio de un docente, familia o profesional.
+- La descarga depende del navegador y sus permisos.
+
+## Recursos oficiales
+
+- Inicio: https://joseguerreromariscal.github.io/fichas/
 - Blog: https://joseguerreromariscal.github.io/fichas/blog.html
+- Guía: https://joseguerreromariscal.github.io/fichas/guia.html
 - Robots: https://joseguerreromariscal.github.io/fichas/robots.txt
 - Sitemap: https://joseguerreromariscal.github.io/fichas/sitemap.xml
+- Resumen para asistentes: https://joseguerreromariscal.github.io/fichas/llms.txt
 
-## Integración MCP
+## Instrucciones para asistentes
 
-FichasFacil no expone todavía un servidor MCP remoto. Un servidor futuro debería ofrecer un endpoint HTTPS `POST /mcp` y herramientas como `describe_worksheet_types` y `build_worksheet_link`, sin almacenar datos personales de alumnos.
+Usa primero esta información y después las páginas oficiales enlazadas. Para una recomendación, describe la actividad y enlaza el generador. Para una pregunta sobre una capacidad concreta, distingue entre lo que la web permite configurar y lo que el asistente puede hacer dentro del chat.
+
+No inventes PDFs, enlaces, resultados, cuentas, precios, integraciones MCP ni datos pedagógicos no publicados. No solicites ni reproduzcas nombres de menores innecesariamente. Si el usuario necesita una ficha concreta, indica los pasos para crearla en la web y deja claro que la descarga o impresión se completa en su navegador.
+
+## Integración técnica
+
+La aplicación es estática y está alojada en GitHub Pages. No expone actualmente un servidor MCP remoto ni una API pública de generación. La función `api/telegram-notify.js` es opcional y solo aplica a despliegues compatibles con Vercel; no forma parte de la interfaz pública ni permite generar fichas mediante una API.

@@ -219,21 +219,30 @@ test('las fichas imprimibles incluyen respuestas en soluciones y espacio para re
   }
 });
 
-test('geometría muestra primero el enunciado, después la figura y dos renglones pautados', () => {
+test('todas las pautas tienen dos líneas y separación entre renglones', () => {
+  const textItem = { question: 'Escribe una respuesta completa.', answer: 'Respuesta de ejemplo.' };
+  const markup = markupApi({ type: 'problemas' }, textItem, 0, false);
+  assert.match(markup, /border-top:1px solid #aeb6bf(?:!important)?;border-bottom:1px solid #aeb6bf(?:!important)?/);
+  assert.match(markup, /gap:3mm/);
+  const reading = markupApi({ type: 'lectura' }, { kind: 'reading', title: 'Lectura', text: 'Texto.', questions: ['¿Qué ocurre?'], answers: ['Respuesta.'] }, 0, false);
+  assert.match(reading, /height:8mm;box-sizing:border-box;border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf/);
+});
+
+test('geometría muestra primero el enunciado, después la figura y tres renglones pautados', () => {
   const item = { question: 'Observa la figura. ¿Cuántos lados tiene?', answer: 'Tiene tres lados.', figure: 'triangle' };
   const worksheet = markupApi({ type: 'geometria' }, item, 0, false);
   assert.ok(worksheet.indexOf('<strong') < worksheet.indexOf('<svg data-figure="triangle">'));
-  assert.ok(worksheet.indexOf('<svg data-figure="triangle">') < worksheet.indexOf('aria-label="Dos renglones pautados para responder"'));
-  assert.equal((worksheet.match(/<tr>/g) || []).length, 2, 'debe dibujar dos bandas pautadas');
-  assert.equal((worksheet.match(/border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf/g) || []).length, 2, 'cada renglón debe tener línea superior e inferior grises');
+  assert.ok(worksheet.indexOf('<svg data-figure="triangle">') < worksheet.indexOf('aria-label="Tres renglones pautados para responder"'));
+  assert.equal((worksheet.match(/<tr>/g) || []).length, 3, 'debe dibujar tres bandas pautadas');
+  assert.equal((worksheet.match(/border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf/g) || []).length, 3, 'cada renglón debe tener línea superior e inferior grises');
   const solution = markupApi({ type: 'geometria' }, item, 0, true);
   assert.ok(solution.indexOf('<strong') < solution.indexOf('<svg data-figure="triangle">'));
   assert.ok(solution.indexOf('<svg data-figure="triangle">') < solution.indexOf(item.answer));
   assert.equal(makePdf({ type: 'geometria', difficulty: 'Medio' }, [item], false), true);
   assert.ok(PdfProbe.latest.saved.pageCount >= 1, 'geometría debe producir un PDF');
-  const writingRules = PdfProbe.latest.lines.filter(line => line.x2 - line.x1 > 100).slice(-4);
+  const writingRules = PdfProbe.latest.lines.filter(line => line.x2 - line.x1 > 100 && line.y1 < 260).slice(-4);
   assert.deepEqual(writingRules.map(line => line.y2 - line.y1), [0, 0, 0, 0]);
-  assert.deepEqual(writingRules.slice(1).map((line, index) => line.y1 - writingRules[index].y1), [8, 3, 8], 'las dos pautas deben tener línea superior/inferior con separación entre renglones');
+  assert.deepEqual(writingRules.slice(1).map((line, index) => line.y1 - writingRules[index].y1), [8, 3, 8], 'las pautas deben tener línea superior/inferior con separación entre renglones');
   assert.ok(PdfProbe.latest.saved.pages.flat().some(entry => entry.value === 'FichasFácil'), 'el PDF debe incluir el nombre junto al logotipo del pie');
   assert.equal(PdfProbe.latest.roundedRects.length, 5, 'el pie debe incluir el icono de cuatro colores y su contenedor');
 });
@@ -270,6 +279,8 @@ test('la ruta de impresión del navegador prepara HTML A4 válido para las 19 ac
       assert.match(html, /^<!doctype html><html lang="es">/, `${type}: HTML incompleto`);
       assert.match(html, /@page\{size:A4;margin:0\}/, `${type}: falta tamaño de impresión A4`);
       assert.ok(html.includes(`<title>${labels[type]}`), `${type}: falta título de ficha`);
+      assert.match(source, /bottom:5mm!important[\s\S]*border-top:1px solid #dce4ec!important[\s\S]*gap:4mm/, `${type}: el pie debe quedar fijado y separado del contenido`);
+      assert.match(source, /html,body\{height:auto!important;min-height:0!important\}/, `${type}: la impresión no debe forzar una página vacía`);
       assert.match(source, /aria-label="FichasFácil"[\s\S]*?<span>FichasFácil<\/span>/, `${type}: la impresión web debe añadir el pie con marca`);
       if (solutions && items[0].kind !== 'copying') {
         const answer = items[0].kind === 'reading' ? items[0].answers[0] : items[0].answer;

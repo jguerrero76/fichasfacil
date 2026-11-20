@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261120-3', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261120-4', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -183,7 +183,7 @@ const updateConnectionStatus = () => {
   if (!connectionStatus) return;
   const offline = navigator.onLine === false;
   connectionStatus.hidden = !offline;
-  connectionStatus.textContent = offline ? 'Sin conexión: puedes seguir creando fichas y guardarlas en PDF.' : '';
+  connectionStatus.textContent = offline ? 'Sin conexión: solo estarán disponibles los recursos ya guardados en este dispositivo.' : '';
 };
 window.addEventListener('online', updateConnectionStatus);
 window.addEventListener('offline', updateConnectionStatus);

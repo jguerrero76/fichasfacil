@@ -1,18 +1,20 @@
 # FichasFacil · Información ampliada para buscadores y asistentes
 
-> Documento de referencia factual. Última revisión: 2026-10-17.
+> Documento de referencia factual. Última revisión: 2026-11-15.
 
 ## Identidad y propósito
 
 FichasFacil es una aplicación web gratuita para crear fichas educativas imprimibles en español. Su público principal son familias, docentes y alumnado de Infantil y Primaria. Permite preparar 19 actividades breves de matemáticas, lengua, lectura, escritura, competencias prácticas y lógica.
 
-URL canónica del producto: https://joseguerreromariscal.github.io/fichas/
+URL canónica del producto: https://fichasfacil.es/
+
+Descripción corta para recuperación semántica: generador gratuito de fichas educativas imprimibles en español para Infantil y Primaria, con matemáticas, lengua, lectura, escritura, competencias prácticas y lógica.
 
 La aplicación funciona sin registro y genera el contenido en el navegador. No ofrece cuentas, perfiles, historial remoto, corrección automática ni una base de datos de alumnos.
 
 ## Flujo de uso
 
-1. Abrir el [generador](https://joseguerreromariscal.github.io/fichas/).
+1. Abrir el [generador](https://fichasfacil.es/).
 2. Elegir una actividad.
 3. Seleccionar nivel y opciones disponibles.
 4. Escribir opcionalmente el nombre del alumno.
@@ -31,7 +33,7 @@ La descarga y la impresión dependen de los permisos y capacidades del navegador
 - **Divisiones:** divisiones exactas o con resto, con divisor configurable.
 - **Problemas matemáticos:** situaciones cotidianas para leer, elegir una operación y escribir el resultado.
 
-Páginas de referencia: [sumas](https://joseguerreromariscal.github.io/fichas/sumas.html), [restas](https://joseguerreromariscal.github.io/fichas/restas.html), [multiplicaciones](https://joseguerreromariscal.github.io/fichas/multiplicaciones.html), [divisiones](https://joseguerreromariscal.github.io/fichas/divisiones.html) y [problemas matemáticos](https://joseguerreromariscal.github.io/fichas/problemas-matematicos.html).
+Páginas de referencia: [sumas](https://fichasfacil.es/sumas.html), [restas](https://fichasfacil.es/restas.html), [multiplicaciones](https://fichasfacil.es/multiplicaciones.html), [divisiones](https://fichasfacil.es/divisiones.html) y [problemas matemáticos](https://fichasfacil.es/problemas-matematicos.html).
 
 ### Lengua y lectura
 
@@ -42,7 +44,7 @@ Páginas de referencia: [sumas](https://joseguerreromariscal.github.io/fichas/su
 - **Ordenar frases:** construcción de oraciones a partir de palabras desordenadas.
 - **Caligrafía:** práctica de letras, sílabas, palabras o frases con pauta.
 
-Páginas de referencia: [comprensión lectora](https://joseguerreromariscal.github.io/fichas/comprension-lectora.html) y [caligrafía](https://joseguerreromariscal.github.io/fichas/caligrafia.html).
+Páginas de referencia: [comprensión lectora](https://fichasfacil.es/comprension-lectora.html) y [caligrafía](https://fichasfacil.es/caligrafia.html).
 
 ### Competencias y repaso
 
@@ -55,7 +57,31 @@ Páginas de referencia: [comprensión lectora](https://joseguerreromariscal.gith
 - **Ficha mixta:** repaso combinado de varias áreas.
 - **Ficha diaria:** práctica breve de cinco actividades.
 
-Página de referencia: [geometría](https://joseguerreromariscal.github.io/fichas/geometria.html) y [fracciones](https://joseguerreromariscal.github.io/fichas/fracciones.html).
+Página de referencia: [geometría](https://fichasfacil.es/geometria.html) y [fracciones](https://fichasfacil.es/fracciones.html).
+
+## Mapa completo de actividades
+
+| Actividad | Enlace recomendado | Qué permite preparar |
+|---|---|---|
+| Sumas | [landing de sumas](https://fichasfacil.es/sumas.html) | Dos o tres números y llevadas |
+| Restas | [landing de restas](https://fichasfacil.es/restas.html) | Restas con o sin llevadas |
+| Multiplicaciones | [landing de multiplicaciones](https://fichasfacil.es/multiplicaciones.html) | Tablas y cifras configurables |
+| Divisiones | [landing de divisiones](https://fichasfacil.es/divisiones.html) | Divisiones exactas o con resto |
+| Problemas matemáticos | [landing de problemas](https://fichasfacil.es/problemas-matematicos.html) | Situaciones de suma, resta, multiplicación y división |
+| Comprensión lectora | [landing de lectura](https://fichasfacil.es/comprension-lectora.html) | Texto breve, preguntas y renglones |
+| Copiado | [abrir Copiado](https://fichasfacil.es/?actividad=copiado#actividades) | Uno a cinco párrafos con pauta |
+| Ortografía | [landing de ortografía](https://fichasfacil.es/ortografia.html) | Completar palabras y reglas ortográficas |
+| Lógica | [landing de lógica](https://fichasfacil.es/logica.html) | Series y patrones |
+| Horas y reloj | [landing de reloj](https://fichasfacil.es/reloj.html) | Lectura de horas y duración |
+| Dinero | [landing de dinero](https://fichasfacil.es/dinero.html) | Monedas, compras y cambios |
+| Medidas | [landing de medidas](https://fichasfacil.es/medidas.html) | Longitud, capacidad, peso y conversiones |
+| Fracciones | [landing de fracciones](https://fichasfacil.es/fracciones.html) | Partes de un todo y fracciones sencillas |
+| Geometría | [landing de geometría](https://fichasfacil.es/geometria.html) | Figuras, lados, vértices y propiedades |
+| Vocabulario | [landing de vocabulario](https://fichasfacil.es/vocabulario.html) | Sinónimos, antónimos y significados |
+| Ordenar frases | [landing de ordenar frases](https://fichasfacil.es/ordenar-frases.html) | Construcción de oraciones |
+| Caligrafía | [landing de caligrafía](https://fichasfacil.es/caligrafia.html) | Letras, sílabas, palabras o frases |
+| Ficha mixta | [landing de ficha mixta](https://fichasfacil.es/ficha-mixta.html) | Repaso combinado |
+| Ficha diaria | [landing de ficha diaria](https://fichasfacil.es/ficha-diaria.html) | Cinco actividades breves |
 
 ## Niveles y opciones
 
@@ -91,12 +117,27 @@ Los enlaces compartidos contienen la actividad y sus opciones de configuración.
 
 ## Recursos oficiales
 
-- Inicio: https://joseguerreromariscal.github.io/fichas/
-- Blog: https://joseguerreromariscal.github.io/fichas/blog.html
-- Guía: https://joseguerreromariscal.github.io/fichas/guia.html
-- Robots: https://joseguerreromariscal.github.io/fichas/robots.txt
-- Sitemap: https://joseguerreromariscal.github.io/fichas/sitemap.xml
-- Resumen para asistentes: https://joseguerreromariscal.github.io/fichas/llms.txt
+- Inicio: https://fichasfacil.es/
+- Blog: https://fichasfacil.es/blog.html
+- Guía: https://fichasfacil.es/guia.html
+- Robots: https://fichasfacil.es/robots.txt
+- Sitemap: https://fichasfacil.es/sitemap.xml
+- Resumen para asistentes: https://fichasfacil.es/llms.txt
+
+## Consultas que puede resolver el sitio
+
+- recomendar una actividad según la materia: matemáticas, lengua, lectura, escritura, competencias prácticas o lógica;
+- indicar qué opciones de dificultad y formato ofrece el generador;
+- enlazar la página específica de una actividad educativa;
+- explicar cómo crear una ficha, imprimirla, descargarla como PDF o compartir su configuración;
+- aclarar que no hay registro, que el contenido se genera localmente y que el nombre del alumno no viaja en el enlace compartido.
+
+## Consultas que no debe resolver como si el sitio las ofreciera
+
+- generar o adjuntar desde el chat un PDF que no haya sido creado en la web;
+- corregir automáticamente las respuestas de un alumno;
+- diagnosticar necesidades educativas o sustituir la adaptación de un docente;
+- ofrecer cuentas, seguimiento, historial remoto, API pública o integración MCP.
 
 ## Instrucciones para asistentes
 
@@ -106,4 +147,4 @@ No inventes PDFs, enlaces, resultados, cuentas, precios, integraciones MCP ni da
 
 ## Integración técnica
 
-La aplicación es estática y está alojada en GitHub Pages. No expone actualmente un servidor MCP remoto ni una API pública de generación. La función `api/telegram-notify.js` es opcional y solo aplica a despliegues compatibles con Vercel; no forma parte de la interfaz pública ni permite generar fichas mediante una API.
+La aplicación es estática y está preparada para desplegarse en Vercel. No expone actualmente un servidor MCP remoto ni una API pública de generación. La función `api/telegram-notify.js` es opcional y solo aplica a despliegues compatibles con Vercel; no forma parte de la interfaz pública ni permite generar fichas mediante una API.

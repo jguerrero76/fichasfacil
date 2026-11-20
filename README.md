@@ -4,7 +4,7 @@ Generador web gratuito de fichas educativas para Infantil y Primaria. Permite cr
 
 ## Demo
 
-- Producción: <https://joseguerreromariscal.github.io/fichas/>
+- Producción: <https://fichasfacil.es/>
 - Páginas de contenido: [Blog](blog.html) · [Guía](guia.html) · [Páginas SEO](sitemap.xml)
 
 ## Qué incluye
@@ -58,7 +58,7 @@ El repositorio está preparado para desplegarse en Vercel como sitio estático. 
 
 Mientras el dominio propio no esté conectado, GitHub Pages sigue siendo la demo pública:
 
-- Demo actual: <https://joseguerreromariscal.github.io/fichas/>
+- Demo actual: <https://fichasfacil.es/>
 - Dominio previsto: <https://fichasfacil.es/>
 
 ```bash

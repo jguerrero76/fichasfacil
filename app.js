@@ -45,6 +45,19 @@ const setSelectValue = (id, value) => {
   select.value = value;
   return true;
 };
+const syncPresetState = () => {
+  const current = { difficulty: document.querySelector('#difficulty')?.value, count: document.querySelector('#count')?.value, firstDigits: document.querySelector('#firstDigits')?.value, secondDigits: document.querySelector('#secondDigits')?.value };
+  const presets = {
+    start: { difficulty: 'Inicial', count: '10', firstDigits: 'auto', secondDigits: 'auto' },
+    balanced: { difficulty: 'Medio', count: '20', firstDigits: 'auto', secondDigits: 'auto' },
+    review: { difficulty: 'Avanzado', count: '10', firstDigits: 'auto', secondDigits: 'auto' }
+  };
+  document.querySelectorAll('[data-preset]').forEach(button => {
+    const preset = presets[button.dataset.preset];
+    const selected = preset && Object.keys(preset).every(key => current[key] === preset[key]);
+    button.setAttribute('aria-pressed', String(Boolean(selected)));
+  });
+};
 window.addEventListener('beforeinstallprompt', event => {
   event.preventDefault();
   installPrompt = event;
@@ -58,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261017-1', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261115-2', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -66,10 +79,11 @@ const updateConfigurationSummary = () => {
     const second = document.querySelector('#secondDigits').value;
     const isMath = ['sumas', 'restas', 'multiplicaciones', 'divisiones'].includes(activity.value);
     const digits = isMath ? (first === 'auto' && second === 'auto' ? 'Según la dificultad' : `${first === 'auto' ? 'dificultad' : `${first} cifras`} / ${second === 'auto' ? 'dificultad' : `${second} cifras`}`) : '';
-    const countSummary = ['lectura', 'copiado', 'caligrafia', 'mixta', 'diaria'].includes(activity.value) ? '' : ` · ${document.querySelector('#count').selectedOptions[0].textContent}`;
+    const countSummary = activity.value === 'lectura' ? ' · 1 lectura' : activity.value === 'diaria' ? ' · 5 actividades' : ['copiado', 'caligrafia', 'mixta'].includes(activity.value) ? '' : ` · ${document.querySelector('#count').selectedOptions[0].textContent}`;
     const paragraphSummary = ['copiado', 'caligrafia'].includes(activity.value) ? ` · ${document.querySelector('#paragraphs').selectedOptions[0].textContent}` : '';
     const extra = activity.value === 'sumas' || activity.value === 'restas' ? document.querySelector('#carryMode').selectedOptions[0].textContent : activity.value === 'multiplicaciones' ? document.querySelector('#tableNumber').value === 'all' ? 'Todas las tablas' : `Tabla del ${document.querySelector('#tableNumber').value}` : activity.value === 'divisiones' ? `${document.querySelector('#divisionMode').selectedOptions[0].textContent}${document.querySelector('#specificDivisor').value === 'all' ? '' : ` · entre ${document.querySelector('#specificDivisor').value}`}` : '';
     summary.textContent = `${document.querySelector('#difficulty').value}${countSummary}${digits ? ` · ${digits}` : ''}${paragraphSummary}${extra ? ` · ${extra}` : ''}`;
+    syncPresetState();
   }
 };
 const updateDigitLabels = () => {
@@ -122,6 +136,21 @@ const updateActivityFields = () => {
 const savePreferences = () => {
   try { localStorage.setItem(preferenceKey, JSON.stringify(Object.fromEntries(preferenceIds.map(id => [id, document.querySelector(`#${id}`).value])))); } catch (error) { /* almacenamiento opcional */ }
 };
+const applyPreset = preset => {
+  const values = {
+    start: { difficulty: 'Inicial', count: '10', firstDigits: 'auto', secondDigits: 'auto' },
+    balanced: { difficulty: 'Medio', count: '20', firstDigits: 'auto', secondDigits: 'auto' },
+    review: { difficulty: 'Avanzado', count: '10', firstDigits: 'auto', secondDigits: 'auto' }
+  }[preset];
+  if (!values) return;
+  Object.entries(values).forEach(([id, value]) => setSelectValue(id, value));
+  document.querySelector('#solutions').checked = false;
+  document.querySelectorAll('[data-preset]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.preset === preset)));
+  updateDigitLabels();
+  updateConfigurationSummary();
+  updateActivityFields();
+  savePreferences();
+};
 try {
   const saved = JSON.parse(localStorage.getItem(preferenceKey) || '{}');
   preferenceIds.forEach(id => { if (saved[id]) setSelectValue(id, saved[id]); });
@@ -146,30 +175,59 @@ updateActivityFields();
 const activitySearch = document.querySelector('#activity-search');
 const clearActivitySearch = document.querySelector('#clear-activity-search');
 const activityEmpty = document.querySelector('#activity-empty');
+const activityResultCount = document.querySelector('#activity-result-count');
+const activityCount = document.querySelector('#activity-count');
+const normalizeSearchText = value => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es');
+const connectionStatus = document.querySelector('#connection-status');
+const updateConnectionStatus = () => {
+  if (!connectionStatus) return;
+  const offline = navigator.onLine === false;
+  connectionStatus.hidden = !offline;
+  connectionStatus.textContent = offline ? 'Sin conexión: puedes seguir creando fichas y guardarlas en PDF.' : '';
+};
+window.addEventListener('online', updateConnectionStatus);
+window.addEventListener('offline', updateConnectionStatus);
+updateConnectionStatus();
+const activityCards = [...document.querySelectorAll('.activity-card')].map(card => ({ element: card, text: normalizeSearchText(card.textContent) }));
+let activitySearchFrame = 0;
 const filterActivities = () => {
-  const query = activitySearch.value.trim().toLocaleLowerCase('es');
+  const query = normalizeSearchText(activitySearch.value.trim());
   let visibleCount = 0;
-  document.querySelectorAll('.activity-card').forEach(card => {
-    const matches = !query || card.textContent.toLocaleLowerCase('es').includes(query);
-    card.hidden = false;
-    const item = card;
-    item.hidden = !matches;
+  activityCards.forEach(({ element, text }) => {
+    const matches = !query || text.includes(query);
+    element.hidden = !matches;
     if (matches) visibleCount += 1;
   });
   if (clearActivitySearch) clearActivitySearch.hidden = !query;
   if (activityEmpty) activityEmpty.hidden = visibleCount > 0;
+  if (activityResultCount) activityResultCount.textContent = query
+    ? `${visibleCount} ${visibleCount === 1 ? 'actividad encontrada' : 'actividades encontradas'}`
+    : '';
+  if (activityCount) activityCount.textContent = query ? `${visibleCount} de 19` : '19 actividades';
 };
-activitySearch?.addEventListener('input', filterActivities);
+activitySearch?.addEventListener('input', () => {
+  cancelAnimationFrame(activitySearchFrame);
+  activitySearchFrame = requestAnimationFrame(filterActivities);
+});
 clearActivitySearch?.addEventListener('click', () => { activitySearch.value = ''; filterActivities(); activitySearch.focus(); });
+activitySearch?.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && activitySearch.value) { activitySearch.value = ''; filterActivities(); }
+});
 const saveRecentActivity = type => {
   try { localStorage.setItem(recentActivityKey, JSON.stringify({ type, label: labels[type], savedAt: Date.now() })); } catch (error) { /* almacenamiento opcional */ }
 };
 const repeatLastButton = document.querySelector('#repeat-last');
+const updateRepeatButton = config => {
+  if (!repeatLastButton || !config?.type || !labels[config.type]) return;
+  repeatLastButton.textContent = `Repetir ${labels[config.type]}`;
+  repeatLastButton.setAttribute('aria-label', `Repetir la última ficha: ${labels[config.type]}`);
+  repeatLastButton.hidden = false;
+};
 const saveLastConfig = config => {
   try {
     const safeConfig = { ...config, student: '', solutions: false };
     localStorage.setItem(lastConfigKey, JSON.stringify(safeConfig));
-    if (repeatLastButton) repeatLastButton.hidden = false;
+    updateRepeatButton(safeConfig);
   } catch (error) { /* almacenamiento opcional */ }
 };
 const loadLastConfig = () => {
@@ -182,7 +240,9 @@ try {
   const recent = JSON.parse(localStorage.getItem(recentActivityKey) || 'null');
   if (recent?.label) document.querySelector('.section-help').textContent = `Pulsa una tarjeta para empezar a configurarla. Última: ${recent.label}.`;
 } catch (error) { /* historial opcional */ }
-if (loadLastConfig() && repeatLastButton) repeatLastButton.hidden = false;
+const savedLastConfig = loadLastConfig();
+if (savedLastConfig) updateRepeatButton(savedLastConfig);
+document.querySelectorAll('[data-preset]').forEach(button => button.addEventListener('click', () => applyPreset(button.dataset.preset)));
 
 const countSelect = document.querySelector('#count');
 if (countSelect && !countSelect.querySelector('option[value="20"]')) {
@@ -191,8 +251,16 @@ if (countSelect && !countSelect.querySelector('option[value="20"]')) {
 }
 
 const generatorTitle = type => ({ mixta: 'Prepara tu ficha mixta', diaria: 'Prepara tu ficha diaria' }[type] || `Prepara tu ficha de ${labels[type].toLowerCase()}`);
-const openGenerator = type => {
+const syncActivityCardSelection = type => {
   lastTrigger = document.querySelector(`[data-type="${type}"]`);
+  document.querySelectorAll('[data-type]').forEach(card => {
+    const selected = card.dataset.type === type;
+    card.classList.toggle('is-selected', selected);
+    card.setAttribute('aria-expanded', String(selected && modal.classList.contains('open')));
+  });
+};
+const openGenerator = type => {
+  syncActivityCardSelection(type);
   document.querySelectorAll('[data-type]').forEach(card => card.setAttribute('aria-expanded', String(card === lastTrigger)));
   modal.classList.add('open');
   modal.setAttribute('aria-hidden', 'false');
@@ -201,6 +269,8 @@ const openGenerator = type => {
   activity.value = type;
   saveRecentActivity(type);
   result.innerHTML = '';
+  result.setAttribute('role', 'status');
+  result.setAttribute('aria-live', 'polite');
   document.querySelector('#generator-title').textContent = generatorTitle(type);
   document.querySelector('#activity-summary').textContent = labels[type];
   document.querySelector('#modal-note').textContent = activityDescriptions[type];
@@ -213,7 +283,7 @@ const openGenerator = type => {
     card.classList.toggle('is-selected', selected);
   });
   document.querySelector('#print-direct').textContent = isMobileDevice() ? 'Descargar PDF' : 'Imprimir ficha';
-  setTimeout(() => activity.focus(), 50);
+  setTimeout(() => document.querySelector('#difficulty').focus(), 50);
 };
 
 repeatLastButton?.addEventListener('click', () => {
@@ -231,6 +301,7 @@ repeatLastButton?.addEventListener('click', () => {
 document.querySelectorAll('[data-type]').forEach(card => card.addEventListener('click', () => openGenerator(card.dataset.type)));
 if (sharedActivity && labels[sharedActivity]) setTimeout(() => openGenerator(sharedActivity), 0);
 activity.addEventListener('change', () => {
+  syncActivityCardSelection(activity.value);
   document.querySelector('#activity-summary').textContent = labels[activity.value];
   document.querySelector('#generator-title').textContent = generatorTitle(activity.value);
   document.querySelector('#modal-note').textContent = activityDescriptions[activity.value];
@@ -263,7 +334,11 @@ document.querySelector('#reset-options').addEventListener('click', () => {
   document.querySelector('#solutions').checked = false;
   result.innerHTML = '';
   updateConfigurationSummary();
+  updateDigitLabels();
+  updateActivityFields();
+  document.querySelectorAll('[data-preset]').forEach(button => button.setAttribute('aria-pressed', 'false'));
   savePreferences();
+  document.querySelector('#difficulty').focus();
 });
 document.querySelector('.modal-close').addEventListener('click', () => {
   closeGenerator();
@@ -286,7 +361,7 @@ function closeGenerator() {
   document.body.classList.remove('modal-open');
   pageBackground.forEach(element => { element.inert = false; element.removeAttribute('aria-hidden'); });
   document.querySelectorAll('[data-type]').forEach(card => card.setAttribute('aria-expanded', 'false'));
-  lastTrigger?.focus();
+  (lastTrigger || activitySearch)?.focus();
 }
 document.addEventListener('keydown', event => { if (event.key === 'Escape' && modal.classList.contains('open')) closeGenerator(); });
 
@@ -1340,11 +1415,11 @@ const geometrySvg = figure => {
 };
 
 function exerciseMarkup(config, item, index, solutions) {
-  if (item.kind === 'copying') return `<article class="copying-sheet"><p class="copying-text">${item.text}</p></article>`;
+  if (item.kind === 'copying') return `<article class="copying-sheet"><p class="copying-text">${escapeHtml(item.text)}</p></article>`;
   if (item.kind === 'reading') {
     const ruledLines = '<i aria-label="espacio para responder" style="display:grid;gap:3mm;height:auto;border:0;background:none">' + Array.from({ length: 4 }, () => '<span style="display:block;height:8mm;box-sizing:border-box;border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf"></span>').join('') + '</i>';
-    const questions = item.questions.map((question, questionIndex) => `<div class="reading-question"><span>${questionIndex + 1}.</span><strong>${question}</strong>${solutions ? `<b>${item.answers[questionIndex]}</b>` : ruledLines}</div>`).join('');
-    return `<article class="reading-sheet"><h3>${item.title}</h3><p class="reading-text">${item.text}</p><h4>Responde a las preguntas</h4>${questions}</article>`;
+    const questions = item.questions.map((question, questionIndex) => `<div class="reading-question"><span>${questionIndex + 1}.</span><strong>${escapeHtml(question)}</strong>${solutions ? `<b>${escapeHtml(item.answers[questionIndex])}</b>` : ruledLines}</div>`).join('');
+    return `<article class="reading-sheet"><h3>${escapeHtml(item.title)}</h3><p class="reading-text">${escapeHtml(item.text)}</p><h4>Responde a las preguntas</h4>${questions}</article>`;
   }
   if (config.type === 'diaria') {
     const response = solutions
@@ -1354,9 +1429,9 @@ function exerciseMarkup(config, item, index, solutions) {
   }
   if (config.type === 'geometria') {
     const answerArea = solutions
-      ? '<b style="display:block;margin-top:6px;color:#275fac">' + item.answer + '</b>'
+      ? '<b style="display:block;margin-top:6px;color:#275fac">' + escapeHtml(item.answer) + '</b>'
       : '<table role="presentation" aria-label="Tres renglones pautados para responder" style="width:100%;margin-top:5px;border-collapse:separate;border-spacing:0 3mm"><tbody>' + Array.from({ length: 3 }, () => '<tr><td height="8mm" style="height:8mm;padding:0;border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf">&nbsp;</td></tr>').join('') + '</tbody></table>';
-    return '<div class="geometry-exercise" style="display:block;min-height:0;padding:10px 4px 14px;break-inside:avoid;page-break-inside:avoid"><strong style="display:block;font-size:15px;line-height:1.35">' + (index + 1) + '. ' + item.question + '</strong>' + geometrySvg(item.figure) + answerArea + '</div>';
+    return '<div class="geometry-exercise" style="display:block;min-height:0;padding:10px 4px 14px;break-inside:avoid;page-break-inside:avoid"><strong style="display:block;font-size:15px;line-height:1.35">' + (index + 1) + '. ' + escapeHtml(item.question) + '</strong>' + geometrySvg(item.figure) + answerArea + '</div>';
   }
   const arithmetic = ['sumas', 'restas', 'multiplicaciones', 'divisiones'].includes(config.type);
   if (arithmetic) {
@@ -1389,9 +1464,9 @@ function exerciseMarkup(config, item, index, solutions) {
   }
   const responseRows = config.type === 'problemas' ? 6 : 4;
   const answerSpace = solutions
-    ? `<b>${item.answer}</b>`
+    ? `<b>${escapeHtml(item.answer)}</b>`
     : `<div class="answer-lines" aria-label="espacio para responder" style="grid-column:2;display:grid;grid-template-rows:repeat(${responseRows},8mm);gap:3mm;width:100%;height:${responseRows * 8 + (responseRows - 1) * 3}mm">${Array.from({ length: responseRows }, () => '<i style="display:block;height:8mm;box-sizing:border-box;border-top:1px solid #aeb6bf!important;border-bottom:1px solid #aeb6bf!important"></i>').join('')}</div>`;
-  return `<div class="print-row text-exercise" style="grid-template-rows:auto auto;min-height:110px;align-items:start"><span class="number">${index + 1}.</span><strong>${item.question}</strong>${answerSpace}</div>`;
+  return `<div class="print-row text-exercise" style="grid-template-rows:auto auto;min-height:110px;align-items:start"><span class="number">${index + 1}.</span><strong>${escapeHtml(item.question)}</strong>${answerSpace}</div>`;
 }
 
 function printableHtml(config, items, solutions) {
@@ -1425,7 +1500,7 @@ function printableHtml(config, items, solutions) {
 const readConfig = () => ({ type: activity.value, level: '', difficulty: document.querySelector('#difficulty').value, count: Number(document.querySelector('#count').value), operands: Number(document.querySelector('#operands').value), firstDigits: document.querySelector('#firstDigits').value, secondDigits: document.querySelector('#secondDigits').value, paragraphs: Number(document.querySelector('#paragraphs').value), calligraphyMode: document.querySelector('#calligraphyMode').value, carryMode: document.querySelector('#carryMode').value, tableNumber: document.querySelector('#tableNumber').value, specificDivisor: document.querySelector('#specificDivisor').value, divisionMode: document.querySelector('#divisionMode').value, student: document.querySelector('#student').value.trim(), solutions: document.querySelector('#solutions')?.checked });
 
 const shareUrl = config => {
-  const url = new URL(window.location.href);
+  const url = new URL(window.location.pathname, window.location.origin);
   url.hash = 'actividades';
   url.search = new URLSearchParams({ actividad: config.type, dificultad: config.difficulty, ejercicios: String(config.count), numeros: String(config.operands), cifras1: config.firstDigits, cifras2: config.secondDigits, parrafos: String(config.paragraphs), caligrafia: config.calligraphyMode, llevadas: config.carryMode, tabla: config.tableNumber, divisor: config.specificDivisor, resto: config.divisionMode, ...(config.solutions ? { soluciones: '1' } : {}) }).toString();
   return url.toString();
@@ -1718,8 +1793,32 @@ function downloadPdf(config, items, solutions = false) {
   return true;
 }
 
+async function safeDownloadPdf(config, items, solutions = false) {
+  try {
+    if (!await loadPdfLibrary()) return false;
+    return downloadPdf(config, items, solutions);
+  } catch (error) {
+    console.error('No se pudo generar el PDF.', error);
+    return false;
+  }
+}
+
 function isMobileDevice() {
   return window.matchMedia?.('(pointer: coarse)').matches || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+let pdfLibraryPromise;
+function loadPdfLibrary() {
+  if (window.jspdf?.jsPDF) return Promise.resolve(true);
+  if (pdfLibraryPromise) return pdfLibraryPromise;
+  pdfLibraryPromise = new Promise(resolve => {
+    const script = document.createElement('script');
+    script.src = 'assets/jspdf.umd.min.js?v=20261115-2';
+    script.onload = () => { const loaded = Boolean(window.jspdf?.jsPDF); if (!loaded) pdfLibraryPromise = null; resolve(loaded); };
+    script.onerror = () => { pdfLibraryPromise = null; resolve(false); };
+    document.head.appendChild(script);
+  });
+  return pdfLibraryPromise;
 }
 
 function notifyTelegram(config) {
@@ -1728,12 +1827,15 @@ function notifyTelegram(config) {
     difficulty: config.difficulty,
     count: config.count
   };
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 4000);
   fetch('/api/telegram-notify', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(payload),
-    keepalive: true
-  }).catch(() => {});
+    keepalive: true,
+    signal: controller.signal
+  }).catch(() => {}).finally(() => clearTimeout(timeout));
 }
 
 function createSheets(config) {
@@ -1783,7 +1885,7 @@ function createSheets(config) {
       printWindow.addEventListener('afterprint', removeFrame, { once: true });
       printWindow.focus();
       printWindow.print();
-      setTimeout(removeFrame, 300000);
+      setTimeout(removeFrame, 60000);
     };
     try {
       frame.addEventListener('load', () => setTimeout(printFrame, 250), { once: true });
@@ -1805,46 +1907,105 @@ document.querySelector('#share-direct').addEventListener('click', async () => {
   const shareData = { title: `${labels[config.type]} · FichasFacil`, text: shareText, url: shareUrl(config) };
   const shareButton = document.querySelector('#share-direct');
   shareButton.disabled = true;
+  shareButton.setAttribute('aria-busy', 'true');
   const fallbackMarkup = (message, linkLabel = 'Abrir enlace') => `<div class="success-box"><strong>Enlace listo para compartir</strong><span class="print-hint">${message}</span><a class="share-url" href="${escapeHtml(shareData.url)}">${linkLabel}</a></div>`;
   try {
-    if (navigator.share) await navigator.share(shareData);
+    if (navigator.share) {
+      await navigator.share(shareData);
+      result.innerHTML = '<div class="success-box"><strong>Enlace compartido</strong><span class="print-hint">La configuración de esta ficha se ha enviado correctamente.</span></div>';
+    }
     else if (navigator.clipboard) { await navigator.clipboard.writeText(`${shareText} ${shareData.url}`); result.innerHTML = fallbackMarkup('Hemos copiado el enlace con la configuración de esta ficha. También puedes abrirlo o copiarlo manualmente.'); }
     else result.innerHTML = fallbackMarkup('Copia o abre este enlace para compartir la configuración.');
   } catch (error) {
     if (error.name === 'AbortError') result.innerHTML = fallbackMarkup('Has cancelado la ventana de compartir. Puedes abrir el enlace directamente.');
     else result.innerHTML = fallbackMarkup('El navegador no permite compartir automáticamente. Puedes abrir el enlace directamente.');
   }
-  finally { shareButton.disabled = false; }
+  finally { shareButton.disabled = false; shareButton.removeAttribute('aria-busy'); }
+  result.setAttribute('role', 'status');
+  result.setAttribute('aria-live', 'polite');
 });
 
-document.querySelector('#download-direct')?.addEventListener('click', () => {
+document.querySelector('#download-direct')?.addEventListener('click', async () => {
   const config = readConfig();
   const button = document.querySelector('#download-direct');
+  const originalLabel = button.textContent;
   button.disabled = true;
-  const items = makeContent(config.type, config.count, config.difficulty, config.level, config.operands, config.firstDigits, config.secondDigits, config.paragraphs, config);
-  const downloaded = downloadPdf(config, items, false);
-  result.innerHTML = `<div class="success-box"><strong>${downloaded ? 'PDF descargado' : 'No se ha podido crear el PDF'}</strong><span class="print-hint">${downloaded ? `${labels[config.type]} · Puedes abrirlo, imprimirlo o compartirlo.` : 'Comprueba que el navegador permite descargas y vuelve a intentarlo.'}</span>${downloaded && config.solutions ? '<button class="solutions-link" id="download-solutions" type="button">Descargar soluciones</button>' : ''}</div>`;
-  document.querySelector('#download-solutions')?.addEventListener('click', () => downloadPdf(config, items, true));
+  button.setAttribute('aria-busy', 'true');
+  button.textContent = 'Preparando PDF…';
+  let items = [];
+  let downloaded = false;
+  try {
+    items = makeContent(config.type, config.count, config.difficulty, config.level, config.operands, config.firstDigits, config.secondDigits, config.paragraphs, config);
+    downloaded = await safeDownloadPdf(config, items, false);
+  } catch (error) {
+    console.error('No se pudo preparar la descarga.', error);
+  }
+  result.innerHTML = `<div class="success-box"><strong>${downloaded ? 'PDF descargado' : 'No se ha podido crear el PDF'}</strong><span class="print-hint">${downloaded ? `${labels[config.type]} · Puedes abrirlo, imprimirlo o compartirlo.` : 'Comprueba que el navegador permite descargas y vuelve a intentarlo.'}</span>${downloaded && config.solutions ? '<button class="solutions-link" id="download-solutions" type="button">Descargar soluciones</button>' : ''}${!downloaded ? '<button class="solutions-link" id="retry-download" type="button">Reintentar descarga</button>' : ''}</div>`;
+  result.setAttribute('role', downloaded ? 'status' : 'alert');
+  result.setAttribute('aria-live', downloaded ? 'polite' : 'assertive');
+  document.querySelector('#download-solutions')?.addEventListener('click', async event => {
+    const solutionButton = event.currentTarget;
+    solutionButton.disabled = true;
+    const originalLabel = solutionButton.textContent;
+    solutionButton.textContent = 'Preparando soluciones…';
+    await safeDownloadPdf(config, items, true);
+    solutionButton.disabled = false;
+    solutionButton.textContent = originalLabel;
+  });
+  document.querySelector('#retry-download')?.addEventListener('click', () => button.click());
   if (downloaded) { saveLastConfig(config); notifyTelegram(config); }
-  setTimeout(() => { button.disabled = false; }, 500);
+  setTimeout(() => { button.disabled = false; button.removeAttribute('aria-busy'); button.textContent = originalLabel; }, 500);
 });
 
-form.addEventListener('submit', event => {
+form.addEventListener('submit', async event => {
   event.preventDefault();
   const submitButton = document.querySelector('#print-direct');
+  const originalSubmitLabel = submitButton.textContent;
   submitButton.disabled = true;
+  submitButton.setAttribute('aria-busy', 'true');
+  submitButton.textContent = isMobileDevice() ? 'Preparando PDF…' : 'Preparando impresión…';
   const config = readConfig();
   form.setAttribute('aria-busy', 'true');
-  const { worksheet, answerSheet, print, items } = createSheets(config);
+  let printed = false;
+  let answerSheet = '';
+  let print = () => false;
+  let items = [];
+  let preparationFailed = false;
+  try {
+    const sheets = createSheets(config);
+    answerSheet = sheets.answerSheet;
+    print = sheets.print;
+    items = sheets.items;
+    const mobile = isMobileDevice();
+    printed = mobile ? await safeDownloadPdf(config, items) : print(sheets.worksheet);
+  } catch (error) {
+    preparationFailed = true;
+    console.error('No se pudo preparar la ficha.', error);
+  }
   const mobile = isMobileDevice();
-  const printed = mobile ? downloadPdf(config, items) : print(worksheet);
-  setTimeout(() => { submitButton.disabled = false; form.setAttribute('aria-busy', 'false'); }, 500);
+  setTimeout(() => { submitButton.disabled = false; submitButton.removeAttribute('aria-busy'); submitButton.textContent = originalSubmitLabel; form.setAttribute('aria-busy', 'false'); }, 500);
   const contentSummary = config.type === 'diaria' ? '5 actividades breves'
     : ['copiado', 'caligrafia'].includes(config.type)
     ? `${config.paragraphs} ${config.paragraphs === 1 ? 'párrafo' : 'párrafos'}`
     : config.type === 'lectura' ? '1 lectura' : `${config.count} ejercicios`;
-  result.innerHTML = `<div class="success-box"><strong>${printed ? (mobile ? 'PDF descargado' : 'Ficha lista para imprimir') : 'No se ha podido preparar la ficha'}</strong><span class="print-hint">${printed ? `${labels[config.type]} · ${contentSummary}${mobile ? ' · Abre el PDF para imprimirlo o compartirlo.' : ''}` : (mobile ? 'El navegador no ha podido generar el PDF.' : 'El navegador ha bloqueado la ventana de impresión.')}</span>${config.solutions ? `<button class="solutions-link" id="print-solutions" type="button">${mobile ? 'Descargar soluciones' : 'Imprimir soluciones'}</button>` : ''}${printed ? '<button class="solutions-link new-sheet" id="new-sheet" type="button">Crear otra ficha</button>' : ''}</div>`;
-  document.querySelector('#print-solutions')?.addEventListener('click', () => mobile ? downloadPdf(config, items, true) : print(answerSheet));
+  const failureMessage = preparationFailed
+    ? 'Ha ocurrido un error inesperado. Revisa las opciones y vuelve a intentarlo.'
+    : mobile
+      ? 'El navegador no ha podido generar el PDF.'
+      : 'El navegador ha bloqueado la ventana de impresión.';
+  result.innerHTML = `<div class="success-box"><strong>${printed ? (mobile ? 'PDF descargado' : 'Ficha lista para imprimir') : 'No se ha podido preparar la ficha'}</strong><span class="print-hint">${printed ? `${labels[config.type]} · ${contentSummary}${mobile ? ' · Abre el PDF para imprimirlo o compartirlo.' : ''}` : failureMessage}</span>${config.solutions && !preparationFailed ? `<button class="solutions-link" id="print-solutions" type="button">${mobile ? 'Descargar soluciones' : 'Imprimir soluciones'}</button>` : ''}${printed ? '<button class="solutions-link new-sheet" id="new-sheet" type="button">Crear otra ficha</button>' : ''}${!printed ? '<button class="solutions-link" id="retry-print" type="button">Reintentar</button>' : ''}</div>`;
+  result.setAttribute('role', printed ? 'status' : 'alert');
+  result.setAttribute('aria-live', printed ? 'polite' : 'assertive');
+  document.querySelector('#print-solutions')?.addEventListener('click', async event => {
+    const solutionButton = event.currentTarget;
+    solutionButton.disabled = true;
+    const originalLabel = solutionButton.textContent;
+    solutionButton.textContent = mobile ? 'Preparando soluciones…' : 'Preparando impresión…';
+    if (mobile) await safeDownloadPdf(config, items, true); else print(answerSheet);
+    solutionButton.disabled = false;
+    solutionButton.textContent = originalLabel;
+  });
+  document.querySelector('#retry-print')?.addEventListener('click', () => form.requestSubmit());
   if (printed) {
     saveLastConfig(config);
     notifyTelegram(config);

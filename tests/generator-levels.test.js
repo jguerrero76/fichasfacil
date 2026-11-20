@@ -11,7 +11,8 @@ assert.notEqual(mathEnd, -1);
 const mathApi = new Function(`let lastReadingTitle = ''; let lastCopyingSequence = -1; ${source.slice(mathStart, mathEnd)}; return { makeOperation, makeContent };`)();
 const markupStart = source.indexOf('function exerciseMarkup(');
 const markupEnd = source.indexOf('\nfunction printableHtml(', markupStart);
-const markupApi = new Function('labels', 'escapeHtml', 'geometrySvg', `${source.slice(markupStart, markupEnd)}; return exerciseMarkup;`)({ sumas: 'Sumas', restas: 'Restas', multiplicaciones: 'Multiplicaciones', divisiones: 'Divisiones' }, value => String(value), figure => `<svg data-figure="${figure}"></svg>`);
+const escapeForTest = value => String(value).replace(/[&<>'"]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
+const markupApi = new Function('labels', 'escapeHtml', 'geometrySvg', `${source.slice(markupStart, markupEnd)}; return exerciseMarkup;`)({ sumas: 'Sumas', restas: 'Restas', multiplicaciones: 'Multiplicaciones', divisiones: 'Divisiones' }, escapeForTest, figure => `<svg data-figure="${figure}"></svg>`);
 const printableStart = markupEnd + 1;
 const printableEnd = source.indexOf('\nconst readConfig', printableStart);
 const printableApi = new Function('labels', 'escapeHtml', 'exerciseMarkup', `${source.slice(printableStart, printableEnd)}; return printableHtml;`)({ sumas: 'Sumas', restas: 'Restas', multiplicaciones: 'Multiplicaciones', divisiones: 'Divisiones', problemas: 'Problemas matemáticos', lectura: 'Lectura comprensiva', copiado: 'Copiado', ortografia: 'Ortografía', logica: 'Lógica', reloj: 'Horas y reloj', dinero: 'Dinero', medidas: 'Medidas', fracciones: 'Fracciones', geometria: 'Geometría', vocabulario: 'Vocabulario', ordenar: 'Ordenar frases', caligrafia: 'Caligrafía', mixta: 'Ficha mixta', diaria: 'Ficha diaria' }, value => String(value), markupApi);
@@ -226,6 +227,14 @@ test('todas las pautas tienen dos líneas y separación entre renglones', () => 
   assert.match(markup, /gap:3mm/);
   const reading = markupApi({ type: 'lectura' }, { kind: 'reading', title: 'Lectura', text: 'Texto.', questions: ['¿Qué ocurre?'], answers: ['Respuesta.'] }, 0, false);
   assert.match(reading, /height:8mm;box-sizing:border-box;border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf/);
+});
+
+test('el contenido textual de las fichas se escapa antes de insertarse en HTML', () => {
+  const item = { question: '<texto>', answer: '<respuesta>' };
+  const markup = markupApi({ type: 'problemas' }, item, 0, true);
+  assert.ok(markup.includes('&lt;texto&gt;'));
+  assert.ok(markup.includes('&lt;respuesta&gt;'));
+  assert.doesNotMatch(markup, /<texto>|<respuesta>/);
 });
 
 test('geometría muestra primero el enunciado, después la figura y tres renglones pautados', () => {

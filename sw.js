@@ -1,9 +1,9 @@
-const CACHE_NAME = 'fichasfacil-v102';
+const CACHE_NAME = 'fichasfacil-v104';
 const APP_SHELL = [
   './',
   './index.html',
   './404.html',
-  './styles.css?v=20261012-95',
+  './styles.css?v=20261115-2',
   './blog.html',
   './guia.html',
   './sumas.html',
@@ -18,16 +18,24 @@ const APP_SHELL = [
   './aviso-legal.html',
   './privacidad.html',
   './cookies.html',
-  './app.js?v=20261017-1',
-  './assets/jspdf.umd.min.js?v=20261012-1',
+  './dinero.html',
+  './ficha-diaria.html',
+  './ficha-mixta.html',
+  './logica.html',
+  './medidas.html',
+  './ordenar-frases.html',
+  './ortografia.html',
+  './reloj.html',
+  './vocabulario.html',
+  './app.js?v=20261115-2',
   './manifest.webmanifest',
   './favicon.svg?v=20261011-17',
   './pwa-icon.svg?v=20261011-17',
   './portada-fichas-reales.svg?v=20261011-1',
   './portada-fichas-reales-v2.svg?v=20261011-3',
-  './blog.html',
-  './guia.html',
-  './llms.txt'
+  './llms.txt',
+  './llms-full.txt',
+  './assets/jspdf.umd.min.js?v=20261115-2'
 ];
 
 self.addEventListener('install', event => {
@@ -35,7 +43,11 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))).then(() => self.clients.claim()));
+  const preloadReady = self.registration.navigationPreload ? self.registration.navigationPreload.enable() : Promise.resolve();
+  event.waitUntil(preloadReady
+    .then(() => caches.keys())
+    .then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))))
+    .then(() => self.clients.claim()));
 });
 
 self.addEventListener('fetch', event => {
@@ -43,16 +55,31 @@ self.addEventListener('fetch', event => {
   const requestUrl = new URL(event.request.url);
   if (requestUrl.origin !== self.location.origin) return;
   event.respondWith((async () => {
+    const isStaticAsset = /\.(?:css|js|svg|png|ico|webmanifest)$/i.test(requestUrl.pathname);
+    if (isStaticAsset) {
+      const cached = await caches.match(event.request);
+      if (cached) return cached;
+      try {
+        const response = await fetch(event.request);
+        if (response && response.status === 200 && response.type !== 'opaque') {
+          event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.put(event.request, response.clone())));
+        }
+        return response;
+      } catch (error) {
+        return Response.error();
+      }
+    }
     try {
-      const response = await fetch(event.request, { cache: 'no-store' });
-      if (response && response.status === 200 && response.type !== 'opaque') {
+      const preload = await event.preloadResponse;
+      const response = preload || await fetch(event.request, { cache: 'no-store' });
+      if (response && response.status === 200 && response.type !== 'opaque' && !requestUrl.search) {
         const copy = response.clone();
         event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy)));
       }
       return response;
     } catch (error) {
       const cached = await caches.match(event.request);
-      return cached || (event.request.mode === 'navigate' ? caches.match('./404.html') : Response.error());
+      return cached || (event.request.mode === 'navigate' ? caches.match('./index.html') : Response.error());
     }
   })());
 });

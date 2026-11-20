@@ -3,27 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Crea fichas educativas gratis para primaria: matemáticas, comprensión lectora, ortografía, caligrafía y lógica. Imprime en A4 o guarda como PDF, sin registro." />
+    <meta name="description" content="Crea fichas educativas gratis para Infantil y Primaria: matemáticas, comprensión lectora, ortografía, caligrafía y lógica. Imprime en A4 o descarga PDF, sin registro." />
     <meta name="author" content="FichasFacil" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-src 'self'; script-src 'self'; script-src-attr 'none'; style-src 'self'; style-src-attr 'none'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests" />
     <meta http-equiv="Permissions-Policy" content="accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), usb=()" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
-    <link rel="canonical" href="https://joseguerreromariscal.github.io/fichas/" />
-    <link rel="help" href="https://joseguerreromariscal.github.io/fichas/llms.txt" />
-    <link rel="alternate" type="text/plain" href="https://joseguerreromariscal.github.io/fichas/llms-full.txt" title="Información ampliada para asistentes" />
+    <link rel="canonical" href="https://fichasfacil.es/" />
+    <link rel="help" href="https://fichasfacil.es/llms.txt" />
+    <link rel="alternate" type="text/plain" href="https://fichasfacil.es/llms-full.txt" title="Información ampliada para asistentes" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_ES" />
     <meta property="og:title" content="Fichas educativas para primaria | FichasFacil" />
-    <meta property="og:description" content="Genera fichas de matemáticas, lengua, lectura, caligrafía y lógica para imprimir en A4 o guardar como PDF." />
-    <meta property="og:url" content="https://joseguerreromariscal.github.io/fichas/" />
+    <meta property="og:description" content="Genera fichas educativas imprimibles de matemáticas, lengua, lectura, caligrafía y lógica para Infantil y Primaria. Sin registro." />
+    <meta property="og:url" content="https://fichasfacil.es/" />
     <meta property="og:site_name" content="FichasFacil" />
-    <meta property="og:image" content="https://joseguerreromariscal.github.io/fichas/social-preview.svg" />
+    <meta property="og:image" content="https://fichasfacil.es/social-preview.svg" />
     <meta property="og:image:alt" content="Vista previa de FichasFacil, generador de fichas educativas" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Fichas educativas para primaria | FichasFacil" />
-    <meta name="twitter:description" content="Genera fichas de matemáticas, lengua, lectura, caligrafía y lógica para imprimir en A4 o guardar como PDF." />
-    <meta name="twitter:image" content="https://joseguerreromariscal.github.io/fichas/social-preview.svg" />
+    <meta name="twitter:description" content="Genera fichas educativas imprimibles de matemáticas, lengua, lectura, caligrafía y lógica para Infantil y Primaria. Sin registro." />
+    <meta name="twitter:image" content="https://fichasfacil.es/social-preview.svg" />
     <meta name="twitter:image:alt" content="Vista previa de FichasFacil, generador de fichas educativas" />
     <meta name="theme-color" content="#20385f" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -34,7 +34,7 @@
     <link rel="icon" href="favicon.svg?v=20261011-17" type="image/svg+xml" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="apple-touch-icon" href="pwa-icon.svg?v=20261011-17" />
-    <link rel="stylesheet" href="styles.css?v=20261012-95" />
+    <link rel="stylesheet" href="styles.css?v=20261115-2" />
   </head>
   <body>
     <a class="skip-link" href="#actividades">Saltar a las actividades</a>
@@ -56,14 +56,27 @@
             <div class="intro-meta" aria-label="Ventajas de FichasFacil"><span>19 actividades</span><span>3 niveles</span><span>A4 · PDF</span><span>Sin registro</span></div>
             <button id="install-app" class="install-button" type="button" hidden>Instalar FichasFacil en este dispositivo</button>
           </div>
+          <div class="hero-preview" role="img" aria-label="Vista previa de una ficha educativa">
+            <div class="preview-sheet">
+              <div class="preview-school-head"><span>Nombre</span><i></i><span>Fecha</span><i></i></div>
+              <div class="preview-sheet-top"><span>FichasFacil · repaso</span><b>Sumas y formas</b></div>
+              <div class="preview-lesson">
+                <div class="preview-operations"><strong>Calcula</strong><div><b>7 + 5 =</b><b>9 + 4 =</b><b>6 + 8 =</b></div><hr /></div>
+                <div class="preview-figure"><strong>Observa</strong><svg viewBox="0 0 60 50" aria-hidden="true"><polygon points="30,4 56,45 4,45"></polygon></svg><span>¿Cuántos lados tiene?</span></div>
+              </div>
+              <div class="preview-writing"><strong>Escribe tu respuesta</strong><i></i><i></i></div>
+              <div class="preview-footer" aria-hidden="true"><span></span><span></span><span></span></div>
+            </div>
+            <span class="preview-badge">Lista para imprimir</span>
+          </div>
         </div>
       </section>
 
       <section id="actividades" class="activities" aria-labelledby="activities-title">
-        <div class="section-label"><span id="activities-title">Elige una actividad</span><span class="activity-count">19 actividades</span></div>
+        <div class="section-label"><h2 id="activities-title">Elige una actividad</h2><span id="activity-count" class="activity-count">19 actividades</span></div>
         <p class="section-help">Pulsa una tarjeta para empezar a configurarla.</p>
-        <div class="activity-tools"><label for="activity-search">Buscar actividad<input id="activity-search" type="search" placeholder="Ej.: fracciones, lectura…" autocomplete="off" /></label><button id="clear-activity-search" type="button" aria-label="Limpiar búsqueda de actividades" hidden>Limpiar</button><button id="repeat-last" class="repeat-last" type="button" hidden>Repetir última ficha</button></div>
-        <div class="activity-grid">
+        <div class="activity-tools"><label for="activity-search">Buscar actividad<input id="activity-search" type="search" placeholder="Ej.: fracciones, lectura…" autocomplete="off" aria-controls="activity-grid" aria-describedby="activity-search-help" /></label><span id="activity-search-help" class="visually-hidden">Escribe una palabra para filtrar las actividades disponibles.</span><button id="clear-activity-search" type="button" aria-label="Limpiar búsqueda de actividades" hidden>Limpiar</button><button id="repeat-last" class="repeat-last" type="button" hidden>Repetir última ficha</button><span id="activity-result-count" class="activity-result-count" role="status" aria-live="polite"></span><span id="connection-status" class="connection-status" role="status" aria-live="polite" hidden></span></div>
+        <div id="activity-grid" class="activity-grid">
           <button class="activity-card card-blue" data-type="sumas" aria-haspopup="dialog" aria-controls="generator" aria-expanded="false"><span class="card-symbol">＋</span><span><strong>Sumas</strong><small>Cálculo básico</small></span></button>
           <button class="activity-card card-lilac" data-type="restas" aria-haspopup="dialog" aria-controls="generator" aria-expanded="false"><span class="card-symbol">−</span><span><strong>Restas</strong><small>Cálculo básico</small></span></button>
           <button class="activity-card card-yellow" data-type="multiplicaciones" aria-haspopup="dialog" aria-controls="generator" aria-expanded="false"><span class="card-symbol">×</span><span><strong>Multiplicaciones</strong><small>Tablas y práctica</small></span></button>
@@ -164,9 +177,10 @@
     <footer class="site-footer"><span>FichasFacil</span><span>Fichas educativas para practicar, imprimir y compartir.</span><span class="site-version" aria-label="Versión de la web">v93</span><nav aria-label="Enlaces de la página"><a href="#recursos">Recursos</a><a href="#preguntas">Preguntas frecuentes</a><a href="guia.html">Guía para usar fichas</a><a href="blog.html">Blog educativo</a><a href="aviso-legal.html">Aviso legal</a><a href="privacidad.html">Privacidad</a><a href="cookies.html">Cookies</a><a href="mailto:fichasfaciles@gmail.com" aria-label="Escribir a FichasFacil por correo">Contacto</a></nav></footer>
 
     <div class="modal-backdrop" id="generator" aria-hidden="true">
-      <section class="generator-modal" role="dialog" aria-modal="true" aria-labelledby="generator-title" aria-describedby="generator-help">
+      <section class="generator-modal" role="dialog" aria-modal="true" aria-labelledby="generator-title" aria-describedby="generator-help configuration-summary modal-note">
         <button class="modal-close" aria-label="Cerrar" aria-keyshortcuts="Escape"><span aria-hidden="true">×</span><span class="close-label">Cerrar</span></button>
-        <div class="modal-header"><p class="kicker">Crea tu ficha</p><div class="activity-summary"><span class="summary-dot" aria-hidden="true"></span><span id="activity-summary">Sumas</span></div><h2 id="generator-title">Prepara una ficha</h2><p id="generator-help">Ajusta las opciones y elige si quieres imprimir, guardar como PDF o compartir el enlace.</p><p class="configuration-summary" id="configuration-summary" role="status">Inicial · 20 ejercicios · Según la dificultad</p></div>
+        <div class="modal-header"><p class="kicker">Crea tu ficha</p><div class="activity-summary"><span class="summary-dot" aria-hidden="true"></span><span id="activity-summary">Sumas</span></div><h2 id="generator-title">Prepara una ficha</h2><p id="generator-help">Elige una configuración rápida o ajusta solo lo que necesites.</p><p class="configuration-summary" id="configuration-summary" role="status">Inicial · 20 ejercicios · Según la dificultad</p></div>
+        <div class="quick-presets" role="group" aria-labelledby="quick-presets-label"><span id="quick-presets-label">Configuración rápida</span><button type="button" data-preset="start" aria-pressed="false">Para empezar</button><button type="button" data-preset="balanced" aria-pressed="false">Equilibrada</button><button type="button" data-preset="review" aria-pressed="false">Repaso</button><small>Después puedes cambiar cualquier opción.</small></div>
         <form id="generator-form">
           <div class="form-grid">
             <label for="activity">Actividad<select id="activity"><option value="sumas">Sumas</option><option value="restas">Restas</option><option value="multiplicaciones">Multiplicaciones</option><option value="divisiones">Divisiones</option><option value="problemas">Problemas matemáticos</option><option value="lectura">Lectura comprensiva</option><option value="copiado">Copiado</option><option value="ortografia">Ortografía</option><option value="logica">Lógica</option><option value="reloj">Horas y reloj</option><option value="dinero">Dinero</option><option value="medidas">Medidas</option><option value="fracciones">Fracciones</option><option value="geometria">Geometría</option><option value="vocabulario">Vocabulario</option><option value="ordenar">Ordenar frases</option><option value="caligrafia">Caligrafía</option><option value="mixta">Ficha mixta</option><option value="diaria">Ficha diaria</option></select></label>
@@ -185,24 +199,23 @@
           </div>
           <p class="modal-note" id="modal-note">Puedes cambiar estas opciones antes de imprimir, guardar como PDF o compartir el enlace.</p>
           <label id="solutions-field" class="check-label"><input id="solutions" type="checkbox" /> <span>Incluir soluciones</span></label>
-          <div class="form-actions"><button class="reset-button" id="reset-options" type="button">Restablecer opciones</button><button class="print-button" id="print-direct" type="submit">Imprimir ficha</button><button class="download-button" id="download-direct" type="button">Descargar PDF</button><button class="share-button" id="share-direct" type="button">Compartir enlace</button></div>
+          <div class="form-actions" role="group" aria-label="Acciones de la ficha"><button class="reset-button" id="reset-options" type="button">Restablecer opciones</button><button class="print-button" id="print-direct" type="submit">Imprimir ficha</button><button class="download-button" id="download-direct" type="button">Descargar PDF</button><button class="share-button" id="share-direct" type="button">Compartir enlace</button></div>
         </form>
         <div class="preview-result" id="preview-result" role="status" aria-live="polite"></div>
       </section>
     </div>
-    <script defer src="assets/jspdf.umd.min.js?v=20261012-1"></script>
-    <script defer src="app.js?v=20261017-1"></script>
+    <script defer src="app.js?v=20261115-2"></script>
     <script type="application/ld+json">
-      {"@context":"https://schema.org","@type":"WebSite","name":"FichasFacil","url":"https://joseguerreromariscal.github.io/fichas/","description":"Generador gratuito de fichas educativas para primaria: matemáticas, lengua, lectura, escritura y lógica.","inLanguage":"es-ES","publisher":{"@type":"Organization","name":"FichasFacil","url":"https://joseguerreromariscal.github.io/fichas/","logo":"https://joseguerreromariscal.github.io/fichas/pwa-icon.svg"}}
+      {"@context":"https://schema.org","@type":"WebSite","name":"FichasFacil","url":"https://fichasfacil.es/","description":"Generador gratuito de fichas educativas imprimibles para Infantil y Primaria: matemáticas, lengua, lectura, escritura y lógica.","inLanguage":"es-ES","publisher":{"@type":"Organization","name":"FichasFacil","url":"https://fichasfacil.es/","logo":"https://fichasfacil.es/pwa-icon.svg"}}
     </script>
     <script type="application/ld+json">
-      {"@context":"https://schema.org","@type":"WebApplication","name":"FichasFacil","url":"https://joseguerreromariscal.github.io/fichas/","applicationCategory":"EducationalApplication","operatingSystem":"Web","inLanguage":"es-ES","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"featureList":["Fichas de matemáticas","Problemas matemáticos","Comprensión lectora","Copiado y caligrafía","Ortografía y vocabulario","Series y lógica","Horas, dinero y medidas","Fracciones y geometría","Fichas mixtas imprimibles","Impresión en A4 y enlaces configurables para compartir"]}
+      {"@context":"https://schema.org","@type":"WebApplication","name":"FichasFacil","url":"https://fichasfacil.es/","applicationCategory":"EducationalApplication","applicationSubCategory":"Generador de fichas educativas imprimibles","operatingSystem":"Web","browserRequirements":"JavaScript habilitado para generar fichas","inLanguage":"es-ES","softwareVersion":"93","isAccessibleForFree":true,"audience":{"@type":"Audience","audienceType":"Familias y docentes de Infantil y Primaria"},"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"featureList":["19 actividades educativas","Tres niveles de dificultad","Fichas de matemáticas","Problemas matemáticos","Comprensión lectora","Copiado y caligrafía","Ortografía y vocabulario","Series y lógica","Horas, dinero y medidas","Fracciones y geometría","Fichas mixtas imprimibles","Impresión en A4 y enlaces configurables para compartir"]}
     </script>
     <script type="application/ld+json">
       {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Tengo que registrarme?","acceptedAnswer":{"@type":"Answer","text":"No. Puedes elegir una actividad y generar una ficha sin crear una cuenta."}},{"@type":"Question","name":"¿Puedo elegir la dificultad y el número de ejercicios?","acceptedAnswer":{"@type":"Answer","text":"Sí. Antes de generar la ficha puedes seleccionar la dificultad, el número de ejercicios y, en matemáticas, el número de cifras."}},{"@type":"Question","name":"¿Puedo imprimirla o compartirla?","acceptedAnswer":{"@type":"Answer","text":"Sí. Puedes imprimir la ficha en A4 o compartir un enlace con la actividad y sus opciones para que otra persona la abra desde su dispositivo."}}]}
     </script>
     <script type="application/ld+json">
-      {"@context":"https://schema.org","@type":"ItemList","name":"Actividades educativas de FichasFacil","itemListElement":[{"@type":"ListItem","position":1,"name":"Fichas de sumas","url":"https://joseguerreromariscal.github.io/fichas/sumas.html"},{"@type":"ListItem","position":2,"name":"Problemas matemáticos","url":"https://joseguerreromariscal.github.io/fichas/problemas-matematicos.html"},{"@type":"ListItem","position":3,"name":"Comprensión lectora","url":"https://joseguerreromariscal.github.io/fichas/comprension-lectora.html"},{"@type":"ListItem","position":4,"name":"Caligrafía","url":"https://joseguerreromariscal.github.io/fichas/caligrafia.html"},{"@type":"ListItem","position":5,"name":"Geometría","url":"https://joseguerreromariscal.github.io/fichas/geometria.html"}]}
+      {"@context":"https://schema.org","@type":"ItemList","name":"Actividades educativas de FichasFacil","numberOfItems":19,"itemListElement":[{"@type":"ListItem","position":1,"name":"Sumas","url":"https://fichasfacil.es/sumas.html"},{"@type":"ListItem","position":2,"name":"Restas","url":"https://fichasfacil.es/restas.html"},{"@type":"ListItem","position":3,"name":"Multiplicaciones","url":"https://fichasfacil.es/multiplicaciones.html"},{"@type":"ListItem","position":4,"name":"Divisiones","url":"https://fichasfacil.es/divisiones.html"},{"@type":"ListItem","position":5,"name":"Problemas matemáticos","url":"https://fichasfacil.es/problemas-matematicos.html"},{"@type":"ListItem","position":6,"name":"Comprensión lectora","url":"https://fichasfacil.es/comprension-lectora.html"},{"@type":"ListItem","position":7,"name":"Copiado","url":"https://fichasfacil.es/index.html?actividad=copiado#actividades"},{"@type":"ListItem","position":8,"name":"Ortografía","url":"https://fichasfacil.es/ortografia.html"},{"@type":"ListItem","position":9,"name":"Lógica","url":"https://fichasfacil.es/logica.html"},{"@type":"ListItem","position":10,"name":"Horas y reloj","url":"https://fichasfacil.es/reloj.html"},{"@type":"ListItem","position":11,"name":"Dinero","url":"https://fichasfacil.es/dinero.html"},{"@type":"ListItem","position":12,"name":"Medidas","url":"https://fichasfacil.es/medidas.html"},{"@type":"ListItem","position":13,"name":"Fracciones","url":"https://fichasfacil.es/fracciones.html"},{"@type":"ListItem","position":14,"name":"Geometría","url":"https://fichasfacil.es/geometria.html"},{"@type":"ListItem","position":15,"name":"Vocabulario","url":"https://fichasfacil.es/vocabulario.html"},{"@type":"ListItem","position":16,"name":"Ordenar frases","url":"https://fichasfacil.es/ordenar-frases.html"},{"@type":"ListItem","position":17,"name":"Caligrafía","url":"https://fichasfacil.es/caligrafia.html"},{"@type":"ListItem","position":18,"name":"Ficha mixta","url":"https://fichasfacil.es/ficha-mixta.html"},{"@type":"ListItem","position":19,"name":"Ficha diaria","url":"https://fichasfacil.es/ficha-diaria.html"}]}
     </script>
   </body>
 </html>

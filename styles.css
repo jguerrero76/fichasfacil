@@ -411,3 +411,18 @@ body{letter-spacing:-.005em}
 @media(max-width:700px){.generator-modal{overflow-y:auto}#generator-form{flex:none}.form-actions{margin-top:12px}.worksheet-preview{width:100vw;height:100dvh;margin:0;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom));border:0;border-radius:0}.worksheet-preview-header{align-items:flex-start}.worksheet-preview h2{font-size:20px}.worksheet-preview-header button{max-width:135px}.worksheet-preview-actions button{flex:1}.worksheet-preview-tools{gap:6px}}
 
 .worksheet-preview-tools select{min-height:40px;max-width:175px;border:1px solid #c5d2e2;border-radius:8px;background:#fff;padding:6px 9px;color:#20385f;font-size:14px}.worksheet-preview-tools .preview-scale-label{font-size:14px}@media(max-width:700px){.worksheet-preview-tools .preview-scale-label{order:3;width:100%;justify-content:space-between}.worksheet-preview-tools .preview-scale-label select{flex:1;max-width:220px}}
+
+/* Readable secondary text and consistent keyboard focus. */
+:root{--muted:#53627a}
+.activity-card .card-symbol{color:#20385f}
+.section-label span:last-child,.homepage-how-card .content-number,.other-projects .kicker{color:#705000}
+.content-heading .kicker{color:#53627a}
+.site-version{color:#c3cddd}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #a36300;outline-offset:4px}
+.generator-loading-status{margin:0;color:#20385f;font-size:16px;line-height:1.5}
+.generator-loading-status:empty{display:none}
+.activity-card[aria-busy="true"]{opacity:.7;cursor:progress}
+
+.homepage-how-heading .kicker{color:#53627a}
+
+.site-footer .site-version{opacity:1;color:#c3cddd}

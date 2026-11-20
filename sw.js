@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fichasfacil-v105';
+const CACHE_NAME = 'fichasfacil-v106';
 const APP_SHELL = [
   './',
   './index.html',
@@ -9,6 +9,13 @@ const APP_SHELL = [
   './copiado.html',
   './sobre-fichasfacil.html',
   './sumas.html',
+  './sumas-sin-llevadas.html',
+  './sumas-con-llevadas.html',
+  './restas-sin-llevadas.html',
+  './restas-con-llevadas.html',
+  './tablas-de-multiplicar.html',
+  './divisiones-exactas.html',
+
   './restas.html',
   './multiplicaciones.html',
   './divisiones.html',

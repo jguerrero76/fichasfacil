@@ -153,3 +153,12 @@ La aplicación es estática y está alojada en Vercel. No expone actualmente un 
 
 - [Responsable, funcionamiento y contacto](https://fichasfacil.es/sobre-fichasfacil.html).
 - [Copiado con pauta](https://fichasfacil.es/copiado.html): textos para copiar de uno a cinco párrafos.
+
+## Prácticas específicas de matemáticas
+
+- [Sumas sin llevadas para imprimir gratis en PDF](https://fichasfacil.es/sumas-sin-llevadas.html): ejemplos resueltos y acceso al generador configurado.
+- [Sumas con llevadas para imprimir gratis en PDF](https://fichasfacil.es/sumas-con-llevadas.html): ejemplos resueltos y acceso al generador configurado.
+- [Restas sin llevadas para imprimir gratis en PDF](https://fichasfacil.es/restas-sin-llevadas.html): ejemplos resueltos y acceso al generador configurado.
+- [Restas con llevadas para imprimir gratis en PDF](https://fichasfacil.es/restas-con-llevadas.html): ejemplos resueltos y acceso al generador configurado.
+- [Tablas de multiplicar para imprimir y practicar en PDF](https://fichasfacil.es/tablas-de-multiplicar.html): ejemplos resueltos y acceso al generador configurado.
+- [Divisiones exactas para imprimir gratis en PDF](https://fichasfacil.es/divisiones-exactas.html): ejemplos resueltos y acceso al generador configurado.

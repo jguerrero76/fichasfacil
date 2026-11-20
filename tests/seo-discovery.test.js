@@ -35,3 +35,45 @@ test('las 19 actividades tienen página enlazada desde el HTML inicial', () => {
   }
   assert.match(read('copiado.html'), /actividad=copiado/);
 });
+
+test('las nuevas prácticas abren el generador con opciones válidas y explícitas', () => {
+  const source = read('app.js');
+  const home = read('index.html');
+  const controls = Object.fromEntries([...home.matchAll(/<select id="([^"]+)"[^>]*>([\s\S]*?)<\/select>/g)].map(m => [m[1], [...m[2].matchAll(/<option(?: value="([^"]*)")?[^>]*>([^<]*)<\/option>/g)].map(o => o[1] ?? o[2])]));
+  const preferenceIds = new Function('return ' + source.match(/const preferenceIds = (\[[^;]+\]);/)[1])();
+  const start = source.indexOf('  const shared = new URLSearchParams');
+  const end = source.indexOf('\n} catch (error) { /* enlaces compartidos opcionales */ }', start);
+  assert.ok(start > 0 && end > start);
+  const apply = new Function('window', 'document', 'preferenceIds', 'setSelectValue', 'labels', 'const activity = document.querySelector("#activity"); let sharedActivity = ""; let sharedSolutions = false; ' + source.slice(start, end) + '; return sharedActivity;');
+  const expected = {
+    'sumas-sin-llevadas': ['sumas', 'carryMode', 'no'],
+    'sumas-con-llevadas': ['sumas', 'carryMode', 'yes'],
+    'restas-sin-llevadas': ['restas', 'carryMode', 'no'],
+    'restas-con-llevadas': ['restas', 'carryMode', 'yes'],
+    'tablas-de-multiplicar': ['multiplicaciones', 'tableNumber', 'all'],
+    'divisiones-exactas': ['divisiones', 'divisionMode', 'exact']
+  };
+  for (const [slug, [type, field, value]] of Object.entries(expected)) {
+    const page = read(slug + '.html');
+    assert.ok(home.includes('href="' + slug + '.html"'), slug);
+    assert.ok(read('sitemap.xml').includes(base + slug + '.html'), slug);
+    const links = [...page.matchAll(/href="(\/\?[^"#]+#actividades)"/g)].map(m => new URL(m[1].replaceAll('&amp;', '&'), base));
+    assert.ok(links.length >= 2, slug);
+    for (const [i, url] of links.entries()) {
+      const state = Object.fromEntries(Object.keys(controls).map(id => [id, { value: 'previous-setting' }]));
+      const activity = apply({ location: { search: url.search } }, { querySelector: selector => state[selector.slice(1)] ||= {} }, preferenceIds, (id, selected) => {
+        assert.ok(controls[id]?.includes(selected), slug + ': ' + id + '=' + selected);
+        state[id].value = selected;
+      }, Object.fromEntries(controls.activity.map(v => [v, true])));
+      assert.equal(activity, type, slug);
+      assert.equal(state.count.value, '10', slug);
+      assert.equal(state.difficulty.value, 'Inicial', slug);
+      if (i < 2 || slug !== 'tablas-de-multiplicar') assert.equal(state[field].value, value, slug);
+      if (type === 'divisiones') assert.equal(state.specificDivisor.value, 'all');
+    }
+    if (slug === 'tablas-de-multiplicar') {
+      assert.equal(links.filter(url => /^[1-9]$/.test(url.searchParams.get('tabla'))).length, 9);
+      for (let n = 1; n <= 9; n++) for (let m = 1; m <= 10; m++) assert.ok(page.includes(`${n} × ${m} = ${n*m}</li>`));
+    }
+  }
+});

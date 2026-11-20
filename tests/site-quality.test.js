@@ -49,7 +49,7 @@ test('la optimización de búsqueda y caché permanece activa', () => {
   const sw = read('sw.js');
   assert.match(app, /const activityCards = \[\.\.\.document\.querySelectorAll\('\.activity-card'\)/, 'app.js: tarjetas no cacheadas');
   assert.match(app, /requestAnimationFrame\(filterActivities\)/, 'app.js: búsqueda sin agrupación de frames');
-  assert.match(sw, /fichasfacil-v105/, 'sw.js: caché sin versionar para la última pasada');
+  assert.match(sw, /fichasfacil-v106/, 'sw.js: caché sin versionar para la última pasada');
   assert.match(sw, /jspdf\.umd\.min\.js\?v=20261115-2/, 'sw.js: jsPDF desactualizado');
 });
 

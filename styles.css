@@ -386,3 +386,28 @@ body{letter-spacing:-.005em}
   .site-footer{gap:10px;align-items:flex-start}
   .site-footer nav{justify-content:flex-start;gap:10px 14px}
 }
+
+/* A4 preview stays separate from the worksheet's print styles. */
+.preview-direct{display:block;width:100%;min-height:44px;margin:12px 0 0;padding:10px 16px;border:1px solid #20385f;border-radius:12px;background:#edf3fa;color:#20385f;font:700 15px Arial,sans-serif;cursor:pointer}
+.preview-direct:hover{background:#dfeafa}
+.generator-modal{overflow-y:auto}
+.worksheet-preview{width:min(1000px,calc(100vw - 32px));height:calc(100dvh - 32px);max-width:none;max-height:none;padding:20px;border:1px solid #d7e0eb;border-radius:20px;background:#f3f6fa;color:#20385f;box-shadow:0 24px 80px #10233f55}
+.worksheet-preview[open]{display:flex;flex-direction:column;gap:12px}
+.worksheet-preview::backdrop{background:#12233fcc}
+.worksheet-preview-header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex:none}
+.worksheet-preview h2{margin:0 0 5px;font-size:24px;line-height:1.2}
+.worksheet-preview-header p{margin:0;font-size:15px;color:#536784}
+.worksheet-preview button{min-height:44px;padding:10px 15px;border:1px solid #c5d2e2;border-radius:10px;background:#fff;color:#20385f;font:700 15px Arial,sans-serif;cursor:pointer}
+.worksheet-preview button:focus-visible,.preview-direct:focus-visible{outline:3px solid #e6b900;outline-offset:3px}
+.worksheet-preview button:disabled{opacity:.6;cursor:wait}
+.worksheet-preview-tools{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;flex:none}
+.worksheet-preview-tools label{display:flex;align-items:center;gap:8px;font-size:16px}
+.worksheet-preview-tools input{width:20px;height:20px;accent-color:#20385f}
+#worksheet-frame{display:block;flex:1;min-height:160px;width:100%;border:1px solid #c5d2e2;border-radius:8px;background:#fff}
+#worksheet-preview-message{flex:none;margin:0;font-size:14px;line-height:1.4;color:#536784}
+.worksheet-preview-actions{display:flex;justify-content:flex-end;gap:12px;flex:none}
+#preview-download{background:#20385f;border-color:#20385f;color:#fff}
+#preview-print{background:#f7c91b;border-color:#f7c91b}
+@media(max-width:700px){.generator-modal{overflow-y:auto}#generator-form{flex:none}.form-actions{margin-top:12px}.worksheet-preview{width:100vw;height:100dvh;margin:0;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom));border:0;border-radius:0}.worksheet-preview-header{align-items:flex-start}.worksheet-preview h2{font-size:20px}.worksheet-preview-header button{max-width:135px}.worksheet-preview-actions button{flex:1}.worksheet-preview-tools{gap:6px}}
+
+.worksheet-preview-tools select{min-height:40px;max-width:175px;border:1px solid #c5d2e2;border-radius:8px;background:#fff;padding:6px 9px;color:#20385f;font-size:14px}.worksheet-preview-tools .preview-scale-label{font-size:14px}@media(max-width:700px){.worksheet-preview-tools .preview-scale-label{order:3;width:100%;justify-content:space-between}.worksheet-preview-tools .preview-scale-label select{flex:1;max-width:220px}}

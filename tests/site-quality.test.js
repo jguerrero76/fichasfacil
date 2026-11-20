@@ -7,7 +7,7 @@ const root = path.join(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 
 test('las páginas públicas tienen título, descripción y canonical', () => {
-  const pages = fs.readdirSync(root).filter(file => file.endsWith('.html') && file !== 'iconos.html' && file !== '404.html');
+  const pages = fs.readdirSync(root).filter(file => file.endsWith('.html') && file !== 'iconos.html' && file !== '404.html' && file !== 'worksheet-preview-frame.html');
   for (const page of pages) {
     const html = read(page);
     assert.match(html, /<title>[^<]+<\/title>/, `${page}: falta title`);
@@ -17,7 +17,7 @@ test('las páginas públicas tienen título, descripción y canonical', () => {
 });
 
 test('las páginas públicas mantienen una jerarquía principal clara', () => {
-  const pages = fs.readdirSync(root).filter(file => file.endsWith('.html') && file !== 'iconos.html' && file !== '404.html');
+  const pages = fs.readdirSync(root).filter(file => file.endsWith('.html') && file !== 'iconos.html' && file !== '404.html' && file !== 'worksheet-preview-frame.html');
   for (const page of pages) {
     const headings = read(page).match(/<h1\b/gi) || [];
     assert.equal(headings.length, 1, `${page}: debe tener exactamente un h1`);
@@ -40,7 +40,7 @@ test('el service worker usa la versión actual de los recursos principales', () 
   assert.ok(stylesVersion, 'index: falta versión de styles.css');
   assert.ok(sw.includes(`app.js?v=${appVersion}`), 'sw.js: app.js desactualizado');
   assert.ok(sw.includes(`styles.css?v=${stylesVersion}`), 'sw.js: styles.css desactualizado');
-  assert.match(read('app.js'), /register\('\.\/sw\.js\?v=20261115-2'/, 'app.js: registro del service worker desactualizado');
+  assert.match(read('app.js'), /register\('\.\/sw\.js\?v=20261120-2'/, 'app.js: registro del service worker desactualizado');
   assert.match(sw, /const CACHE_NAME = 'fichasfacil-v\d+'/);
 });
 
@@ -49,7 +49,7 @@ test('la optimización de búsqueda y caché permanece activa', () => {
   const sw = read('sw.js');
   assert.match(app, /const activityCards = \[\.\.\.document\.querySelectorAll\('\.activity-card'\)/, 'app.js: tarjetas no cacheadas');
   assert.match(app, /requestAnimationFrame\(filterActivities\)/, 'app.js: búsqueda sin agrupación de frames');
-  assert.match(sw, /fichasfacil-v106/, 'sw.js: caché sin versionar para la última pasada');
+  assert.match(sw, /fichasfacil-v107/, 'sw.js: caché sin versionar para la última pasada');
   assert.match(sw, /jspdf\.umd\.min\.js\?v=20261115-2/, 'sw.js: jsPDF desactualizado');
 });
 

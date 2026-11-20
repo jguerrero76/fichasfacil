@@ -1,9 +1,10 @@
-const CACHE_NAME = 'fichasfacil-v106';
+const CACHE_NAME = 'fichasfacil-v107';
 const APP_SHELL = [
   './',
   './index.html',
+  './worksheet-preview-frame.html',
   './404.html',
-  './styles.css?v=20261120-1',
+  './styles.css?v=20261120-2',
   './blog.html',
   './guia.html',
   './copiado.html',
@@ -36,7 +37,7 @@ const APP_SHELL = [
   './ortografia.html',
   './reloj.html',
   './vocabulario.html',
-  './app.js?v=20261115-2',
+  './app.js?v=20261120-2',
   './manifest.webmanifest',
   './favicon.svg?v=20261011-17',
   './pwa-icon.svg?v=20261011-17',

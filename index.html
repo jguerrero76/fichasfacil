@@ -34,7 +34,7 @@
     <link rel="icon" href="favicon.svg?v=20261011-17" type="image/svg+xml" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="apple-touch-icon" href="pwa-icon.svg?v=20261011-17" />
-    <link rel="stylesheet" href="styles.css?v=20261120-1" />
+    <link rel="stylesheet" href="styles.css?v=20261120-2" />
   </head>
   <body>
     <a class="skip-link" href="#actividades">Saltar a las actividades</a>
@@ -175,7 +175,7 @@
 
     </main>
 
-    <footer class="site-footer"><span>FichasFacil</span><span>Fichas educativas para practicar, imprimir y compartir.</span><span class="site-version" aria-label="Versión de la web">v95</span><nav aria-label="Enlaces de la página"><a href="#recursos">Recursos</a><a href="#preguntas">Preguntas frecuentes</a><a href="guia.html">Guía para usar fichas</a><a href="blog.html">Blog educativo</a><a href="aviso-legal.html">Aviso legal</a><a href="privacidad.html">Privacidad</a><a href="cookies.html">Cookies</a><a href="mailto:fichasfaciles@gmail.com" aria-label="Escribir a FichasFacil por correo">Contacto</a><a href="sobre-fichasfacil.html">Sobre FichasFacil</a><a href="mailto:fichasfaciles@gmail.com">Contacto</a></nav></footer>
+    <footer class="site-footer"><span>FichasFacil</span><span>Fichas educativas para practicar, imprimir y compartir.</span><span class="site-version" aria-label="Versión de la web">v96</span><nav aria-label="Enlaces de la página"><a href="#recursos">Recursos</a><a href="#preguntas">Preguntas frecuentes</a><a href="guia.html">Guía para usar fichas</a><a href="blog.html">Blog educativo</a><a href="aviso-legal.html">Aviso legal</a><a href="privacidad.html">Privacidad</a><a href="cookies.html">Cookies</a><a href="mailto:fichasfaciles@gmail.com" aria-label="Escribir a FichasFacil por correo">Contacto</a><a href="sobre-fichasfacil.html">Sobre FichasFacil</a><a href="mailto:fichasfaciles@gmail.com">Contacto</a></nav></footer>
 
     <div class="modal-backdrop" id="generator" aria-hidden="true">
       <section class="generator-modal" role="dialog" aria-modal="true" aria-labelledby="generator-title" aria-describedby="generator-help configuration-summary modal-note">
@@ -200,17 +200,25 @@
           </div>
           <p class="modal-note" id="modal-note">Puedes cambiar estas opciones antes de imprimir, guardar como PDF o compartir el enlace.</p>
           <label id="solutions-field" class="check-label"><input id="solutions" type="checkbox" /> <span>Incluir soluciones</span></label>
-          <div class="form-actions" role="group" aria-label="Acciones de la ficha"><button class="reset-button" id="reset-options" type="button">Restablecer opciones</button><button class="print-button" id="print-direct" type="submit">Imprimir ficha</button><button class="download-button" id="download-direct" type="button">Descargar PDF</button><button class="share-button" id="share-direct" type="button">Compartir enlace</button></div>
+          <button class="preview-direct" id="preview-direct" type="button" aria-haspopup="dialog" aria-controls="worksheet-preview">Ver ficha antes de descargar</button><div class="form-actions" role="group" aria-label="Acciones de la ficha"><button class="reset-button" id="reset-options" type="button">Restablecer opciones</button><button class="print-button" id="print-direct" type="submit">Imprimir ficha</button><button class="download-button" id="download-direct" type="button">Descargar PDF</button><button class="share-button" id="share-direct" type="button">Compartir enlace</button></div>
         </form>
         <div class="preview-result" id="preview-result" role="status" aria-live="polite"></div>
       </section>
     </div>
-    <script defer src="app.js?v=20261115-2"></script>
+
+    <dialog id="worksheet-preview" class="worksheet-preview" aria-labelledby="worksheet-preview-title" aria-describedby="worksheet-preview-summary">
+      <header class="worksheet-preview-header"><div><h2 id="worksheet-preview-title">Vista previa de tu ficha</h2><p id="worksheet-preview-summary">Formato A4</p></div><button id="close-worksheet-preview" type="button" autofocus>Volver a las opciones</button></header>
+      <div class="worksheet-preview-tools"><label><input id="preview-solutions" type="checkbox"> Ver soluciones</label><label class="preview-scale-label">Tamaño <select id="preview-scale"><option value="fit">Ajustar al ancho</option><option value="actual">Tamaño real</option></select></label><button id="preview-refresh" type="button">Crear otros ejercicios</button></div>
+      <iframe id="worksheet-frame" title="Vista previa de la ficha educativa en A4" sandbox="allow-same-origin" referrerpolicy="no-referrer"></iframe>
+      <p id="worksheet-preview-message" role="status" aria-live="polite"></p>
+      <div class="worksheet-preview-actions"><button id="preview-print" type="button">Imprimir ficha</button><button id="preview-download" type="button">Descargar PDF</button></div>
+    </dialog>
+    <script defer src="app.js?v=20261120-2"></script>
     <script type="application/ld+json">
       {"@context":"https://schema.org","@type":"WebSite","name":"FichasFacil","url":"https://fichasfacil.es/","description":"Generador gratuito de fichas educativas imprimibles para Infantil y Primaria: matemáticas, lengua, lectura, escritura y lógica.","inLanguage":"es-ES","publisher":{"@type":"Organization","name":"FichasFacil","url":"https://fichasfacil.es/","logo":"https://fichasfacil.es/pwa-icon.svg"}}
     </script>
     <script type="application/ld+json">
-      {"@context":"https://schema.org","@type":"WebApplication","name":"FichasFacil","url":"https://fichasfacil.es/","applicationCategory":"EducationalApplication","applicationSubCategory":"Generador de fichas educativas imprimibles","operatingSystem":"Web","browserRequirements":"JavaScript habilitado para generar fichas","inLanguage":"es-ES","softwareVersion":"95","isAccessibleForFree":true,"audience":{"@type":"Audience","audienceType":"Familias y docentes de Infantil y Primaria"},"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"featureList":["19 actividades educativas","Tres niveles de dificultad","Fichas de matemáticas","Problemas matemáticos","Comprensión lectora","Copiado y caligrafía","Ortografía y vocabulario","Series y lógica","Horas, dinero y medidas","Fracciones y geometría","Fichas mixtas imprimibles","Impresión en A4 y enlaces configurables para compartir"]}
+      {"@context":"https://schema.org","@type":"WebApplication","name":"FichasFacil","url":"https://fichasfacil.es/","applicationCategory":"EducationalApplication","applicationSubCategory":"Generador de fichas educativas imprimibles","operatingSystem":"Web","browserRequirements":"JavaScript habilitado para generar fichas","inLanguage":"es-ES","softwareVersion":"96","isAccessibleForFree":true,"audience":{"@type":"Audience","audienceType":"Familias y docentes de Infantil y Primaria"},"offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"featureList":["19 actividades educativas","Tres niveles de dificultad","Fichas de matemáticas","Problemas matemáticos","Comprensión lectora","Copiado y caligrafía","Ortografía y vocabulario","Series y lógica","Horas, dinero y medidas","Fracciones y geometría","Fichas mixtas imprimibles","Impresión en A4 y enlaces configurables para compartir"]}
     </script>
     <script type="application/ld+json">
       {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Tengo que registrarme?","acceptedAnswer":{"@type":"Answer","text":"No. Puedes elegir una actividad y generar una ficha sin crear una cuenta."}},{"@type":"Question","name":"¿Puedo elegir la dificultad y el número de ejercicios?","acceptedAnswer":{"@type":"Answer","text":"Sí. Antes de generar la ficha puedes seleccionar la dificultad, el número de ejercicios y, en matemáticas, el número de cifras."}},{"@type":"Question","name":"¿Puedo imprimirla o compartirla?","acceptedAnswer":{"@type":"Answer","text":"Sí. Puedes imprimir la ficha en A4 o compartir un enlace con la actividad y sus opciones para que otra persona la abra desde su dispositivo."}}]}

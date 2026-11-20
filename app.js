@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261115-2', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261120-2', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -260,6 +260,7 @@ const syncActivityCardSelection = type => {
   });
 };
 const openGenerator = type => {
+  preparedWorksheet = null;
   syncActivityCardSelection(type);
   document.querySelectorAll('[data-type]').forEach(card => card.setAttribute('aria-expanded', String(card === lastTrigger)));
   modal.classList.add('open');
@@ -363,7 +364,7 @@ function closeGenerator() {
   document.querySelectorAll('[data-type]').forEach(card => card.setAttribute('aria-expanded', 'false'));
   (lastTrigger || activitySearch)?.focus();
 }
-document.addEventListener('keydown', event => { if (event.key === 'Escape' && modal.classList.contains('open')) closeGenerator(); });
+document.addEventListener('keydown', event => { if (event.key === 'Escape' && modal.classList.contains('open') && !document.querySelector('#worksheet-preview').open) closeGenerator(); });
 
 function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 function shuffledIndexes(length) {
@@ -1499,6 +1500,21 @@ function printableHtml(config, items, solutions) {
 
 const readConfig = () => ({ type: activity.value, level: '', difficulty: document.querySelector('#difficulty').value, count: Number(document.querySelector('#count').value), operands: Number(document.querySelector('#operands').value), firstDigits: document.querySelector('#firstDigits').value, secondDigits: document.querySelector('#secondDigits').value, paragraphs: Number(document.querySelector('#paragraphs').value), calligraphyMode: document.querySelector('#calligraphyMode').value, carryMode: document.querySelector('#carryMode').value, tableNumber: document.querySelector('#tableNumber').value, specificDivisor: document.querySelector('#specificDivisor').value, divisionMode: document.querySelector('#divisionMode').value, student: document.querySelector('#student').value.trim(), solutions: document.querySelector('#solutions')?.checked });
 
+
+// Keep the exercises stable across preview, print, PDF and answer sheets.
+let preparedWorksheet = null;
+function getWorksheetItems(config, fresh = false) {
+  const { student, solutions, ...contentConfig } = config;
+  const key = JSON.stringify(contentConfig);
+  if (fresh || !preparedWorksheet || preparedWorksheet.key !== key) {
+    preparedWorksheet = {
+      key,
+      items: makeContent(config.type, config.count, config.difficulty, config.level, config.operands, config.firstDigits, config.secondDigits, config.paragraphs, config)
+    };
+  }
+  return preparedWorksheet.items;
+}
+
 const shareUrl = config => {
   const url = new URL(window.location.pathname, window.location.origin);
   url.hash = 'actividades';
@@ -1839,7 +1855,7 @@ function notifyTelegram(config) {
 }
 
 function createSheets(config) {
-  const items = makeContent(config.type, config.count, config.difficulty, config.level, config.operands, config.firstDigits, config.secondDigits, config.paragraphs, config);
+  const items = getWorksheetItems(config);
   const simpleMath = ['sumas', 'restas', 'multiplicaciones', 'divisiones'].includes(config.type);
   const textStyles = '.text-exercise i{grid-column:2;width:100%}.text-exercise strong{font-size:17px;line-height:1.35}.reading-sheet{max-width:180mm;margin:0 auto}.reading-sheet h3{font-size:24px;margin:0 0 14px}.reading-text{font-size:16px;line-height:1.55;margin:0 0 20px}.reading-sheet h4{font-size:14px;margin:0 0 10px}.reading-question{display:grid;grid-template-columns:22px 1fr;gap:5px 7px;min-height:78px;align-items:start;margin-bottom:9px;break-inside:avoid;page-break-inside:avoid}.reading-question span{font-weight:700}.reading-question strong{font-size:15px;line-height:1.35}.reading-question i{grid-column:2;height:48px;border-bottom:1px solid #82958b;background:repeating-linear-gradient(to bottom,transparent 0,transparent 22px,#d9e2ea 22px,#d9e2ea 23px)}.reading-question b{grid-column:2;color:#275fac}.copying-sheet{break-inside:avoid;page-break-inside:avoid;margin:0 auto 9mm;max-width:180mm}.copying-text{font-size:17px;line-height:1.55;margin:0}.copying-final-guide{break-inside:avoid;page-break-inside:avoid;max-width:180mm;margin:7mm auto 0}.copying-final-guide h3{font-size:14px;margin:0 0 7px;color:#697772}.lamela-guide{height:108mm;border-top:1.2px solid #647b9b}.lamela-guide span{display:block;height:9mm;border-bottom:1px solid #9aaabd}.lamela-line-0{border-bottom:1.2px solid #7890af!important}.lamela-line-1{border-bottom:1px dashed #b7c4d2!important}.lamela-line-2{border-bottom:1.2px solid #ef9b9b!important}';
   const printPolish = '<style>html,body{width:210mm!important;min-width:210mm!important;max-width:210mm!important}body{font-family:ui-rounded,"Arial Rounded MT Bold","Trebuchet MS",Arial,sans-serif!important;color:#20283f!important;background:#fff!important;padding:13mm 12mm!important;overflow:visible!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}h1{text-align:center!important;font-size:15px!important;font-weight:700!important;line-height:1.2!important;color:#20283f!important;margin:0 0 19px!important}.worksheet-header{display:flex!important;justify-content:space-between!important;gap:20px!important;margin-bottom:24px!important;padding:0 8px!important;border:0!important;font-size:10px!important;font-weight:700!important}.worksheet-header>div:first-child{flex:1}.worksheet-header>div:last-child{min-width:72px}.worksheet-header span{min-width:100px;height:13px}.worksheet-header>div:last-child span{min-width:62px}.math-grid{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-template-rows:repeat(5,minmax(0,1fr))!important;gap:0 22px!important;min-height:246mm!important;padding:0 2mm!important}.math-grid .arithmetic{width:100%!important;min-height:0!important;justify-content:center!important;align-items:center!important;padding:0!important}.math-grid .operation{display:block!important;flex:0 0 116px!important;width:116px!important;min-width:116px!important;max-width:116px!important;font-family:ui-monospace,SFMono-Regular,Menlo,monospace!important;font-size:17px!important;line-height:1.15!important}.math-grid .digit-value{display:inline-flex!important;gap:3px!important;letter-spacing:0!important}.math-grid .digit-value b{letter-spacing:0!important}.math-grid .top-number,.math-grid .extra-number{padding-right:0!important;letter-spacing:0!important;min-height:23px!important;white-space:nowrap!important}.math-grid .bottom-number{grid-template-columns:18px 1fr!important;gap:0!important;padding-right:0!important;letter-spacing:0!important;line-height:1.15!important;white-space:nowrap!important}.math-grid .bottom-number .operator{text-align:center!important;letter-spacing:0!important}.math-grid .bottom-number .digit-value{justify-self:end!important}.math-grid .operation-rule{display:block!important;width:116px!important;max-width:116px!important;margin-top:5px!important}.math-grid .answer-space{display:none!important}@media print{h1{letter-spacing:-.02em}.worksheet-header{break-inside:avoid;page-break-inside:avoid}.text-exercise,.reading-question{break-inside:avoid;page-break-inside:avoid}.reading-sheet{break-inside:avoid;page-break-inside:avoid}.copying-sheet{break-inside:avoid;page-break-inside:avoid}p,h1,h2,h3,h4{orphans:3;widows:3}}</style>';
@@ -1930,17 +1946,19 @@ document.querySelector('#download-direct')?.addEventListener('click', async () =
   const button = document.querySelector('#download-direct');
   const originalLabel = button.textContent;
   button.disabled = true;
+  document.querySelector('#preview-download').disabled = true;
   button.setAttribute('aria-busy', 'true');
   button.textContent = 'Preparando PDF…';
   let items = [];
   let downloaded = false;
   try {
-    items = makeContent(config.type, config.count, config.difficulty, config.level, config.operands, config.firstDigits, config.secondDigits, config.paragraphs, config);
+    items = getWorksheetItems(config);
     downloaded = await safeDownloadPdf(config, items, false);
   } catch (error) {
     console.error('No se pudo preparar la descarga.', error);
   }
   result.innerHTML = `<div class="success-box"><strong>${downloaded ? 'PDF descargado' : 'No se ha podido crear el PDF'}</strong><span class="print-hint">${downloaded ? `${labels[config.type]} · Puedes abrirlo, imprimirlo o compartirlo.` : 'Comprueba que el navegador permite descargas y vuelve a intentarlo.'}</span>${downloaded && config.solutions ? '<button class="solutions-link" id="download-solutions" type="button">Descargar soluciones</button>' : ''}${!downloaded ? '<button class="solutions-link" id="retry-download" type="button">Reintentar descarga</button>' : ''}</div>`;
+  if (worksheetPreview.open) previewMessage.textContent = downloaded ? 'PDF preparado con los mismos ejercicios de la vista previa. Revisa las descargas de tu navegador.' : 'No se ha podido preparar el PDF. Vuelve a intentarlo.';
   result.setAttribute('role', downloaded ? 'status' : 'alert');
   result.setAttribute('aria-live', downloaded ? 'polite' : 'assertive');
   document.querySelector('#download-solutions')?.addEventListener('click', async event => {
@@ -1954,7 +1972,7 @@ document.querySelector('#download-direct')?.addEventListener('click', async () =
   });
   document.querySelector('#retry-download')?.addEventListener('click', () => button.click());
   if (downloaded) { saveLastConfig(config); notifyTelegram(config); }
-  setTimeout(() => { button.disabled = false; button.removeAttribute('aria-busy'); button.textContent = originalLabel; }, 500);
+  setTimeout(() => { button.disabled = false; document.querySelector('#preview-download').disabled = false; button.removeAttribute('aria-busy'); button.textContent = originalLabel; }, 500);
 });
 
 form.addEventListener('submit', async event => {
@@ -2011,7 +2029,72 @@ form.addEventListener('submit', async event => {
     notifyTelegram(config);
   }
   document.querySelector('#new-sheet')?.addEventListener('click', () => {
+    preparedWorksheet = null;
     result.innerHTML = '';
     document.querySelector('#print-direct').focus();
   });
+});
+
+
+const worksheetPreview = document.querySelector('#worksheet-preview');
+const previewFrame = document.querySelector('#worksheet-frame');
+const previewSolutions = document.querySelector('#preview-solutions');
+const previewMessage = document.querySelector('#worksheet-preview-message');
+function renderWorksheetPreview(fresh = false) {
+  const config = readConfig();
+  if (fresh) getWorksheetItems(config, true);
+  const sheets = createSheets(config);
+  document.querySelector('#worksheet-preview-title').textContent = `${labels[config.type]} · Vista previa`;
+  const count = ['sumas', 'restas', 'multiplicaciones', 'divisiones'].includes(config.type) ? sheets.items.length + ' ejercicios' : config.difficulty;
+  document.querySelector('#worksheet-preview-summary').textContent = `${count} · Formato A4 · ${previewSolutions.checked ? 'Soluciones' : 'Ficha para resolver'}`;
+  const fitScale = Math.min(1, (previewFrame.clientWidth || Math.min(window.innerWidth - 32, 958)) / 794);
+  const scale = document.querySelector('#preview-scale').value === 'actual' ? 1 : fitScale;
+  const screenStyle = `<style>@media screen{html{zoom:${scale}!important}div[role="img"][aria-label="FichasFácil"]{position:static!important;margin-top:28px!important}}</style>`;
+  const previewHtml = (previewSolutions.checked ? sheets.answerSheet : sheets.worksheet).replace('</head>', screenStyle + '</head>');
+  previewFrame.dataset.previewHtml = previewHtml;
+  previewFrame.onload = () => {
+    previewFrame.onload = null;
+    if (!worksheetPreview.open) return;
+    const frameDocument = previewFrame.contentDocument;
+    if (!frameDocument) { previewMessage.textContent = 'No se ha podido mostrar la ficha. Puedes descargarla como PDF.'; return; }
+    frameDocument.open();
+    frameDocument.write(previewHtml);
+    frameDocument.close();
+  };
+  previewFrame.src = 'worksheet-preview-frame.html';
+  previewMessage.textContent = 'Estos ejercicios se conservarán al imprimir o descargar. Puedes desplazarte dentro de la ficha para verla completa.';
+}
+document.querySelector('#preview-direct').addEventListener('click', () => {
+  try {
+    previewSolutions.checked = false;
+    renderWorksheetPreview();
+    worksheetPreview.showModal();
+  } catch (error) {
+    result.textContent = 'No se ha podido preparar la vista previa. Puedes volver a intentarlo o descargar el PDF.';
+    result.setAttribute('role', 'alert');
+  }
+});
+document.querySelector('#close-worksheet-preview').addEventListener('click', () => worksheetPreview.close());
+worksheetPreview.addEventListener('close', () => {
+  previewFrame.onload = null;
+  previewFrame.removeAttribute('src');
+  delete previewFrame.dataset.previewHtml;
+  document.querySelector('#preview-direct').focus();
+});
+worksheetPreview.addEventListener('keydown', event => {
+  if (event.key === 'Escape') event.stopPropagation();
+});
+previewSolutions.addEventListener('change', () => renderWorksheetPreview());
+document.querySelector('#preview-scale').addEventListener('change', () => renderWorksheetPreview());
+document.querySelector('#preview-refresh').addEventListener('click', () => {
+  try { renderWorksheetPreview(true); }
+  catch (error) { previewMessage.textContent = 'No se han podido preparar otros ejercicios. Vuelve a intentarlo.'; }
+});
+document.querySelector('#preview-print').addEventListener('click', () => {
+  worksheetPreview.close();
+  form.requestSubmit();
+});
+document.querySelector('#preview-download').addEventListener('click', () => {
+  previewMessage.textContent = 'Preparando PDF…';
+  document.querySelector('#download-direct').click();
 });

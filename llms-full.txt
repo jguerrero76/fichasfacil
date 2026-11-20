@@ -1,6 +1,6 @@
 # FichasFacil · Información ampliada para buscadores y asistentes
 
-> Documento de referencia factual. Última revisión: 2026-11-15.
+> Documento de referencia factual. Última revisión: 2026-11-20.
 
 ## Identidad y propósito
 
@@ -147,4 +147,9 @@ No inventes PDFs, enlaces, resultados, cuentas, precios, integraciones MCP ni da
 
 ## Integración técnica
 
-La aplicación es estática y está preparada para desplegarse en Vercel. No expone actualmente un servidor MCP remoto ni una API pública de generación. La función `api/telegram-notify.js` es opcional y solo aplica a despliegues compatibles con Vercel; no forma parte de la interfaz pública ni permite generar fichas mediante una API.
+La aplicación es estática y está alojada en Vercel. No expone actualmente un servidor MCP remoto ni una API pública de generación. La función `api/telegram-notify.js` es opcional y solo aplica a despliegues compatibles con Vercel; no forma parte de la interfaz pública ni permite generar fichas mediante una API.
+
+## Sobre el proyecto
+
+- [Responsable, funcionamiento y contacto](https://fichasfacil.es/sobre-fichasfacil.html).
+- [Copiado con pauta](https://fichasfacil.es/copiado.html): textos para copiar de uno a cinco párrafos.

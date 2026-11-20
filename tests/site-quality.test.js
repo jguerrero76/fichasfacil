@@ -49,7 +49,7 @@ test('la optimización de búsqueda y caché permanece activa', () => {
   const sw = read('sw.js');
   assert.match(app, /const activityCards = \[\.\.\.document\.querySelectorAll\('\.activity-card'\)/, 'app.js: tarjetas no cacheadas');
   assert.match(app, /requestAnimationFrame\(filterActivities\)/, 'app.js: búsqueda sin agrupación de frames');
-  assert.match(sw, /fichasfacil-v104/, 'sw.js: caché sin versionar para la última pasada');
+  assert.match(sw, /fichasfacil-v105/, 'sw.js: caché sin versionar para la última pasada');
   assert.match(sw, /jspdf\.umd\.min\.js\?v=20261115-2/, 'sw.js: jsPDF desactualizado');
 });
 
@@ -138,7 +138,7 @@ test('los documentos para asistentes describen el producto real', () => {
   assert.match(read('index.html'), /llms-full\.txt/);
   assert.match(short, /Intenciones de búsqueda cubiertas/);
   assert.match(full, /Consultas que puede resolver el sitio/);
-  assert.match(full, /Última revisión: 2026-11-15/);
+  assert.match(full, /Última revisión: 2026-11-20/);
   assert.match(read('index.html'), /"numberOfItems":19/);
 });
 
@@ -158,7 +158,7 @@ test('los enlaces HTML relativos apuntan a recursos existentes', () => {
 test('las señales SEO y de descubrimiento mantienen una fuente coherente', () => {
   assert.doesNotThrow(() => JSON.parse(read('vercel.json')), 'vercel.json: JSON inválido');
   const sitemap = read('sitemap.xml');
-  assert.match(sitemap, /<lastmod>2026-11-15<\/lastmod>/, 'sitemap: falta la fecha de actualización actual');
+  assert.match(sitemap, /<lastmod>2026-11-20<\/lastmod>/, 'sitemap: falta la fecha de actualización actual');
   const full = read('llms-full.txt');
   assert.equal((full.match(/^\| [^|]+ \| \[.*?\]\(/gm) || []).length, 19, 'llms-full: el mapa no contiene las 19 actividades');
   const index = read('index.html');

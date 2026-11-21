@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-27', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-28', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -298,7 +298,7 @@ function ensureWorksheetEngine() {
   if (worksheetEnginePromise) return worksheetEnginePromise;
   worksheetEnginePromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'worksheet-engine.js?v=20261121-27';
+    script.src = 'worksheet-engine.js?v=20261121-28';
     script.async = true;
     const timeout = setTimeout(() => { script.remove(); reject(new Error('El generador tarda demasiado en cargar.')); }, 15000);
     script.onload = () => { clearTimeout(timeout); resolve(); };
@@ -715,13 +715,13 @@ function downloadPdf(config, items, solutions = false) {
         if (solutions) {
           doc.setFont('helvetica', 'normal');
           doc.setFontSize(10);
-          const answerLines = doc.splitTextToSize(`Respuesta posible: ${item.answers[questionIndex]}`, pageWidth - margin * 2);
+          const answerLines = doc.splitTextToSize(`Respuesta posible (se aceptan respuestas equivalentes): ${item.answers[questionIndex]}`, pageWidth - margin * 2);
           ensureSpace(questionLines.length * (11 * 0.48 + 2) + 2 + answerLines.length * (10 * 0.48 + 2) + 5);
         } else {
           ensureSpace(questionLines.length * (11 * 0.48 + 2) + 3 * 10 + 20);
         }
         write(`${questionIndex + 1}. ${question}`, 11, { bold: true, gap: 2 });
-        if (solutions) write(`Respuesta posible: ${item.answers[questionIndex]}`, 10, { gap: 5 });
+        if (solutions) write(`Respuesta posible (se aceptan respuestas equivalentes): ${item.answers[questionIndex]}`, 10, { gap: 5 });
         else writeAnswerLines(4);
       });
       return;

@@ -1131,7 +1131,7 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
       const item = pool[order[index]];
       let answer = item[1];
       const openAnswer = type === 'ordenar' || (type === 'vocabulario' && /^(Escribe|¿Qué significa)/.test(item[0])) || (type === 'medidas' && item[0].startsWith('¿Qué unidad usarías'));
-      if (openAnswer) answer = `Respuesta posible: ${answer}`;
+      if (openAnswer) answer = `Respuesta posible (se aceptan respuestas equivalentes): ${answer}`;
       if (type === 'fracciones' && /^\d+\/\d+\.$/.test(answer) && !/mayor|menor/.test(item[0])) {
         answer += ' También son válidas fracciones equivalentes.';
       }
@@ -1205,7 +1205,7 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
       const item = mixed[selected[index]];
       const isOpen = /^(Escribe|Lee:|Explica)/.test(item.question);
       return isOpen && !/^Respuesta (posible|orientativa):/.test(item.answer)
-        ? { ...item, answer: `Respuesta posible: ${item.answer}` }
+        ? { ...item, answer: `Respuesta posible (se aceptan respuestas equivalentes): ${item.answer}` }
         : item;
     });
   }
@@ -1297,7 +1297,7 @@ function exerciseMarkup(config, item, index, solutions) {
   if (item.kind === 'copying') return `<article class="copying-sheet"><p class="copying-text">${escapeHtml(item.text)}</p></article>`;
   if (item.kind === 'reading') {
     const ruledLines = '<i aria-label="espacio para responder" style="display:grid;gap:3mm;height:auto;border:0;background:none">' + Array.from({ length: 4 }, () => '<span style="display:block;height:8mm;box-sizing:border-box;border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf"></span>').join('') + '</i>';
-    const questions = item.questions.map((question, questionIndex) => `<div class="reading-question"><span>${questionIndex + 1}.</span><strong>${escapeHtml(question)}</strong>${solutions ? `<b>Respuesta posible: ${escapeHtml(item.answers[questionIndex])}</b>` : ruledLines}</div>`).join('');
+    const questions = item.questions.map((question, questionIndex) => `<div class="reading-question"><span>${questionIndex + 1}.</span><strong>${escapeHtml(question)}</strong>${solutions ? `<b>Respuesta posible (se aceptan respuestas equivalentes): ${escapeHtml(item.answers[questionIndex])}</b>` : ruledLines}</div>`).join('');
     return `<article class="reading-sheet"><h3>${escapeHtml(item.title)}</h3><p class="reading-text">${escapeHtml(item.text)}</p><h4>Responde a las preguntas</h4>${questions}</article>`;
   }
   if (config.type === 'diaria') {

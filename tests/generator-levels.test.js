@@ -683,16 +683,16 @@ test('las figuras complejas se reservan para niveles posteriores', () => {
 test('las respuestas abiertas se presentan como ejemplos y se aceptan equivalencias', () => {
   for (const tier of ['Inicial', 'Medio', 'Avanzado']) {
     const vocabulary = mathApi.makeContent('vocabulario', 20, tier, '', 2, 'auto', 'auto');
-    for (const item of vocabulary.filter(item => /^(Escribe|¿Qué significa)/.test(item.question))) assert.match(item.answer, /^Respuesta posible:/, item.question);
+    for (const item of vocabulary.filter(item => /^(Escribe|¿Qué significa)/.test(item.question))) assert.match(item.answer, /^Respuesta posible \(se aceptan respuestas equivalentes\):/, item.question);
     const ordering = mathApi.makeContent('ordenar', 20, tier, '', 2, 'auto', 'auto');
-    assert.ok(ordering.every(item => item.answer.startsWith('Respuesta posible:')));
+    assert.ok(ordering.every(item => item.answer.startsWith('Respuesta posible (se aceptan respuestas equivalentes):')));
     const fractions = mathApi.makeContent('fracciones', 20, tier, '', 2, 'auto', 'auto');
     for (const item of fractions.filter(item => /^\d+\/\d+\./.test(item.answer) && !/mayor|menor/.test(item.question))) assert.match(item.answer, /fracciones equivalentes/, item.question);
   }
   const reading = {kind:'reading',title:'Lectura',text:'Texto.',questions:['¿Qué pasó?'],answers:['Salió el sol.']};
-  assert.match(markupApi({type:'lectura'},reading,0,true), /Respuesta posible: Salió el sol/);
+  assert.match(markupApi({type:'lectura'},reading,0,true), /Respuesta posible \(se aceptan respuestas equivalentes\): Salió el sol/);
   assert.equal(makePdf({type:'lectura',difficulty:'Inicial',student:''},[reading],true),true);
-  assert.ok(PdfProbe.latest.saved.pages.flat().some(entry => entry.value.includes('Respuesta posible: Salió el sol.')));
+  assert.ok(PdfProbe.latest.saved.pages.flat().some(entry => entry.value.includes('Respuesta posible (se aceptan respuestas equivalentes): Salió el sol.')));
 });
 
 test('las frases de todos los niveles conservan las palabras propuestas', () => {

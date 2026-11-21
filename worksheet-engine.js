@@ -450,7 +450,7 @@ calligraphySamples.sentences.push('La estrella brilla por la noche.', 'Mi perro 
 
 const spellingActivities = [
   ['Completa con b o v', 'La _icicleta de Bea es _erde.', 'La bicicleta de Bea es verde.'],
-  ['Completa con g o j', 'El _inete monta un gara_e.', 'El jinete monta un garaje.'],
+  ['Completa con g o j', 'El _inete lleva su caballo al gara_e.', 'El jinete lleva su caballo al garaje.'],
   ['Completa con h', 'Ayer _icimos una excursión y _allamos un tesoro.', 'Ayer hicimos una excursión y hallamos un tesoro.'],
   ['Completa con c o z', 'El _apato está junto a la _anahoria.', 'El zapato está junto a la zanahoria.'],
   ['Coloca las mayúsculas', 'marta vive en sevilla y visita el museo.', 'Marta vive en Sevilla y visita el museo.'],
@@ -494,7 +494,7 @@ spellingActivities.push(
   ['Completa con c o z', 'La _igüeña cruza la _ona húmeda.', 'La cigüeña cruza la zona húmeda.'],
   ['Completa con ll o y', 'La _ave está cerca de la _egua.', 'La llave está cerca de la yegua.'],
   ['Completa con r o rr', 'El pe_o siguió el ca_o.', 'El perro siguió el carro.'],
-  ['Completa con m o n', 'El i_vierno llegó con mucho _ieve.', 'El invierno llegó con mucha nieve.'],
+  ['Completa con m o n', 'El i_vierno llegó con mucha _ieve.', 'El invierno llegó con mucha nieve.'],
   ['Completa con mp o mb', 'La ta__ora sonó junto al ca__o.', 'La tambora sonó junto al campo.'],
   ['Completa con gü o gu', 'El para_as está junto a la ci_eña.', 'El paraguas está junto a la cigüeña.'],
   ['Completa con qu o c', 'El pa__ete llegó a la _iudad.', 'El paquete llegó a la ciudad.'],
@@ -543,7 +543,7 @@ const practicalActivities = {
   fracciones: [
     ['Una pizza se divide en 4 partes iguales y comes 1. ¿Qué fracción comes?', '1/4.'],
     ['¿Qué fracción representa la mitad?', '1/2.'],
-    ['¿Cuántas partes iguales tiene un tercio?', '3 partes.'],
+    ['¿En cuántas partes iguales se divide un entero para tomar un tercio?', '3 partes.'],
     ['De 8 partes iguales, 3 están coloreadas. ¿Qué fracción está coloreada?', '3/8.'],
     ['¿Qué es mayor: 1/2 o 1/4?', '1/2.'],
     ['Una tarta tiene 6 partes y comes 2. ¿Qué fracción comes?', '2/6.'],
@@ -582,7 +582,7 @@ const practicalActivities = {
     ['Ordena: libro / un / Leo / lee.', 'Leo lee un libro.'],
     ['Ordena: mañana / temprano / salimos / por la.', 'Salimos temprano por la mañana.'],
     ['Ordena: música / escucha / Marta / tranquila.', 'Marta escucha música tranquila.'],
-    ['Ordena: reciclamos / papel / el / En / colegio.', 'En el colegio reciclamos el papel.'],
+    ['Ordena: reciclamos / papel / el / En / el / colegio.', 'En el colegio reciclamos el papel.'],
     ['Ordena: sobre / vuela / mar / la / gaviota / el.', 'La gaviota vuela sobre el mar.'],
     ['Ordena: una / prepara / sopa / Elena.', 'Elena prepara una sopa.']
   ]
@@ -679,7 +679,7 @@ const additionalPracticalActivities = {
     ['Ordena: ventana / abre / Lucía / la.', 'Lucía abre la ventana.'],
     ['Ordena: flores / riega / Pedro / las.', 'Pedro riega las flores.'],
     ['Ordena: camino / seguimos / el / largo.', 'Seguimos el camino largo.'],
-    ['Ordena: cuento / antes / leo / dormir / de.', 'Leo un cuento antes de dormir.'],
+    ['Ordena: cuento / un / antes / leo / dormir / de.', 'Leo un cuento antes de dormir.'],
     ['Ordena: contentos / vuelven / casa / a / Los niños.', 'Los niños vuelven contentos a casa.']
   ]
 };
@@ -695,7 +695,7 @@ const expandedPracticalActivities = {
     ['Si son las 7:30, ¿qué hora será dentro de 45 minutos?', 'Las 8:15.'],
     ['¿Cuántos minutos hay en dos horas?', '120 minutos.'],
     ['Una clase empieza a las 10:15 y dura 30 minutos. ¿Cuándo termina?', 'A las 10:45.'],
-    ['¿Qué hora marca un reloj si la aguja corta está en el 12 y la larga en el 6?', 'Las doce y media.'],
+    ['¿Qué hora marca un reloj si la aguja corta está entre el 12 y el 1 y la larga en el 6?', 'Las doce y media.'],
     ['Si son las 18:00, ¿qué hora era hace una hora?', 'Las 17:00.']
   ],
   dinero: [
@@ -729,7 +729,7 @@ const expandedPracticalActivities = {
   vocabulario: [
     ['Escribe un sinónimo de “enorme”.', 'Gigante.'],
     ['Escribe un antónimo de “limpio”.', 'Sucio.'],
-    ['¿Qué significa “valiente”?', 'Que no tiene miedo ante una dificultad.'],
+    ['¿Qué significa “valiente”?', 'Que afronta una dificultad con valor, incluso si siente miedo.'],
     ['Escribe una palabra de la familia de “mar”.', 'Marea.'],
     ['¿Cuál no pertenece al grupo: cuchara, tenedor, plato, montaña?', 'Montaña.']
   ],
@@ -755,7 +755,7 @@ const finalPracticalExpansion = {
   dinero: [
     ['Una carpeta cuesta 2,50 € y un lápiz 0,50 €. ¿Cuánto pagas?', '3 €.'],
     ['Tienes 12 € y gastas 7,50 €. ¿Cuánto te queda?', '4,50 €.'],
-    ['¿Cuántas monedas de 25 céntimos forman 1 €?', '4 monedas.'],
+    ['¿Cuántas monedas de 20 céntimos forman 1 €?', '5 monedas.'],
     ['Tres entradas cuestan 4 € cada una. ¿Cuánto pagas?', '12 €.'],
     ['Una merienda cuesta 2,80 € y pagas con 5 €. ¿Qué cambio recibes?', '2,20 €.'],
     ['Un libro cuesta 9 € y una libreta 1,50 €. ¿Cuánto cuestan juntos?', '10,50 €.']
@@ -779,7 +779,7 @@ const finalPracticalExpansion = {
   geometria: [
     ['¿Cuántos lados tiene un octógono?', '8 lados.'],
     ['¿Cuántos vértices tiene un rectángulo?', '4 vértices.'],
-    ['¿Cómo se llama una figura de cuatro lados iguales?', 'Cuadrado.'],
+    ['¿Cómo se llama un cuadrilátero de cuatro lados iguales y cuatro ángulos rectos?', 'Cuadrado.'],
     ['¿Qué figura tiene tres lados y tres vértices?', 'Triángulo.'],
     ['¿Cuántos lados tiene un heptágono?', '7 lados.'],
     ['¿Cómo se llama un ángulo mayor que uno recto?', 'Ángulo obtuso.']
@@ -852,7 +852,8 @@ const geometryFigureFor = question => {
   const text = question.toLowerCase();
   if (text.includes('triángulo')) return 'triangle';
   if (text.includes('tres lados') || text.includes('tres ángulos')) return 'triangle';
-  if (text.includes('ángulo') && !text.includes('rectángulo')) return 'angle';
+  if (text.includes('cuadrilátero de cuatro lados iguales')) return 'square';
+  if (text.includes('ángulo') && !text.includes('rectángulo')) return text.includes('menor, igual o mayor') ? 'acuteAngle' : 'angle';
   if (text.includes('cuadrado')) return 'square';
   if (text.includes('círculo') || text.includes('redonda')) return 'circle';
   if (text.includes('rectángulo') || text.includes('cuadrilátero')) return 'rectangle';
@@ -1036,16 +1037,17 @@ const geometrySvg = figure => {
   const common = 'width="104" height="80" viewBox="0 0 76 58" aria-hidden="true" style="display:block;flex:0 0 104px"';
   const stroke = 'fill="none" stroke="#315c9b" stroke-width="2.4" stroke-linejoin="round"';
   const shapes = {
-    triangle: `<polygon points="38,7 8,51 68,51" ${stroke}/>`,
-    square: `<rect x="13" y="10" width="48" height="38" ${stroke}/>`,
+    triangle: `<polygon points="38,4 11,51 65,51" ${stroke}/>`,
+    square: `<rect x="19" y="10" width="38" height="38" ${stroke}/>`,
     rectangle: `<rect x="6" y="16" width="64" height="27" ${stroke}/>`,
     circle: `<circle cx="38" cy="29" r="21" ${stroke}/><circle cx="38" cy="29" r="2.5" fill="#ef8e69"/>`,
     pentagon: `<polygon points="38,6 67,27 56,53 20,53 9,27" ${stroke}/>`,
     hexagon: `<polygon points="20,7 56,7 70,29 56,51 20,51 6,29" ${stroke}/>`,
     heptagon: `<polygon points="38,5 64,16 70,39 52,53 24,53 6,39 12,16" ${stroke}/>`,
     octagon: `<polygon points="22,5 54,5 70,21 70,37 54,53 22,53 6,37 6,21" ${stroke}/>`,
+    acuteAngle: `<path d="M12 47 L50 15 M12 47 L62 47" ${stroke}/><path d="M25 36 Q29 40 29 47" stroke="#ef8e69" stroke-width="2" fill="none"/>`,
     angle: `<path d="M12 47 L12 14 M12 47 L62 47" ${stroke}/><path d="M12 33 A14 14 0 0 1 26 47" stroke="#ef8e69" stroke-width="2" fill="none"/>`,
-    line: `<path d="M8 29 H68" stroke="#315c9b" stroke-width="2.4"/><path d="M8 20 V38 M68 20 V38" stroke="#ef8e69" stroke-width="2"/>`
+    line: `<path d="M8 29 H68" stroke="#315c9b" stroke-width="2.4"/><path d="M15 23 L8 29 L15 35 M61 23 L68 29 L61 35" stroke="#315c9b" stroke-width="2" fill="none"/>`
   };
   return `<svg ${common}>${shapes[figure] || shapes.square}</svg>`;
 };

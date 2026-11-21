@@ -325,3 +325,24 @@ test('los problemas muestran una operación que justifica cada respuesta', () =>
     }
   }
 });
+
+
+test('las figuras corresponden a los enunciados de geometría', () => {
+  const start = source.indexOf('const geometryFigureFor =');
+  const end = source.indexOf('function randomReadingActivity', start);
+  const figureFor = new Function(source.slice(start, end) + '; return geometryFigureFor;')();
+  assert.equal(figureFor('Observa el ángulo. ¿Es menor, igual o mayor que un ángulo recto?'), 'acuteAngle');
+  assert.equal(figureFor('¿Cómo se llama un cuadrilátero de cuatro lados iguales y cuatro ángulos rectos?'), 'square');
+  assert.equal(figureFor('Observa el ángulo. ¿Cómo se llama si forma una esquina como la de un cuadrado?'), 'angle');
+});
+
+
+test('ordenar frases conserva todas las palabras de la solución', () => {
+  const start = source.indexOf('const spellingActivities =');
+  const end = source.indexOf('function activityQuestionPool', start);
+  const activities = new Function(source.slice(start, end) + '; return practicalActivities;')();
+  const words = text => (text.toLocaleLowerCase('es').match(/[\p{L}]+/gu) || []).sort();
+  for (const [question, answer] of activities.ordenar) {
+    assert.deepEqual(words(question.replace(/^Ordena:/, '')), words(answer), question);
+  }
+});

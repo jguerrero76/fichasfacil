@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261120-6', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-1', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -268,7 +268,7 @@ function ensureWorksheetEngine() {
   if (worksheetEnginePromise) return worksheetEnginePromise;
   worksheetEnginePromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'worksheet-engine.js?v=20261120-6';
+    script.src = 'worksheet-engine.js?v=20261121-1';
     script.async = true;
     const timeout = setTimeout(() => { script.remove(); reject(new Error('El generador tarda demasiado en cargar.')); }, 15000);
     script.onload = () => { clearTimeout(timeout); resolve(); };
@@ -529,6 +529,9 @@ function downloadPdf(config, items, solutions = false) {
         const next = points[(index + 1) % points.length];
         doc.line(point[0], point[1], next[0], next[1]);
       });
+    } else if (figure === 'acuteAngle') {
+      doc.line(x - 15, topY + 24, x + 10, topY + 3);
+      doc.line(x - 15, topY + 24, x + 16, topY + 24);
     } else if (figure === 'angle') {
       doc.line(x - 15, topY + 24, x - 15, topY);
       doc.line(x - 15, topY + 24, x + 16, topY + 24);
@@ -536,8 +539,10 @@ function downloadPdf(config, items, solutions = false) {
       doc.arc?.(x - 15, topY + 24, 9, 270, 360);
     } else if (figure === 'line') {
       doc.line(x - 18, topY + 21, x + 18, topY + 21);
-      doc.circle(x - 18, topY + 21, 1.5, 'F');
-      doc.circle(x + 18, topY + 21, 1.5, 'F');
+      doc.line(x - 18, topY + 21, x - 14, topY + 18);
+      doc.line(x - 18, topY + 21, x - 14, topY + 24);
+      doc.line(x + 18, topY + 21, x + 14, topY + 18);
+      doc.line(x + 18, topY + 21, x + 14, topY + 24);
     } else {
       doc.rect(x - 9, topY, 18, 18);
     }

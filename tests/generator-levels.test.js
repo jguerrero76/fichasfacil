@@ -624,3 +624,31 @@ test('la impresión añade contadores y reserva espacio en el margen', () => {
   assert.match(source, /@page\{size:A4;margin:0 0 10mm;/);
   assert.match(source, /\$\{writingGuideLayout\}\$\{pageNumberLayout\}/);
 });
+
+test('la ficha diaria combina cálculo, lengua, series y una situación práctica', () => {
+  for (const type of ['diaria', 'mixta']) for (const tier of ['Inicial', 'Medio', 'Avanzado']) for (let run = 0; run < 50; run++) {
+    const items = mathApi.makeContent(type, 5, tier, '', 2, 'auto', 'auto');
+    assert.equal(items.length, 5);
+    const questions = items.map(item => item.question);
+    assert.ok(questions.some(q => /^Calcula:/.test(q)), tier);
+    assert.ok(questions.some(q => /serie/i.test(q)), tier);
+    assert.ok(questions.some(q => /sinónimo|antónimo|tildes|Corrige|Completa con|Lee:|palabra|fuente/i.test(q)), tier);
+    assert.ok(questions.some(q => !/^Calcula:|serie|sinónimo|antónimo|tildes|Corrige|Completa con|Lee:|palabra|fuente/i.test(q)), tier);
+  }
+});
+
+test('los nuevos ejercicios de medidas y fracciones usan conversiones válidas', () => {
+  for (const bank of Object.values(practicalApi.practicalActivitiesByDifficulty)) {
+    for (const [question, answer] of bank.medidas.slice(-20)) {
+      const n = Number(question.match(/\d+/)[0]);
+      const expected = /metros.*centímetros/.test(question) ? n * 100 : /centímetros.*metros/.test(question) ? n / 100 : /litros.*mililitros|kilogramos.*gramos/.test(question) ? n * 1000 : NaN;
+      assert.equal(Number.parseInt(answer, 10), expected, question);
+    }
+    for (const [question, answer] of bank.fracciones.slice(-20)) {
+      const match = question.match(/dividida en (\d+) partes iguales y se colorean (\d+)/);
+      assert.ok(match, question);
+      assert.ok(Number(match[1]) <= 12 && Number(match[2]) < Number(match[1]), question);
+      assert.equal(answer, `${match[2]}/${match[1]}.`);
+    }
+  }
+});

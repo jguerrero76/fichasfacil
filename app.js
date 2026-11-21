@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-24', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-25', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -298,7 +298,7 @@ function ensureWorksheetEngine() {
   if (worksheetEnginePromise) return worksheetEnginePromise;
   worksheetEnginePromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'worksheet-engine.js?v=20261121-24';
+    script.src = 'worksheet-engine.js?v=20261121-25';
     script.async = true;
     const timeout = setTimeout(() => { script.remove(); reject(new Error('El generador tarda demasiado en cargar.')); }, 15000);
     script.onload = () => { clearTimeout(timeout); resolve(); };
@@ -1027,16 +1027,22 @@ const worksheetPreview = document.querySelector('#worksheet-preview');
 const previewFrame = document.querySelector('#worksheet-frame');
 const previewSolutions = document.querySelector('#preview-solutions');
 const previewDifficulty = document.querySelector('#preview-difficulty');
+const previewCount = document.querySelector('#preview-count');
+const previewCountField = document.querySelector('#preview-count-field');
 const previewMessage = document.querySelector('#worksheet-preview-message');
 function renderWorksheetPreview(fresh = false) {
   const config = readConfig();
   document.querySelector('#preview-download').disabled = false;
   document.querySelector('#preview-print').disabled = false;
   previewDifficulty.value = config.difficulty;
+  const countSelect = document.querySelector('#count');
+  previewCountField.hidden = ['lectura', 'copiado', 'caligrafia', 'diaria'].includes(config.type);
+  previewCount.replaceChildren(...Array.from(countSelect.options, option => new Option(option.textContent, option.value, false, option.selected)));
+  previewCount.value = countSelect.value;
   if (fresh) getWorksheetItems(config, true);
   const sheets = createSheets(config);
   document.querySelector('#worksheet-preview-title').textContent = `${labels[config.type]} · Vista previa`;
-  const count = ['sumas', 'restas', 'multiplicaciones', 'divisiones'].includes(config.type) ? ` · ${sheets.items.length} ejercicios` : '';
+  const count = previewCountField.hidden ? '' : ` · ${sheets.items.length} ${sheets.items.length === 1 ? 'ejercicio' : 'ejercicios'}`;
   document.querySelector('#worksheet-preview-summary').textContent = `Nivel ${config.difficulty}${count} · Formato A4 · ${previewSolutions.checked ? 'Soluciones' : 'Ficha para resolver'}`;
   const fitScale = Math.min(1, (previewFrame.clientWidth || Math.min(window.innerWidth - 32, 958)) / 794);
   const scale = document.querySelector('#preview-scale').value === 'actual' ? 1 : fitScale;
@@ -1096,6 +1102,24 @@ previewDifficulty.addEventListener('change', () => {
       document.querySelector('#preview-print').disabled = true;
     }
     previewMessage.textContent = 'No se ha podido cambiar el nivel. Vuelve a las opciones e inténtalo de nuevo.';
+  }
+});
+previewCount.addEventListener('change', () => {
+  const countSelect = document.querySelector('#count');
+  const previous = countSelect.value;
+  try {
+    countSelect.value = previewCount.value;
+    countSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    renderWorksheetPreview();
+    previewMessage.textContent = `Ficha actualizada: ${countSelect.selectedOptions[0].textContent}. Se conservarán al imprimir o descargar.`;
+  } catch (error) {
+    countSelect.value = previous;
+    countSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    try { renderWorksheetPreview(); } catch (restoreError) {
+      document.querySelector('#preview-download').disabled = true;
+      document.querySelector('#preview-print').disabled = true;
+    }
+    previewMessage.textContent = 'No se ha podido cambiar el número de ejercicios. Vuelve a las opciones e inténtalo de nuevo.';
   }
 });
 previewSolutions.addEventListener('change', () => renderWorksheetPreview());

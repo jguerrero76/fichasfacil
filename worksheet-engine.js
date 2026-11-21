@@ -839,6 +839,10 @@ Object.entries(expandedPracticalActivities).forEach(([type, items]) => {
 });
 
 // Ejercicios adicionales con datos variados y respuestas calculadas.
+const fractionPairs = [];
+for (let denominator = 2; denominator <= 12; denominator += 1) {
+  for (let numerator = 1; numerator < denominator; numerator += 1) fractionPairs.push([denominator, numerator]);
+}
 for (const [tier, offset] of [['Inicial', 0], ['Medio', 10], ['Avanzado', 20]]) {
   const bank = practicalActivitiesByDifficulty[tier];
   for (let index = 1; index <= 20; index += 1) {
@@ -862,9 +866,19 @@ for (const [tier, offset] of [['Inicial', 0], ['Medio', 10], ['Avanzado', 20]]) 
     ];
     bank.dinero.push(moneyExamples[(index - 1) % moneyExamples.length]);
     const meters = index + offset;
-    bank.medidas.push([`Una cinta mide ${meters} metros. ¿Cuántos centímetros son?`, `${meters * 100} centímetros.`]);
-    const denominator = index + 2 + offset;
-    const numerator = index + 1;
+    const measurementExamples = tier === 'Inicial' ? [
+      [`Una cinta mide ${meters} metros. ¿Cuántos centímetros son?`, `${meters * 100} centímetros.`],
+      [`Una cuerda mide ${meters} metros. ¿Cuántos centímetros son?`, `${meters * 100} centímetros.`],
+      [`Un camino mide ${meters} metros. ¿Cuántos centímetros son?`, `${meters * 100} centímetros.`],
+      [`Una tela mide ${meters} metros. ¿Cuántos centímetros son?`, `${meters * 100} centímetros.`]
+    ] : [
+      [`Una cinta mide ${meters} metros. ¿Cuántos centímetros son?`, `${meters * 100} centímetros.`],
+      [`Una cuerda mide ${meters * 100} centímetros. ¿Cuántos metros son?`, `${meters} metros.`],
+      [`Un depósito contiene ${meters} litros. ¿Cuántos mililitros son?`, `${meters * 1000} mililitros.`],
+      [`Una caja pesa ${meters} kilogramos. ¿Cuántos gramos son?`, `${meters * 1000} gramos.`]
+    ];
+    bank.medidas.push(measurementExamples[(index - 1) % measurementExamples.length]);
+    const [denominator, numerator] = fractionPairs[index - 1 + offset];
     bank.fracciones.push([`Una figura está dividida en ${denominator} partes iguales y se colorean ${numerator}. ¿Qué fracción está coloreada?`, `${numerator}/${denominator}.`]);
   }
 }
@@ -1105,7 +1119,7 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
       { question: '¿Qué hora será una hora después de las 10:30?', answer: 'Las 11:30.' },
       { question: 'Lee: “Marta plantó una semilla y la regó”. ¿Qué hizo Marta después de plantar?', answer: 'La regó.' },
       { question: '¿Cuántos centímetros hay en medio metro?', answer: '50 centímetros.' },
-      { question: 'Completa: 5, 10, 15, __', answer: '20' },
+      { question: 'Completa la serie: 5, 10, 15, __', answer: '20' },
       { question: 'Escribe una palabra que empiece por ma-.', answer: 'Respuesta libre: por ejemplo, mano.' },
       { question: '¿Qué necesitas para medir la hora?', answer: 'Un reloj.' }
       ],
@@ -1146,11 +1160,17 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
       return { question: `Calcula: ${first} + ${second} =`, answer: String(first + second) };
     });
     const mixed = [...mixedByDifficulty[tier], ...extras];
-    if (type === 'diaria') {
-      const dailyOrder = shuffledIndexes(mixed.length);
-      return dailyOrder.slice(0, 5).map(index => mixed[index]);
-    }
-    return mixed.slice(0, Math.min(count, mixed.length));
+    // Las fichas cortas también mezclan cálculo, lengua, lógica y situaciones prácticas.
+    const groups = {
+      Inicial: [[0], [1, 3, 7, 10], [2, 9], [4, 5, 6, 8, 11]],
+      Medio: [[0, 1, 2, 3], [5, 10], [4, 9], [6, 7, 8, 11]],
+      Avanzado: [[0, 1, 2, 3], [5, 11], [4], [7, 8, 10]]
+    }[tier];
+    const requested = type === 'diaria' ? 5 : Math.min(count, mixed.length);
+    const selected = groups.slice(0, requested).map(group => group[randomInt(0, group.length - 1)]);
+    const remaining = mixed.map((_, index) => index).filter(index => !selected.includes(index));
+    for (const index of shuffledIndexes(remaining.length).slice(0, requested - selected.length)) selected.push(remaining[index]);
+    return shuffledIndexes(selected.length).map(index => mixed[selected[index]]);
   }
   if (type === 'problemas') {
     const grade = difficultyIndex(difficulty);

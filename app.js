@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-26', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-27', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -298,7 +298,7 @@ function ensureWorksheetEngine() {
   if (worksheetEnginePromise) return worksheetEnginePromise;
   worksheetEnginePromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'worksheet-engine.js?v=20261121-26';
+    script.src = 'worksheet-engine.js?v=20261121-27';
     script.async = true;
     const timeout = setTimeout(() => { script.remove(); reject(new Error('El generador tarda demasiado en cargar.')); }, 15000);
     script.onload = () => { clearTimeout(timeout); resolve(); };
@@ -715,13 +715,13 @@ function downloadPdf(config, items, solutions = false) {
         if (solutions) {
           doc.setFont('helvetica', 'normal');
           doc.setFontSize(10);
-          const answerLines = doc.splitTextToSize(`Respuesta: ${item.answers[questionIndex]}`, pageWidth - margin * 2);
+          const answerLines = doc.splitTextToSize(`Respuesta posible: ${item.answers[questionIndex]}`, pageWidth - margin * 2);
           ensureSpace(questionLines.length * (11 * 0.48 + 2) + 2 + answerLines.length * (10 * 0.48 + 2) + 5);
         } else {
           ensureSpace(questionLines.length * (11 * 0.48 + 2) + 3 * 10 + 20);
         }
         write(`${questionIndex + 1}. ${question}`, 11, { bold: true, gap: 2 });
-        if (solutions) write(`Respuesta: ${item.answers[questionIndex]}`, 10, { gap: 5 });
+        if (solutions) write(`Respuesta posible: ${item.answers[questionIndex]}`, 10, { gap: 5 });
         else writeAnswerLines(4);
       });
       return;
@@ -736,16 +736,18 @@ function downloadPdf(config, items, solutions = false) {
     doc.setFontSize(12);
     const questionLines = doc.splitTextToSize(`${index + 1}. ${item.question}`, pageWidth - margin * 2);
     const questionHeight = questionLines.length * (12 * 0.48 + 2) + 3;
+    const rawAnswer = item.explanation || item.answer;
+    const answerText = /^Respuesta (posible|orientativa):/.test(String(rawAnswer)) ? String(rawAnswer) : `Respuesta: ${rawAnswer}`;
     if (solutions) {
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
-      const answerLines = doc.splitTextToSize(`Respuesta: ${item.explanation || item.answer}`, pageWidth - margin * 2);
+      const answerLines = doc.splitTextToSize(answerText, pageWidth - margin * 2);
       ensureSpace(questionHeight + answerLines.length * (10 * 0.48 + 2) + 5);
     } else {
       ensureSpace(Math.max(questionHeight + answerLineCount * 10 + 15, config.type === 'problemas' ? 70 : 0));
     }
     write(`${index + 1}. ${item.question}`, 12, { bold: true, gap: 3 });
-    if (solutions) write(`Respuesta: ${item.explanation || item.answer}`, 10, { gap: 5 });
+    if (solutions) write(answerText, 10, { gap: 5 });
     else writeAnswerLines(answerLineCount);
     });
     if (!solutions && ['copiado', 'caligrafia'].includes(config.type)) writeWritingGuide();

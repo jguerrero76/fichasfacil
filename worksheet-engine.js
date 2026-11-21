@@ -677,12 +677,12 @@ const additionalPracticalActivities = {
     ['Una barra tiene 8 partes iguales y comes 4. ¿Qué fracción comes?', '4/8.'],
     ['¿Qué fracción es mayor: 3/4 o 1/4?', '3/4.'],
     ['De 5 partes iguales, 2 están coloreadas. ¿Qué fracción está coloreada?', '2/5.'],
-    ['¿Qué fracción representa un entero dividido en dos partes iguales?', '2/2.'],
+    ['Un entero se divide en dos partes iguales. ¿Qué fracción forman las dos partes juntas?', '2/2.'],
     ['¿Qué es mayor: 2/3 o 1/3?', '2/3.']
   ],
   geometria: [
     ['Observa la figura. ¿Cuántos ángulos tiene el triángulo?', '3 ángulos.'],
-    ['Observa la figura. ¿Qué cuadrilátero tiene dos lados largos y dos cortos?', 'El rectángulo.'],
+    ['Observa el rectángulo. ¿Cuántos lados largos y cuántos lados cortos tiene?', '2 lados largos y 2 lados cortos.'],
     ['Observa el octógono. ¿Cuántos lados tiene y cómo se llama?', '8 lados. Octógono.'],
     ['Observa la línea. ¿Tiene principio o final?', 'No, es una línea recta infinita.'],
     ['Observa la figura. ¿Cuántos vértices tiene el pentágono?', '5 vértices.'],
@@ -691,13 +691,13 @@ const additionalPracticalActivities = {
     ['Observa la figura. ¿Cuántos lados paralelos tiene el rectángulo?', 'Tiene dos pares de lados paralelos.'],
     ['Observa la figura. ¿Cómo se llama un triángulo que tiene sus tres lados iguales?', 'Triángulo equilátero.'],
     ['Observa el ángulo. ¿Cómo se llama si forma una esquina como la de un cuadrado?', 'Ángulo recto.'],
-    ['Observa la figura. ¿Qué diferencia hay entre un círculo y una circunferencia?', 'El círculo es la superficie interior y la circunferencia es su línea exterior.']
+    ['Observa la figura. ¿Qué diferencia hay entre un círculo y una circunferencia?', 'El círculo es la región limitada por la circunferencia; la circunferencia es su borde.']
   ],
   vocabulario: [
     ['Escribe un sinónimo de “bonito”.', 'Hermoso.'],
     ['Escribe un antónimo de “lento”.', 'Rápido.'],
     ['¿Qué significa “observar”?', 'Mirar con atención.'],
-    ['Escribe una palabra de la familia de “mar”.', 'Marino, marinero o marea.'],
+    ['Escribe una palabra de la familia de “mar”.', 'Marino o marinero.'],
     ['¿Cuál no pertenece al grupo: correr, saltar, azul, nadar?', 'Azul.']
   ],
   ordenar: [
@@ -768,7 +768,7 @@ const expandedPracticalActivities = {
     ['Escribe un sinónimo de “enorme”.', 'Gigante.'],
     ['Escribe un antónimo de “limpio”.', 'Sucio.'],
     ['¿Qué significa “valiente”?', 'Que afronta una dificultad con valor, incluso si siente miedo.'],
-    ['Escribe una palabra de la familia de “mar”.', 'Marea.'],
+    ['Escribe una palabra de la familia de “mar”.', 'Marino o marinero.'],
     ['¿Cuál no pertenece al grupo: cuchara, tenedor, plato, montaña?', 'Montaña.']
   ],
   ordenar: [
@@ -886,12 +886,12 @@ for (const [tier, offset] of [['Inicial', 0], ['Medio', 10], ['Avanzado', 20]]) 
     bank.dinero.push(moneyExamples[(index - 1) % moneyExamples.length]);
     const meters = index + offset;
     const measurementExamples = tier === 'Inicial' ? [
-      [`Una cinta mide ${meters} metros. ¿Cuántos centímetros son?`, `${meters * 100} centímetros.`],
-      [`Una cuerda mide ${meters} metros. ¿Cuántos centímetros son?`, `${meters * 100} centímetros.`],
-      [`Un camino mide ${meters} metros. ¿Cuántos centímetros son?`, `${meters * 100} centímetros.`],
-      [`Una tela mide ${meters} metros. ¿Cuántos centímetros son?`, `${meters * 100} centímetros.`]
+      [`Una cinta mide ${meters} ${meters === 1 ? 'metro' : 'metros'}. ¿Cuántos centímetros son?`, `${meters * 100} centímetros.`],
+      [`Una cuerda mide ${meters} ${meters === 1 ? 'metro' : 'metros'}. ¿Cuántos centímetros son?`, `${meters * 100} centímetros.`],
+      [`Un camino mide ${meters} ${meters === 1 ? 'metro' : 'metros'}. ¿Cuántos centímetros son?`, `${meters * 100} centímetros.`],
+      [`Una tela mide ${meters} ${meters === 1 ? 'metro' : 'metros'}. ¿Cuántos centímetros son?`, `${meters * 100} centímetros.`]
     ] : [
-      [`Una cinta mide ${meters} metros. ¿Cuántos centímetros son?`, `${meters * 100} centímetros.`],
+      [`Una cinta mide ${meters} ${meters === 1 ? 'metro' : 'metros'}. ¿Cuántos centímetros son?`, `${meters * 100} centímetros.`],
       [`Una cuerda mide ${meters * 100} centímetros. ¿Cuántos metros son?`, `${meters} metros.`],
       [`Un depósito contiene ${meters} litros. ¿Cuántos mililitros son?`, `${meters * 1000} mililitros.`],
       [`Una caja pesa ${meters} kilogramos. ¿Cuántos gramos son?`, `${meters * 1000} gramos.`]
@@ -1129,7 +1129,13 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
     const order = shuffledIndexes(pool.length);
     return Array.from({ length: Math.min(count, pool.length) }, (_, index) => {
       const item = pool[order[index]];
-      return { question: item[0], answer: type === 'vocabulario' && item[0].startsWith('Escribe') ? `Respuesta posible: ${item[1]}` : item[1], ...(type === 'geometria' ? { figure: geometryFigureFor(item[0]) } : {}) };
+      let answer = item[1];
+      const openAnswer = type === 'ordenar' || (type === 'vocabulario' && /^(Escribe|¿Qué significa)/.test(item[0])) || (type === 'medidas' && item[0].startsWith('¿Qué unidad usarías'));
+      if (openAnswer) answer = `Respuesta posible: ${answer}`;
+      if (type === 'fracciones' && /^\d+\/\d+\.$/.test(answer) && !/mayor|menor/.test(item[0])) {
+        answer += ' También son válidas fracciones equivalentes.';
+      }
+      return { question: item[0], answer, ...(type === 'geometria' ? { figure: geometryFigureFor(item[0]) } : {}) };
     });
   }
   if (type === 'mixta' || type === 'diaria') {
@@ -1195,7 +1201,13 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
     const selected = groups.slice(0, requested).map(group => group[randomInt(0, group.length - 1)]);
     const remaining = mixed.map((_, index) => index).filter(index => !selected.includes(index));
     for (const index of shuffledIndexes(remaining.length).slice(0, requested - selected.length)) selected.push(remaining[index]);
-    return shuffledIndexes(selected.length).map(index => mixed[selected[index]]);
+    return shuffledIndexes(selected.length).map(index => {
+      const item = mixed[selected[index]];
+      const isOpen = /^(Escribe|Lee:|Explica)/.test(item.question);
+      return isOpen && !/^Respuesta (posible|orientativa):/.test(item.answer)
+        ? { ...item, answer: `Respuesta posible: ${item.answer}` }
+        : item;
+    });
   }
   if (type === 'problemas') {
     const grade = difficultyIndex(difficulty);
@@ -1285,7 +1297,7 @@ function exerciseMarkup(config, item, index, solutions) {
   if (item.kind === 'copying') return `<article class="copying-sheet"><p class="copying-text">${escapeHtml(item.text)}</p></article>`;
   if (item.kind === 'reading') {
     const ruledLines = '<i aria-label="espacio para responder" style="display:grid;gap:3mm;height:auto;border:0;background:none">' + Array.from({ length: 4 }, () => '<span style="display:block;height:8mm;box-sizing:border-box;border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf"></span>').join('') + '</i>';
-    const questions = item.questions.map((question, questionIndex) => `<div class="reading-question"><span>${questionIndex + 1}.</span><strong>${escapeHtml(question)}</strong>${solutions ? `<b>${escapeHtml(item.answers[questionIndex])}</b>` : ruledLines}</div>`).join('');
+    const questions = item.questions.map((question, questionIndex) => `<div class="reading-question"><span>${questionIndex + 1}.</span><strong>${escapeHtml(question)}</strong>${solutions ? `<b>Respuesta posible: ${escapeHtml(item.answers[questionIndex])}</b>` : ruledLines}</div>`).join('');
     return `<article class="reading-sheet"><h3>${escapeHtml(item.title)}</h3><p class="reading-text">${escapeHtml(item.text)}</p><h4>Responde a las preguntas</h4>${questions}</article>`;
   }
   if (config.type === 'diaria') {

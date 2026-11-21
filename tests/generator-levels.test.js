@@ -641,7 +641,7 @@ test('los nuevos ejercicios de medidas y fracciones usan conversiones válidas',
   for (const bank of Object.values(practicalApi.practicalActivitiesByDifficulty)) {
     for (const [question, answer] of bank.medidas.slice(-20)) {
       const n = Number(question.match(/\d+/)[0]);
-      const expected = /metros.*centímetros/.test(question) ? n * 100 : /centímetros.*metros/.test(question) ? n / 100 : /litros.*mililitros|kilogramos.*gramos/.test(question) ? n * 1000 : NaN;
+      const expected = /metros?.*centímetros/.test(question) ? n * 100 : /centímetros.*metros/.test(question) ? n / 100 : /litros.*mililitros|kilogramos.*gramos/.test(question) ? n * 1000 : NaN;
       assert.equal(Number.parseInt(answer, 10), expected, question);
     }
     for (const [question, answer] of bank.fracciones.slice(-20)) {
@@ -678,4 +678,26 @@ test('las figuras complejas se reservan para niveles posteriores', () => {
   assert.ok(!banks.Inicial.geometria.some(([q]) => /hexágono|heptágono|octógono/i.test(q)));
   assert.ok(banks.Medio.geometria.some(([q]) => /hexágono/i.test(q)));
   assert.ok(banks.Avanzado.geometria.some(([q]) => /diagonales/i.test(q)));
+});
+
+test('las respuestas abiertas se presentan como ejemplos y se aceptan equivalencias', () => {
+  for (const tier of ['Inicial', 'Medio', 'Avanzado']) {
+    const vocabulary = mathApi.makeContent('vocabulario', 20, tier, '', 2, 'auto', 'auto');
+    for (const item of vocabulary.filter(item => /^(Escribe|¿Qué significa)/.test(item.question))) assert.match(item.answer, /^Respuesta posible:/, item.question);
+    const ordering = mathApi.makeContent('ordenar', 20, tier, '', 2, 'auto', 'auto');
+    assert.ok(ordering.every(item => item.answer.startsWith('Respuesta posible:')));
+    const fractions = mathApi.makeContent('fracciones', 20, tier, '', 2, 'auto', 'auto');
+    for (const item of fractions.filter(item => /^\d+\/\d+\./.test(item.answer) && !/mayor|menor/.test(item.question))) assert.match(item.answer, /fracciones equivalentes/, item.question);
+  }
+  const reading = {kind:'reading',title:'Lectura',text:'Texto.',questions:['¿Qué pasó?'],answers:['Salió el sol.']};
+  assert.match(markupApi({type:'lectura'},reading,0,true), /Respuesta posible: Salió el sol/);
+  assert.equal(makePdf({type:'lectura',difficulty:'Inicial',student:''},[reading],true),true);
+  assert.ok(PdfProbe.latest.saved.pages.flat().some(entry => entry.value.includes('Respuesta posible: Salió el sol.')));
+});
+
+test('las frases de todos los niveles conservan las palabras propuestas', () => {
+  const words = text => (text.toLocaleLowerCase('es').match(/[\p{L}]+/gu) || []).sort();
+  for (const [tier, bank] of Object.entries(practicalApi.practicalActivitiesByDifficulty)) {
+    for (const [question, answer] of bank.ordenar) assert.deepEqual(words(question.replace(/^Ordena:/, '')), words(answer), `${tier}: ${question}`);
+  }
 });

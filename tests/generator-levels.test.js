@@ -543,3 +543,10 @@ test('la solución de división se sitúa debajo del divisor y se escapa', () =>
   const escaped = markupApi({ type: 'divisiones' }, { question: '17 ÷ 5 =', answer: '<prueba>' }, 0, true);
   assert.match(escaped, /&lt;prueba&gt;/);
 });
+
+test('el PDF sitúa la línea de división entre divisor y cociente', () => {
+  assert.equal(makePdf({ type: 'divisiones', difficulty: 'Inicial', student: '' }, [{ question: '17 ÷ 5 =', answer: '3 · resto 2' }], true), true);
+  const lines = PdfProbe.latest.lines;
+  assert.ok(lines.some(line => Math.abs(line.y1 - 60) < 0.001 && Math.abs(line.y2 - 60) < 0.001 && Math.abs(line.x2 - line.x1 - 28) < 0.001));
+  assert.ok(!lines.some(line => Math.abs(line.y1 - 48) < 0.001 && Math.abs(line.y2 - 48) < 0.001 && Math.abs(line.x2 - line.x1 - 28) < 0.001));
+});

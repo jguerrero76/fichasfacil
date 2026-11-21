@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-16', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-17', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -298,7 +298,7 @@ function ensureWorksheetEngine() {
   if (worksheetEnginePromise) return worksheetEnginePromise;
   worksheetEnginePromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'worksheet-engine.js?v=20261121-16';
+    script.src = 'worksheet-engine.js?v=20261121-17';
     script.async = true;
     const timeout = setTimeout(() => { script.remove(); reject(new Error('El generador tarda demasiado en cargar.')); }, 15000);
     script.onload = () => { clearTimeout(timeout); resolve(); };
@@ -497,7 +497,7 @@ function downloadPdf(config, items, solutions = false) {
     doc.setFontSize(12);
     if (division) {
       doc.text(division[1], x - 9, topY, { align: 'right' });
-      doc.line(x + 2, topY - 7, x + 30, topY - 7);
+      doc.line(x + 2, topY + 5, x + 30, topY + 5);
       doc.line(x + 2, topY - 7, x + 2, topY + 5);
       doc.text(division[2], x + 16, topY, { align: 'center' });
       if (solutions) doc.text(String(item.answer), x + 16, topY + 13, { align: 'center' });

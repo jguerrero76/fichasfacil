@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-9', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-10', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -127,6 +127,11 @@ const updateActivityFields = () => {
   document.querySelector('#calligraphy-field').classList.toggle('hidden-field', activity.value !== 'caligrafia');
   document.querySelector('#solutions-field').classList.toggle('hidden-field', isCopying);
   document.querySelector('#carry-field').classList.toggle('hidden-field', !['sumas', 'restas'].includes(activity.value));
+  const borrowUnavailable = activity.value === 'restas' && document.querySelector('#firstDigits').value === '1';
+  const carryMode = document.querySelector('#carryMode');
+  carryMode.querySelector('option[value="yes"]').disabled = borrowUnavailable;
+  if (borrowUnavailable && carryMode.value === 'yes') carryMode.value = 'any';
+  document.querySelector('#carry-note').textContent = borrowUnavailable ? 'Para restar con llevadas, el primer número necesita al menos dos cifras.' : '';
   document.querySelector('#table-field').classList.toggle('hidden-field', activity.value !== 'multiplicaciones');
   document.querySelector('#specific-divisor-field').classList.toggle('hidden-field', activity.value !== 'divisiones' || document.querySelector('#secondDigits').value !== '1');
   document.querySelector('#remainder-field').classList.toggle('hidden-field', activity.value !== 'divisiones');

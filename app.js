@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261120-4', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261120-6', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -174,6 +174,8 @@ updateActivityFields();
 
 const activitySearch = document.querySelector('#activity-search');
 const clearActivitySearch = document.querySelector('#clear-activity-search');
+const activitySubject = document.querySelector('#activity-subject');
+const subjectTypes = { matematicas: ['sumas', 'restas', 'multiplicaciones', 'divisiones', 'problemas', 'reloj', 'dinero', 'medidas', 'fracciones', 'geometria'], lengua: ['lectura', 'copiado', 'ortografia', 'vocabulario', 'ordenar', 'caligrafia'], razonamiento: ['logica', 'mixta', 'diaria'] };
 const activityEmpty = document.querySelector('#activity-empty');
 const activityResultCount = document.querySelector('#activity-result-count');
 const activityCount = document.querySelector('#activity-count');
@@ -188,23 +190,24 @@ const updateConnectionStatus = () => {
 window.addEventListener('online', updateConnectionStatus);
 window.addEventListener('offline', updateConnectionStatus);
 updateConnectionStatus();
-const activityCards = [...document.querySelectorAll('.activity-card')].map(card => ({ element: card, text: normalizeSearchText(card.textContent) }));
+const activityCards = [...document.querySelectorAll('.activity-card')].map(card => ({ element: card, text: normalizeSearchText(card.textContent + (card.dataset.type === 'lectura' ? ' lectura' : '')) }));
 let activitySearchFrame = 0;
 const filterActivities = () => {
   const query = normalizeSearchText(activitySearch.value.trim());
   let visibleCount = 0;
   activityCards.forEach(({ element, text }) => {
-    const matches = !query || text.includes(query);
+    const matches = (!query || text.includes(query)) && (activitySubject.value === 'todas' || subjectTypes[activitySubject.value].includes(element.dataset.type));
     element.hidden = !matches;
     if (matches) visibleCount += 1;
   });
   if (clearActivitySearch) clearActivitySearch.hidden = !query;
   if (activityEmpty) activityEmpty.hidden = visibleCount > 0;
-  if (activityResultCount) activityResultCount.textContent = query
+  if (activityResultCount) activityResultCount.textContent = (query || activitySubject.value !== 'todas')
     ? `${visibleCount} ${visibleCount === 1 ? 'actividad encontrada' : 'actividades encontradas'}`
     : '';
-  if (activityCount) activityCount.textContent = query ? `${visibleCount} de 19` : '19 actividades';
+  if (activityCount) activityCount.textContent = (query || activitySubject.value !== 'todas') ? `${visibleCount} de 19` : '19 actividades';
 };
+activitySubject?.addEventListener('change', filterActivities);
 activitySearch?.addEventListener('input', () => {
   cancelAnimationFrame(activitySearchFrame);
   activitySearchFrame = requestAnimationFrame(filterActivities);
@@ -265,7 +268,7 @@ function ensureWorksheetEngine() {
   if (worksheetEnginePromise) return worksheetEnginePromise;
   worksheetEnginePromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'worksheet-engine.js?v=20261120-3';
+    script.src = 'worksheet-engine.js?v=20261120-6';
     script.async = true;
     const timeout = setTimeout(() => { script.remove(); reject(new Error('El generador tarda demasiado en cargar.')); }, 15000);
     script.onload = () => { clearTimeout(timeout); resolve(); };
@@ -662,7 +665,7 @@ function downloadPdf(config, items, solutions = false) {
       ensureSpace(Math.max(questionHeight + answerLineCount * 10 + 15, config.type === 'problemas' ? 70 : 0));
     }
     write(`${index + 1}. ${item.question}`, 12, { bold: true, gap: 3 });
-    if (solutions) write(`Respuesta: ${item.answer}`, 10, { gap: 5 });
+    if (solutions) write(`Respuesta: ${item.explanation || item.answer}`, 10, { gap: 5 });
     else writeAnswerLines(answerLineCount);
     });
     if (!solutions && ['copiado', 'caligrafia'].includes(config.type)) writeWritingGuide();

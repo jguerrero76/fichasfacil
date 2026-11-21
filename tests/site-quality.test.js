@@ -40,7 +40,7 @@ test('el service worker usa la versión actual de los recursos principales', () 
   assert.ok(stylesVersion, 'index: falta versión de styles.css');
   assert.ok(sw.includes(`app.js?v=${appVersion}`), 'sw.js: app.js desactualizado');
   assert.ok(sw.includes(`styles.css?v=${stylesVersion}`), 'sw.js: styles.css desactualizado');
-  assert.match(read('app.js'), /register\('\.\/sw\.js\?v=20261120-4'/, 'app.js: registro del service worker desactualizado');
+  assert.match(read('app.js'), /register\('\.\/sw\.js\?v=20261120-6'/, 'app.js: registro del service worker desactualizado');
   assert.match(sw, /const CACHE_NAME = 'fichasfacil-v\d+'/);
 });
 
@@ -49,7 +49,7 @@ test('la optimización de búsqueda y caché permanece activa', () => {
   const sw = read('sw.js');
   assert.match(app, /const activityCards = \[\.\.\.document\.querySelectorAll\('\.activity-card'\)/, 'app.js: tarjetas no cacheadas');
   assert.match(app, /requestAnimationFrame\(filterActivities\)/, 'app.js: búsqueda sin agrupación de frames');
-  assert.match(sw, /fichasfacil-v109/, 'sw.js: caché sin versionar para la última pasada');
+  assert.match(sw, /fichasfacil-v110/, 'sw.js: caché sin versionar para la última pasada');
   assert.doesNotMatch(sw.split('];')[0], /jspdf|worksheet-engine|blog\.html/, 'sw.js: precarga recursos no esenciales');
 });
 
@@ -81,7 +81,7 @@ test('la interfaz refleja la actividad y el filtro actuales', () => {
   const index = read('index.html');
   const app = read('app.js');
   assert.match(index, /id="activity-count"/, 'index: falta contador dinámico de actividades');
-  assert.match(app, /activityCount\.textContent = query/, 'app.js: el contador no sigue la búsqueda');
+  assert.match(app, /activityCount\.textContent = \(query/, 'app.js: el contador no sigue la búsqueda');
   assert.match(app, /const syncActivityCardSelection = type =>/, 'app.js: tarjetas no sincronizadas al cambiar actividad');
   assert.match(app, /syncActivityCardSelection\(activity\.value\)/, 'app.js: selector de actividad sin sincronización visual');
 });

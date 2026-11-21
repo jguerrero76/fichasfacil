@@ -309,3 +309,19 @@ test('las páginas y textos públicos no mencionan las pautas por la marca anter
   assert.match(source, /Pauta de renglones con dos líneas grises por renglón/, 'copiado y caligrafía deben tener pauta de dos líneas');
 });
 
+
+
+test('los problemas muestran una operación que justifica cada respuesta', () => {
+  for (const difficulty of ['Inicial', 'Medio', 'Avanzado']) {
+    const items = mathApi.makeContent('problemas', 40, difficulty, '', 2, 'auto', 'auto');
+    for (const item of items) {
+      const match = item.explanation.match(/^(\d+) ([+−×÷]) (\d+) = (\d+)$/);
+      assert.ok(match, item.question);
+      const a = Number(match[1]);
+      const b = Number(match[3]);
+      const result = match[2] === '+' ? a + b : match[2] === '−' ? a - b : match[2] === '×' ? a * b : a / b;
+      assert.equal(result, item.answer);
+      assert.equal(Number(match[4]), item.answer);
+    }
+  }
+});

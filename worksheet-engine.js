@@ -1003,7 +1003,7 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
         const secondRange = grade <= 1 ? [2, 5] : grade <= 3 ? [2, 12] : [10, 99];
         first = randomInt(firstRange[0], firstRange[1]);
         second = randomInt(secondRange[0], secondRange[1]);
-        question = `Se prepararon ${first} cajas con ${second} ${object} en cada una. ¿Cuántos ${object} hay en total?`;
+        question = `Se prepararon ${first} cajas con ${second} ${object} en cada una. ¿${howMany} ${object} hay en total?`;
         answer = first * second;
       } else {
         const divisorRange = grade <= 1 ? [2, 5] : grade <= 3 ? [2, 12] : [11, 99];
@@ -1011,9 +1011,11 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
         second = randomInt(divisorRange[0], divisorRange[1]);
         answer = randomInt(quotientRange[0], quotientRange[1]);
         first = second * answer;
-        question = `Se reparten ${first} ${object} por igual entre ${second} grupos. ¿Cuántos recibe cada grupo?`;
+        question = `Se reparten ${first} ${object} por igual entre ${second} grupos. ¿${howMany} recibe cada grupo?`;
       }
-      return { question, answer, operation };
+      const symbol = { sumas: '+', restas: '−', multiplicaciones: '×', divisiones: '÷' }[operation];
+      const explanation = `${first} ${symbol} ${second} = ${answer}`;
+      return { question, answer, operation, explanation };
     });
   }
   const people = ['Lucía', 'Mario', 'Sara', 'Leo', 'Amina', 'Hugo', 'Nora', 'Diego', 'Clara', 'Pablo', 'Irene', 'Mateo', 'Valeria', 'Álvaro', 'Marta', 'Elena', 'Bruno', 'Inés', 'Óscar', 'Sofía'];
@@ -1098,7 +1100,7 @@ function exerciseMarkup(config, item, index, solutions) {
   }
   const responseRows = config.type === 'problemas' ? 6 : 4;
   const answerSpace = solutions
-    ? `<b>${escapeHtml(item.answer)}</b>`
+    ? `<b>${escapeHtml(item.explanation || item.answer)}</b>`
     : `<div class="answer-lines" aria-label="espacio para responder" style="grid-column:2;display:grid;grid-template-rows:repeat(${responseRows},8mm);gap:3mm;width:100%;height:${responseRows * 8 + (responseRows - 1) * 3}mm">${Array.from({ length: responseRows }, () => '<i style="display:block;height:8mm;box-sizing:border-box;border-top:1px solid #aeb6bf!important;border-bottom:1px solid #aeb6bf!important"></i>').join('')}</div>`;
   return `<div class="print-row text-exercise" style="grid-template-rows:auto auto;min-height:110px;align-items:start"><span class="number">${index + 1}.</span><strong>${escapeHtml(item.question)}</strong>${answerSpace}</div>`;
 }

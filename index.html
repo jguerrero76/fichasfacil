@@ -34,7 +34,7 @@
     <link rel="icon" href="favicon.svg?v=20261011-17" type="image/svg+xml" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="apple-touch-icon" href="pwa-icon.svg?v=20261011-17" />
-    <link rel="stylesheet" href="styles.css?v=20261120-3" />
+    <link rel="stylesheet" href="styles.css?v=20261120-6" />
   </head>
   <body>
     <a class="skip-link" href="#actividades">Saltar a las actividades</a>
@@ -75,7 +75,7 @@
       <section id="actividades" class="activities" aria-labelledby="activities-title">
         <div class="section-label"><h2 id="activities-title">Elige una actividad</h2><span id="activity-count" class="activity-count">19 actividades</span></div>
         <p class="section-help">Pulsa una tarjeta para empezar a configurarla.</p>
-        <div class="activity-tools"><label for="activity-search">Buscar actividad<input id="activity-search" type="search" placeholder="Ej.: fracciones, lectura…" autocomplete="off" aria-controls="activity-grid" aria-describedby="activity-search-help" /></label><span id="activity-search-help" class="visually-hidden">Escribe una palabra para filtrar las actividades disponibles.</span><button id="clear-activity-search" type="button" aria-label="Limpiar búsqueda de actividades" hidden>Limpiar</button><button id="repeat-last" class="repeat-last" type="button" hidden>Repetir última ficha</button><span id="activity-result-count" class="activity-result-count" role="status" aria-live="polite"></span><span id="connection-status" class="connection-status" role="status" aria-live="polite" hidden></span></div>
+        <div class="activity-tools"><label for="activity-search">Buscar actividad<input id="activity-search" type="search" placeholder="Ej.: fracciones, lectura…" autocomplete="off" aria-controls="activity-grid" aria-describedby="activity-search-help" /></label><label for="activity-subject">Materia<select id="activity-subject"><option value="todas">Todas</option><option value="matematicas">Matemáticas</option><option value="lengua">Lengua y lectura</option><option value="razonamiento">Lógica y repaso</option></select></label><span id="activity-search-help" class="visually-hidden">Escribe una palabra para filtrar las actividades disponibles.</span><button id="clear-activity-search" type="button" aria-label="Limpiar búsqueda de actividades" hidden>Limpiar</button><button id="repeat-last" class="repeat-last" type="button" hidden>Repetir última ficha</button><span id="activity-result-count" class="activity-result-count" role="status" aria-live="polite"></span><span id="connection-status" class="connection-status" role="status" aria-live="polite" hidden></span></div>
         <p id="generator-loading-status" class="generator-loading-status" role="status" aria-live="polite"></p><div id="activity-grid" class="activity-grid">
           <button class="activity-card card-blue" data-type="sumas" aria-haspopup="dialog" aria-controls="generator" aria-expanded="false"><span class="card-symbol" aria-hidden="true">＋</span><span><strong>Sumas</strong><small>Cálculo básico</small></span></button>
           <button class="activity-card card-lilac" data-type="restas" aria-haspopup="dialog" aria-controls="generator" aria-expanded="false"><span class="card-symbol" aria-hidden="true">−</span><span><strong>Restas</strong><small>Cálculo básico</small></span></button>
@@ -97,10 +97,12 @@
           <button class="activity-card card-blue" data-type="mixta" aria-haspopup="dialog" aria-controls="generator" aria-expanded="false"><span class="card-symbol" aria-hidden="true">✦</span><span><strong>Ficha mixta</strong><small>Repaso completo</small></span></button>
           <button class="activity-card card-green" data-type="diaria" aria-haspopup="dialog" aria-controls="generator" aria-expanded="false"><span class="card-symbol" aria-hidden="true">☀</span><span><strong>Ficha diaria</strong><small>5 minutos</small></span></button>
         </div>
-        <p class="activity-empty" id="activity-empty" role="status" aria-live="polite" hidden>No hemos encontrado ninguna actividad. Prueba con otra palabra.</p>
+        <p class="activity-empty" id="activity-empty" role="status" aria-live="polite" hidden>No hemos encontrado ninguna actividad. Prueba con otra palabra o cambia la materia.</p>
       </section>
 
       <section class="content-section" aria-labelledby="ready-title"><div class="content-heading"><h2 id="ready-title">Fichas listas para descargar</h2><p>Elige una práctica para ver un ejemplo y descargar 12 ejercicios con soluciones.</p></div><nav class="seo-related" aria-label="Fichas listas para imprimir"><a href="sumas-sin-llevadas.html">Sumas sin llevadas</a><a href="sumas-con-llevadas.html">Sumas con llevadas</a><a href="restas-sin-llevadas.html">Restas sin llevadas</a><a href="restas-con-llevadas.html">Restas con llevadas</a><a href="tablas-de-multiplicar.html">Tablas de multiplicar</a><a href="divisiones-exactas.html">Divisiones exactas</a></nav></section>
+      <section class="content-section" aria-labelledby="weekly-title"><div class="content-heading"><h2 id="weekly-title">Repaso semanal de cálculo</h2><p>Cinco días de sumas y restas con soluciones, orientado a 2.º de Primaria.</p><a class="hero-cta" href="repaso-semanal-2-primaria.html">Ver cuadernillo semanal</a></div></section>
+      <section class="content-section" aria-labelledby="grade-title"><div class="content-heading"><h2 id="grade-title">Ideas por curso</h2><p>Son orientaciones flexibles. Elige la dificultad según lo que el alumno ya sabe hacer.</p></div><nav class="seo-related" aria-label="Actividades orientativas por curso"><a href="sumas-sin-llevadas.html">1.º · Sumas sin llevadas</a><a href="restas-sin-llevadas.html">1.º · Restas sin llevadas</a><a href="sumas-con-llevadas.html">2.º · Sumas con llevadas</a><a href="repaso-semanal-2-primaria.html">2.º · Repaso semanal</a><a href="tablas-de-multiplicar.html">2.º y 3.º · Tablas</a><a href="divisiones-exactas.html">3.º · Divisiones exactas</a></nav></section>
       <section class="featured-activities" aria-labelledby="featured-title">
         <div class="content-heading">
           <p class="kicker">Para empezar</p>
@@ -214,7 +216,7 @@
       <p id="worksheet-preview-message" role="status" aria-live="polite"></p>
       <div class="worksheet-preview-actions"><button id="preview-print" type="button">Imprimir ficha</button><button id="preview-download" type="button">Descargar PDF</button></div>
     </dialog>
-    <script defer src="app.js?v=20261120-4"></script>
+    <script defer src="app.js?v=20261120-6"></script>
     <script type="application/ld+json">
       {"@context":"https://schema.org","@type":"WebSite","name":"FichasFacil","url":"https://fichasfacil.es/","description":"Generador gratuito de fichas educativas imprimibles para Infantil y Primaria: matemáticas, lengua, lectura, escritura y lógica.","inLanguage":"es-ES","publisher":{"@type":"Organization","name":"FichasFacil","url":"https://fichasfacil.es/","logo":"https://fichasfacil.es/pwa-icon.svg"}}
     </script>

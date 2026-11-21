@@ -346,3 +346,17 @@ test('ordenar frases conserva todas las palabras de la solución', () => {
     assert.deepEqual(words(question.replace(/^Ordena:/, '')), words(answer), question);
   }
 });
+
+
+test('cada lectura tiene texto, tres preguntas y tres respuestas completas', () => {
+  const start = source.indexOf('const makeReading =');
+  const end = source.indexOf('const copyingSequences =', start);
+  const readings = new Function(source.slice(start, end) + '; return readingActivities;')();
+  assert.ok(readings.length > 100);
+  for (const reading of readings) {
+    assert.ok(reading.title && reading.text, reading.title);
+    assert.equal(reading.questions.length, 3, reading.title);
+    assert.equal(reading.answers.length, 3, reading.title);
+    for (const value of [...reading.questions, ...reading.answers]) assert.ok(value.trim(), reading.title);
+  }
+});

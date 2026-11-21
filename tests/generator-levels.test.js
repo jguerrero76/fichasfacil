@@ -535,3 +535,11 @@ test('la vista imprimible reserva siete renglones para multiplicar por seis cifr
   assert.equal((html.match(/height="8mm"/g) || []).length, 7);
   assert.match(html, /break-inside:avoid;page-break-inside:avoid/);
 });
+
+test('la solución de división se sitúa debajo del divisor y se escapa', () => {
+  const markup = markupApi({ type: 'divisiones' }, { question: '17 ÷ 5 =', answer: '3 · resto 2' }, 0, true);
+  assert.match(markup, /class="division-answer"[^>]*top:30px/);
+  assert.match(markup, /3 · resto 2/);
+  const escaped = markupApi({ type: 'divisiones' }, { question: '17 ÷ 5 =', answer: '<prueba>' }, 0, true);
+  assert.match(escaped, /&lt;prueba&gt;/);
+});

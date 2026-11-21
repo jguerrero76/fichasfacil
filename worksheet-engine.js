@@ -1228,7 +1228,7 @@ function exerciseMarkup(config, item, index, solutions) {
       if (division) {
         const dividend = String(division[1]).split('').join('&nbsp;');
         const divisor = String(division[2]).split('').join('&nbsp;');
-        const quotient = solutions ? `<span style="position:absolute;left:0;right:0;top:-22px;text-align:center;font-size:14px;font-weight:700">${item.answer}</span>` : '';
+        const quotient = solutions ? `<span class="division-answer" style="position:absolute;left:0;right:0;top:30px;text-align:center;font-size:14px;font-weight:700">${escapeHtml(String(item.answer))}</span>` : '';
         return `<div class="division-exercise" style="display:flex;align-items:center;justify-content:center;min-height:76px;padding:10px 2px 16px;font:700 18px/1.2 Arial,Helvetica,sans-serif;color:#20283f;white-space:nowrap"><span style="display:block;min-width:42px;text-align:right;padding-right:8px;letter-spacing:1px">${dividend}</span><span style="position:relative;display:grid;grid-template-rows:26px 2px;min-width:46px;padding-left:8px;border-left:2px solid #20283f;text-align:center">${quotient}<span style="letter-spacing:1px">${divisor}</span><span style="display:block;width:100%;border-bottom:1.5px solid #20283f"></span></span></div>`;
       }
     }

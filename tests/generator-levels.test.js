@@ -591,3 +591,18 @@ test('los problemas nuevos de dinero varían y sus operaciones son correctas', (
     }
   }
 });
+
+
+test('algunas conversiones y comparaciones se reservan para el nivel medio', () => {
+  for (const [type, start] of [['medidas', 'Una botella tiene 750 mililitros.'], ['reloj', 'Si son las 14:20'], ['fracciones', '¿Qué es menor: 1/3 o 1/2?']]) {
+    assert.ok(!practicalApi.practicalActivitiesByDifficulty.Inicial[type].some(([question]) => question.startsWith(start)), start);
+    assert.ok(practicalApi.practicalActivitiesByDifficulty.Medio[type].some(([question]) => question.startsWith(start)), start);
+  }
+});
+
+test('los ejercicios de dinero generan respuestas variadas', () => {
+  for (const tier of ['Inicial', 'Medio', 'Avanzado']) {
+    const answers = practicalApi.practicalActivitiesByDifficulty[tier].dinero.slice(-20).map(([, answer]) => answer);
+    assert.ok(new Set(answers).size >= 5, tier);
+  }
+});

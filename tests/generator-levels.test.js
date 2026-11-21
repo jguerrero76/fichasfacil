@@ -550,3 +550,14 @@ test('el PDF sitúa la línea de división entre divisor y cociente', () => {
   assert.ok(lines.some(line => Math.abs(line.y1 - 60) < 0.001 && Math.abs(line.y2 - 60) < 0.001 && Math.abs(line.x2 - line.x1 - 28) < 0.001));
   assert.ok(!lines.some(line => Math.abs(line.y1 - 48) < 0.001 && Math.abs(line.y2 - 48) < 0.001 && Math.abs(line.x2 - line.x1 - 28) < 0.001));
 });
+
+test('la lectura sobre medición conserva los datos que justifican su respuesta', () => {
+  const start = source.indexOf('const makeReading =');
+  const end = source.indexOf('const copyingSequences =', start);
+  const readings = new Function(source.slice(start, end) + '; return readingActivities;')();
+  const reading = readings.find(item => item.title === 'Dos maneras de medir');
+  assert.ok(reading);
+  assert.match(reading.text, /12 centímetros/);
+  assert.match(reading.text, /16 centímetros/);
+  assert.match(reading.answers[2], /12 y 16 centímetros/);
+});

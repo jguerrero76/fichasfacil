@@ -652,3 +652,30 @@ test('los nuevos ejercicios de medidas y fracciones usan conversiones válidas',
     }
   }
 });
+
+test('los rangos automáticos de cálculo progresan por niveles', () => {
+  const limits = { Inicial: 20, Medio: 99, Avanzado: 9999 };
+  for (const type of ['sumas', 'restas', 'divisiones']) for (const tier of Object.keys(limits)) {
+    for (let run = 0; run < 100; run++) {
+      const item = mathApi.makeOperation(type, tier);
+      const values = [...item.question.matchAll(/\d+/g)].map(match => Number(match[0]));
+      assert.ok(values[0] <= limits[tier], `${tier}: ${item.question}`);
+      if (type !== 'divisiones') assert.ok(values[1] <= limits[tier], item.question);
+      if (type === 'divisiones') assert.equal(values[0] / values[1], item.answer, item.question);
+    }
+  }
+  const multiplicationLimits = { Inicial: 20, Medio: 99, Avanzado: 999 };
+  for (const tier of Object.keys(multiplicationLimits)) for (let run = 0; run < 100; run++) {
+    const item = mathApi.makeOperation('multiplicaciones', tier);
+    const values = [...item.question.matchAll(/\d+/g)].map(match => Number(match[0]));
+    assert.ok(values[0] <= multiplicationLimits[tier], item.question);
+    assert.equal(values[0] * values[1], item.answer);
+  }
+});
+
+test('las figuras complejas se reservan para niveles posteriores', () => {
+  const banks = practicalApi.practicalActivitiesByDifficulty;
+  assert.ok(!banks.Inicial.geometria.some(([q]) => /hexágono|heptágono|octógono/i.test(q)));
+  assert.ok(banks.Medio.geometria.some(([q]) => /hexágono/i.test(q)));
+  assert.ok(banks.Avanzado.geometria.some(([q]) => /diagonales/i.test(q)));
+});

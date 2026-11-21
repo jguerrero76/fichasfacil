@@ -88,7 +88,8 @@ function makeOperation(type, difficulty, level = '', operands = 2, firstDigits =
   const grade = level ? levelIndex(level) : difficultyIndex(difficulty);
   if (type === 'multiplicaciones') {
     const rangesByGrade = [[1, 9, 2, 5], [1, 20, 2, 5], [10, 99, 2, 9], [100, 999, 2, 9], [1000, 9999, 2, 9], [1000, 99999, 2, 12], [10000, 999999, 10, 99]];
-    const ranges = rangesByGrade[grade] || rangesByGrade[1];
+    const automatic = { Inicial: [1, 20, 2, 5], Medio: [10, 99, 2, 9], Avanzado: [100, 999, 2, 12] };
+    const ranges = level ? (rangesByGrade[grade] || rangesByGrade[1]) : automatic[difficultyTier(difficulty)];
     const firstRange = rangeForDigits(firstDigits, ranges.slice(0, 2));
     const secondRange = rangeForDigits(secondDigits, ranges.slice(2, 4), 2);
     const a = randomInt(firstRange[0], firstRange[1]);
@@ -98,7 +99,8 @@ function makeOperation(type, difficulty, level = '', operands = 2, firstDigits =
     return { question: `${a} × ${b} =`, answer: a * b };
   }
   const rangesByGrade = [[1, 9], [1, 20], [10, 99], [10, 999], [100, 9999], [1000, 99999], [10000, 999999]];
-  const range = rangesByGrade[grade] || rangesByGrade[1];
+  const automatic = { Inicial: [1, 20], Medio: [10, 99], Avanzado: [100, 9999] };
+  const range = level ? (rangesByGrade[grade] || rangesByGrade[1]) : automatic[difficultyTier(difficulty)];
   const [minimum, maximum] = range;
   if (type === 'divisiones') {
     const dividendRange = rangeForDigits(firstDigits, [minimum, maximum]);
@@ -463,6 +465,11 @@ calligraphySamples.syllables = [
   'fra  fre  fri  fro  fru', 'gra  gre  gri  gro  gru', 'dra  dre  dri  dro  dru', 'fla  fle  fli  flo  flu', 'pra  pre  pri  pro  pru'
 ];
 calligraphySamples.words.push('sendero', 'manzana', 'compañero', 'jirafa', 'marinero', 'cometa', 'pizarra', 'semilla', 'paraguas');
+calligraphySamples.words = [
+  'pelota', 'camino', 'familia', 'ventana', 'zapato', 'bosque', 'manzana', 'cometa', 'semilla', 'jirafa',
+  'escuela', 'naranja', 'jardín', 'cuaderno', 'amistad', 'montaña', 'estrella', 'pizarra', 'camiseta', 'sendero',
+  'mariposa', 'primavera', 'biblioteca', 'elefante', 'aventura', 'cuidadoso', 'regadera', 'compañero', 'marinero', 'paraguas'
+];
 calligraphySamples.sentences.push('El viento mueve las ramas.', 'Mi cuaderno tiene hojas blancas.', 'Paseamos juntos por el parque.', 'La semilla crece en la tierra.', 'El gato duerme junto a la ventana.', 'Hoy leemos un cuento diferente.', 'Mi amiga comparte sus lápices.', 'En la biblioteca hay muchos libros.', 'La bicicleta espera en el patio.', 'El cielo cambia al atardecer.', 'Mañana regaremos las plantas.');
 
 
@@ -838,6 +845,18 @@ Object.entries(expandedPracticalActivities).forEach(([type, items]) => {
   practicalActivitiesByDifficulty.Avanzado[type] = [...items, ...(finalPracticalExpansion[type] || [])];
 });
 
+// En el nivel avanzado se ordenan frases algo más largas con conectores conocidos.
+practicalActivitiesByDifficulty.Avanzado.ordenar = [
+  ['Ordena: llegó / cuando / empezó / la lluvia / Lucía.', 'La lluvia empezó cuando llegó Lucía.'],
+  ['Ordena: al terminar / guardó / los libros / el equipo.', 'El equipo guardó los libros al terminar.'],
+  ['Ordena: el cuento / leyó / antes de dormir / Marta.', 'Marta leyó el cuento antes de dormir.'],
+  ['Ordena: porque llovía / su paraguas / abrió / Pablo.', 'Pablo abrió su paraguas porque llovía.'],
+  ['Ordena: después de clase / la mochila / preparó / Ana.', 'Ana preparó la mochila después de clase.'],
+  ['Ordena: mientras / el viento / las hojas / movía / dormía el gato.', 'El viento movía las hojas mientras dormía el gato.'],
+  ['Ordena: en la biblioteca / buscaron / para el mural / información / los alumnos.', 'Los alumnos buscaron información para el mural en la biblioteca.'],
+  ['Ordena: con cuidado / el camino / siguieron / hasta el río / los amigos.', 'Los amigos siguieron el camino con cuidado hasta el río.']
+];
+
 // Ejercicios adicionales con datos variados y respuestas calculadas.
 const fractionPairs = [];
 for (let denominator = 2; denominator <= 12; denominator += 1) {
@@ -918,8 +937,8 @@ const vocabularyByDifficulty = {
 };
 for (const tier of ['Inicial', 'Medio', 'Avanzado']) {
   for (const [word, synonym] of vocabularyByDifficulty[tier]) practicalActivitiesByDifficulty[tier].vocabulario.push([`Escribe un sinónimo de «${word}».`, synonym.charAt(0).toUpperCase() + synonym.slice(1) + '.']);
-  for (const [subject, verb, object] of extraSentences) {
-    const ending = tier === 'Inicial' ? '' : tier === 'Medio' ? ' antes de salir' : ' para preparar la actividad';
+  for (const [index, [subject, verb, object]] of extraSentences.entries()) {
+    const ending = tier === 'Inicial' ? '' : tier === 'Medio' ? [' con calma', ' durante la mañana', ' antes de salir', ' con atención'][index % 4] : [' cuando termina la clase', ' mientras espera a sus amigos', ' antes de comenzar la actividad', ' durante un rato tranquilo'][index % 4];
     practicalActivitiesByDifficulty[tier].ordenar.push([`Ordena: ${object} / ${verb} / ${subject}${ending ? ' / ' + ending.trim() : ''}.`, `${subject} ${verb} ${object}${ending}.`]);
   }
 }
@@ -981,6 +1000,12 @@ for (let hour = 1; hour <= 12; hour += 1) {
   const endLabel = hour === 1 ? 'La' : 'Las';
   practicalActivitiesByDifficulty.Medio.reloj.push([`${startLabel} ${hour}:00. ¿Qué hora será dentro de 30 minutos?`, `${endLabel} ${hour}:30.`]);
 }
+
+// Las figuras con más lados se reservan para una etapa posterior.
+const initialGeometry = practicalActivitiesByDifficulty.Inicial.geometria;
+const laterGeometry = initialGeometry.filter(([question]) => /hexágono|heptágono|octógono/i.test(question));
+practicalActivitiesByDifficulty.Inicial.geometria = initialGeometry.filter(item => !laterGeometry.includes(item));
+practicalActivitiesByDifficulty.Medio.geometria.push(...laterGeometry);
 
 function activityQuestionPool(items, difficulty, type) {
   const level = difficultyTier(difficulty);
@@ -1124,10 +1149,10 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
       { question: '¿Qué necesitas para medir la hora?', answer: 'Un reloj.' }
       ],
       Medio: [
-        { question: 'Calcula: 248 + 376 =', answer: '624' },
-        { question: 'Calcula: 805 − 267 =', answer: '538' },
-        { question: 'Calcula: 24 × 13 =', answer: '312' },
-        { question: 'Calcula: 864 ÷ 8 =', answer: '108' },
+        { question: 'Calcula: 48 + 37 =', answer: '85' },
+        { question: 'Calcula: 85 − 27 =', answer: '58' },
+        { question: 'Calcula: 24 × 3 =', answer: '72' },
+        { question: 'Calcula: 84 ÷ 4 =', answer: '21' },
         { question: 'Completa la serie: 7, 12, 17, 22, __', answer: '27' },
         { question: 'Coloca las tildes: El camion llego al almacen.', answer: 'El camión llegó al almacén.' },
         { question: '¿Cuánto son 2 metros y 35 centímetros en centímetros?', answer: '235 centímetros.' },
@@ -1189,28 +1214,28 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
       let answer;
       if (operation === 'sumas') {
         const minimum = grade <= 1 ? 1 : grade <= 3 ? 10 : 100;
-        const maximum = grade <= 1 ? 20 : grade <= 3 ? 999 : 9999;
+        const maximum = grade <= 1 ? 20 : grade <= 3 ? 99 : 999;
         first = randomInt(minimum, maximum);
         second = randomInt(minimum, maximum);
         question = `${person} tenía ${first} ${object} y recibió ${second} más. ¿${howMany} ${object} tiene ahora?`;
         answer = first + second;
       } else if (operation === 'restas') {
         const minimum = grade <= 1 ? 2 : grade <= 3 ? 20 : 100;
-        const maximum = grade <= 1 ? 20 : grade <= 3 ? 999 : 9999;
+        const maximum = grade <= 1 ? 20 : grade <= 3 ? 99 : 999;
         first = randomInt(minimum, maximum);
         second = randomInt(1, first - 1);
         question = `En el aula había ${first} ${object}. Se utilizaron ${second}. ¿${howMany} ${object} quedan?`;
         answer = first - second;
       } else if (operation === 'multiplicaciones') {
-        const firstRange = grade <= 1 ? [2, 10] : grade <= 3 ? [2, 20] : [12, 99];
-        const secondRange = grade <= 1 ? [2, 5] : grade <= 3 ? [2, 12] : [10, 99];
+        const firstRange = grade <= 1 ? [2, 10] : grade <= 3 ? [2, 12] : [10, 30];
+        const secondRange = grade <= 1 ? [2, 5] : grade <= 3 ? [2, 9] : [10, 30];
         first = randomInt(firstRange[0], firstRange[1]);
         second = randomInt(secondRange[0], secondRange[1]);
         question = `Se prepararon ${first} cajas con ${second} ${object} en cada una. ¿${howMany} ${object} hay en total?`;
         answer = first * second;
       } else {
-        const divisorRange = grade <= 1 ? [2, 5] : grade <= 3 ? [2, 12] : [11, 99];
-        const quotientRange = grade <= 1 ? [2, 10] : grade <= 3 ? [10, 99] : [10, 99];
+        const divisorRange = grade <= 1 ? [2, 5] : grade <= 3 ? [2, 9] : [10, 30];
+        const quotientRange = grade <= 1 ? [2, 10] : grade <= 3 ? [2, 12] : [10, 30];
         second = randomInt(divisorRange[0], divisorRange[1]);
         answer = randomInt(quotientRange[0], quotientRange[1]);
         first = second * answer;

@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-25', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-26', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -95,7 +95,7 @@ const updateSubtractionDigitOptions = () => {
   const first = document.querySelector('#firstDigits');
   const second = document.querySelector('#secondDigits');
   const constrainsSubtraction = activity.value === 'restas';
-  const gradeMaximum = { Inicial: 20, Medio: 999, Avanzado: 99999 }[document.querySelector('#difficulty').value] || 9;
+  const gradeMaximum = { Inicial: 20, Medio: 99, Avanzado: 9999 }[document.querySelector('#difficulty').value] || 9;
   const firstMaximum = first.value === 'auto' ? gradeMaximum : (10 ** Number(first.value)) - 1;
   [...second.options].forEach(option => {
     option.disabled = constrainsSubtraction && option.value !== 'auto' && (10 ** (Number(option.value) - 1)) > firstMaximum;
@@ -108,7 +108,7 @@ const updateDivisionOptions = () => {
   const isRemainderDivision = isDivision && document.querySelector('#divisionMode').value === 'remainder';
   const digits = document.querySelector('#firstDigits').value;
   const difficulty = document.querySelector('#difficulty').value;
-  const autoMaximum = { Inicial: 20, Medio: 999, Avanzado: 99999 }[difficulty] || 9;
+  const autoMaximum = { Inicial: 20, Medio: 99, Avanzado: 9999 }[difficulty] || 9;
   const dividendMaximum = digits === 'auto' ? autoMaximum : (10 ** Number(digits)) - 1;
   const divisorDigits = document.querySelector('#secondDigits');
   if (isDivision) {
@@ -298,7 +298,7 @@ function ensureWorksheetEngine() {
   if (worksheetEnginePromise) return worksheetEnginePromise;
   worksheetEnginePromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'worksheet-engine.js?v=20261121-25';
+    script.src = 'worksheet-engine.js?v=20261121-26';
     script.async = true;
     const timeout = setTimeout(() => { script.remove(); reject(new Error('El generador tarda demasiado en cargar.')); }, 15000);
     script.onload = () => { clearTimeout(timeout); resolve(); };

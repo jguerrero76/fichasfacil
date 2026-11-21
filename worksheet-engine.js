@@ -357,11 +357,11 @@ const copyingSequences = [
     'Durante las semanas siguientes, todos observaron cómo crecía. La clase descubrió que una planta necesita cuidados constantes y no solo agua de vez en cuando.'
   ],
   [
-    'Clara preparó su mochila antes de salir hacia la biblioteca. Quería devolver un libro y buscar una historia nueva para el fin de semana.',
+    'Clara preparó su mochila antes de salir hacia la biblioteca. Quería devolver un libro que había leído y buscar una historia nueva.',
     'Guardó un cuaderno, un lápiz y la tarjeta de préstamo. También comprobó que llevaba la merienda para el camino de vuelta.',
-    'En la sala infantil encontró un libro sobre animales del bosque. La portada mostraba un zorro entre los árboles y le llamó mucho la atención.',
-    'Lo leyó en silencio y anotó una palabra que no conocía. Al llegar a casa pensaba buscar su significado en el diccionario.',
-    'Al terminar, devolvió el libro en el mostrador de entrada. La bibliotecaria le recomendó otro título para su próxima visita.'
+    'Al llegar, devolvió el libro en el mostrador. Después encontró otro sobre animales del bosque, con un zorro en la portada.',
+    'Leyó unas páginas en silencio y anotó una palabra que no conocía. Pensó buscar su significado en el diccionario.',
+    'Al terminar, pidió prestado el libro de animales. La bibliotecaria le recordó la fecha de devolución.'
   ],
   [
     'La familia de Hugo decidió preparar una merienda en el campo. Querían aprovechar la tarde y caminar por un sendero cercano.',
@@ -386,7 +386,7 @@ const copyingSequences = [
   ],
   [
     'El lunes, Valeria llevó una libreta nueva a clase. Quería anotar las preguntas que se le ocurrieran durante el experimento.',
-    'El grupo mezcló agua, arena y piedras en tres recipientes. Después observó qué materiales se quedaban arriba y cuáles bajaban al fondo.',
+    'El grupo puso agua en tres recipientes. Después añadió hojas a uno, arena a otro y piedras al tercero. Observaron qué flotaba y qué se hundía.',
     'Valeria dibujó cada recipiente y escribió una palabra para describirlo. Su equipo comparó los dibujos antes de ordenar los resultados.',
     'Al terminar, limpiaron la mesa y devolvieron cada material a su caja. La profesora les recordó que observar también significa cuidar el espacio de trabajo.',
     'En casa, Valeria contó el experimento a su hermano. Juntos pensaron en otras mezclas que podrían investigar otro día.'
@@ -443,28 +443,37 @@ copyingSequences.push(
 
 const calligraphySamples = {
   letters: ['a  a  a  a  a', 'e  e  e  e  e', 'i  i  i  i  i', 'o  o  o  o  o', 'u  u  u  u  u', 'm  m  m  m  m', 'p  p  p  p  p', 's  s  s  s  s', 'l  l  l  l  l', 't  t  t  t  t', 'n  n  n  n  n', 'r  r  r  r  r', 'd  d  d  d  d', 'c  c  c  c  c'],
-  syllables: ['ma  me  mi  mo  mu', 'pa  pe  pi  po  pu', 'la  le  li  lo  lu', 'sa  se  si  so  su', 'bra  bre  bri  bro  bru', 'pla  ple  pli  plo  plu', 'tra  tre  tri  tro  tru', 'cla  cle  cli  clo  clu', 'que  qui  qua  quo  cu', 'ña  ñe  ñi  ño  ñu'],
+  syllables: ['ma  me  mi  mo  mu', 'pa  pe  pi  po  pu', 'la  le  li  lo  lu', 'sa  se  si  so  su', 'bra  bre  bri  bro  bru', 'pla  ple  pli  plo  plu', 'tra  tre  tri  tro  tru', 'cla  cle  cli  clo  clu', 'que  qui  ca  co  cu', 'ña  ñe  ñi  ño  ñu'],
   words: ['mariposa', 'pelota', 'camino', 'familia', 'escuela', 'ventana', 'primavera', 'biblioteca', 'montaña', 'elefante', 'cuaderno', 'amistad', 'jardín', 'aventura'],
   sentences: ['Mi casa tiene un jardín.', 'La rana salta junto al lago.', 'Hoy aprendemos algo nuevo.', 'Mi mochila está preparada.', 'Los amigos juegan en el parque.', 'Cuidamos juntos nuestro planeta.', 'La tortuga camina despacio.', 'Mi familia prepara la merienda.', 'El sol ilumina la ventana.', 'Compartir nos ayuda a aprender.', 'El tren llega a la estación.', 'Cada día practico un poco.']
 };
 calligraphySamples.letters.push('b  b  b  b  b', 'f  f  f  f  f', 'g  g  g  g  g', 'h  h  h  h  h', 'v  v  v  v  v', 'z  z  z  z  z', 'ñ  ñ  ñ  ñ  ñ');
-calligraphySamples.syllables.push('da  de  di  do  du', 'fa  fe  fi  fo  fu', 'ga  ge  gi  go  gu', 'ña  ñe  ñi  ño  ñu', 'va  ve  vi  vo  vu', 'za  ze  zi  zo  zu', 'cha  che  chi  cho  chu');
+calligraphySamples.syllables.push('da  de  di  do  du', 'fa  fe  fi  fo  fu', 'ga  ge  gi  go  gu', 'ña  ñe  ñi  ño  ñu', 'va  ve  vi  vo  vu', 'za  ce  ci  zo  zu', 'cha  che  chi  cho  chu');
 calligraphySamples.words.push('naranja', 'zapato', 'bosque', 'cuidadoso', 'camiseta', 'estrella', 'regadera');
 calligraphySamples.sentences.push('La estrella brilla por la noche.', 'Mi perro corre por el jardín.', 'La clase cuida los libros.', 'El barco navega despacio.', 'Preparamos juntos la mochila.', 'La lluvia moja las hojas.', 'Cada pregunta nos ayuda a aprender.');
 calligraphySamples.letters.push('k  k  k  k  k', 'q  q  q  q  q', 'w  w  w  w  w', 'x  x  x  x  x', 'y  y  y  y  y', 'A  A  A  A  A', 'E  E  E  E  E', 'I  I  I  I  I', 'O  O  O  O  O');
 calligraphySamples.syllables.push('ca  co  cu  que  qui', 'ga  go  gu  gue  gui', 'lla  lle  lli  llo  llu', 'ra  re  ri  ro  ru', 'ja  je  ji  jo  ju', 'bla  ble  bli  blo  blu', 'fra  fre  fri  fro  fru', 'gra  gre  gri  gro  gru', 'dra  dre  dri  dro  dru', 'fla  fle  fli  flo  flu', 'pra  pre  pri  pro  pru', 'cra  cre  cri  cro  cru', 'ta  te  ti  to  tu');
+// Primero se practican sílabas simples; después, combinaciones más complejas.
+calligraphySamples.syllables = [
+  'ma  me  mi  mo  mu', 'pa  pe  pi  po  pu', 'la  le  li  lo  lu', 'sa  se  si  so  su', 'da  de  di  do  du',
+  'fa  fe  fi  fo  fu', 'ta  te  ti  to  tu', 'na  ne  ni  no  nu', 'va  ve  vi  vo  vu', 'ra  re  ri  ro  ru',
+  'ca  co  cu  que  qui', 'ga  go  gu  gue  gui', 'za  ce  ci  zo  zu', 'ña  ñe  ñi  ño  ñu', 'cha  che  chi  cho  chu',
+  'lla  lle  lli  llo  llu', 'ja  je  ji  jo  ju', 'ga  ge  gi  go  gu', 'ha  he  hi  ho  hu', 'ya  ye  yi  yo  yu',
+  'bra  bre  bri  bro  bru', 'pla  ple  pli  plo  plu', 'tra  tre  tri  tro  tru', 'cla  cle  cli  clo  clu', 'bla  ble  bli  blo  blu',
+  'fra  fre  fri  fro  fru', 'gra  gre  gri  gro  gru', 'dra  dre  dri  dro  dru', 'fla  fle  fli  flo  flu', 'pra  pre  pri  pro  pru'
+];
 calligraphySamples.words.push('sendero', 'manzana', 'compañero', 'jirafa', 'marinero', 'cometa', 'pizarra', 'semilla', 'paraguas');
 calligraphySamples.sentences.push('El viento mueve las ramas.', 'Mi cuaderno tiene hojas blancas.', 'Paseamos juntos por el parque.', 'La semilla crece en la tierra.', 'El gato duerme junto a la ventana.', 'Hoy leemos un cuento diferente.', 'Mi amiga comparte sus lápices.', 'En la biblioteca hay muchos libros.', 'La bicicleta espera en el patio.', 'El cielo cambia al atardecer.', 'Mañana regaremos las plantas.');
 
 
 const spellingActivities = [
   ['Completa con b o v', 'La _icicleta de Bea es _erde.', 'La bicicleta de Bea es verde.'],
-  ['Completa con g o j', 'El _inete salta una valla en el _ardín.', 'El jinete salta una valla en el jardín.'],
+  ['Completa con g o j', 'El _irasol crece en el _ardín.', 'El girasol crece en el jardín.'],
   ['Completa con h', 'Ayer _icimos una excursión y _allamos un tesoro.', 'Ayer hicimos una excursión y hallamos un tesoro.'],
-  ['Completa con c o z', 'El _apato está junto a la _anahoria.', 'El zapato está junto a la zanahoria.'],
+  ['Completa con c o z', 'El _apato y la _apatilla están en el suelo.', 'El zapato y la zapatilla están en el suelo.'],
   ['Coloca las mayúsculas', 'marta vive en sevilla y visita el museo.', 'Marta vive en Sevilla y visita el museo.'],
   ['Coloca las tildes', 'El camaleon cambio de color junto al arbol.', 'El camaleón cambió de color junto al árbol.'],
-  ['Completa con ll o y', 'El po_ito corre detrás de la _egua.', 'El pollito corre detrás de la yegua.'],
+  ['Completa con ll o y', 'El po_ito está junto a la ga_ina.', 'El pollito está junto a la gallina.'],
   ['Completa con r o rr', 'El pe_o corre alrededor del ca_o.', 'El perro corre alrededor del carro.'],
   ['Completa con m o n', 'La ca_pana suena junto al ta_bor.', 'La campana suena junto al tambor.'],
   ['Completa con mp o mb', 'La bo__a lleva agua al ca__o.', 'La bomba lleva agua al campo.'],
@@ -498,21 +507,21 @@ logicActivities.push(
 
 spellingActivities.push(
   ['Completa con b o v', 'El _urro llevaba una _olsa.', 'El burro llevaba una bolsa.'],
-  ['Completa con g o j', 'La _elatina tiene sabor a _engibre.', 'La gelatina tiene sabor a jengibre.'],
+  ['Completa con g o j', 'La _irafa come hojas en el _ardín.', 'La jirafa come hojas en el jardín.'],
   ['Completa con h', 'Mi _ija _izo los deberes.', 'Mi hija hizo los deberes.'],
   ['Completa con c o z', 'La _igüeña cruza la _ona húmeda.', 'La cigüeña cruza la zona húmeda.'],
-  ['Completa con ll o y', 'La _ave está cerca de la _egua.', 'La llave está cerca de la yegua.'],
+  ['Completa con ll o y', 'La _ave abre la puerta del pasi_o.', 'La llave abre la puerta del pasillo.'],
   ['Completa con r o rr', 'El pe_o siguió el ca_o.', 'El perro siguió el carro.'],
   ['Completa con m o n', 'El i_vierno llegó con mucha _ieve.', 'El invierno llegó con mucha nieve.'],
-  ['Completa con mp o mb', 'La ta__ora sonó junto al ca__o.', 'La tambora sonó junto al campo.'],
-  ['Completa con gü o gu', 'El para_as está junto a la ci_eña.', 'El paraguas está junto a la cigüeña.'],
+  ['Completa con mp o mb', 'El ta__or sonó en el ca__o.', 'El tambor sonó en el campo.'],
+  ['Completa con gü o gu', 'La ci_eña vuela sobre un para_as.', 'La cigüeña vuela sobre un paraguas.'],
   ['Completa con qu o c', 'El pa__ete llegó a la _iudad.', 'El paquete llegó a la ciudad.'],
   ['Completa con s o x', 'La e_cursión pasó junto al e_tanque.', 'La excursión pasó junto al estanque.'],
   ['Coloca las tildes', 'El lapiz quedo junto al sofa.', 'El lápiz quedó junto al sofá.'],
   ['Coloca los signos', 'Has terminado la actividad', '¿Has terminado la actividad?'],
   ['Coloca las mayúsculas', 'ana vive en toledo y escucha canciones.', 'Ana vive en Toledo y escucha canciones.'],
   ['Completa con y o i', 'La _glesia tiene un ra_o en la torre.', 'La iglesia tiene un rayo en la torre.'],
-  ['Completa con b o v', 'La _aca bebe agua junto al _arco.', 'La vaca bebe agua junto al barco.']
+  ['Completa con b o v', 'La _aca bebe agua junto al _allado.', 'La vaca bebe agua junto al vallado.']
 );
 
 const practicalActivities = {
@@ -598,12 +607,12 @@ const practicalActivities = {
 };
 
 spellingActivities.push(
-  ['Completa con b o v', 'La _aca bebe agua junto al _arco.', 'La vaca bebe agua junto al barco.'],
+  ['Completa con b o v', 'La _aca bebe agua junto al _allado.', 'La vaca bebe agua junto al vallado.'],
   ['Completa con g o j', 'La _irafa come ho_as del árbol.', 'La jirafa come hojas del árbol.'],
   ['Completa con h', 'Mi _ermano _izo una tarta.', 'Mi hermano hizo una tarta.'],
   ['Coloca las tildes', 'La musica sono en el salon.', 'La música sonó en el salón.'],
   ['Completa con ll o y', 'El caba_o salta junto a la va_a.', 'El caballo salta junto a la valla.'],
-  ['Completa con r o rr', 'El ca_o llegó por la ca_etera.', 'El carro llegó por la carretera.'],
+  ['Completa con r o rr', 'El ca_o de madera avanza por la ca_etera.', 'El carro de madera avanza por la carretera.'],
   ['Coloca las mayúsculas', 'el lunes viajamos a granada.', 'El lunes viajamos a Granada.'],
   ['Completa con c o z', 'La _ebra cruza la _ona de hierba.', 'La cebra cruza la zona de hierba.']
 );
@@ -616,12 +625,12 @@ logicActivities.push(
 );
 
 spellingActivities.push(
-  ['Completa con b o v', 'El _urro vive junto al _osque.', 'El burro vive junto al bosque.'],
+  ['Completa con b o v', 'El _urro camina por el _osque.', 'El burro camina por el bosque.'],
   ['Completa con g o j', 'La _elatina está en la nevera.', 'La gelatina está en la nevera.'],
   ['Completa con h', 'El _ielo cubría la _ierba.', 'El hielo cubría la hierba.'],
   ['Coloca las tildes', 'El camion paso junto al rio.', 'El camión pasó junto al río.'],
   ['Coloca los signos', 'Has terminado la actividad', '¿Has terminado la actividad?'],
-  ['Completa con ll o y', 'El _ate navega cerca de la _egua.', 'El yate navega cerca de la yegua.'],
+  ['Completa con ll o y', 'El _ate navega junto al mue_e.', 'El yate navega junto al muelle.'],
   ['Completa con r o rr', 'La to_tuga cruza el ca_il.', 'La tortuga cruza el carril.'],
   ['Coloca las mayúsculas', 'lucas viaja a madrid en verano.', 'Lucas viaja a Madrid en verano.'],
   ['Completa con c o z', 'La _ebra corre por la _ona.', 'La cebra corre por la zona.'],
@@ -849,9 +858,9 @@ for (const [tier, offset] of [['Inicial', 0], ['Medio', 10], ['Avanzado', 20]]) 
 
 const extraVocabulary = [
   ['alegre', 'contento'], ['bonito', 'hermoso'], ['rápido', 'veloz'], ['grande', 'enorme'],
-  ['pequeño', 'diminuto'], ['empezar', 'comenzar'], ['acabar', 'terminar'], ['mirar', 'observar'],
-  ['ayudar', 'auxiliar'], ['cuidar', 'atender'], ['tranquilo', 'sereno'], ['valiente', 'intrépido'],
-  ['fácil', 'sencillo'], ['difícil', 'complicado'], ['cansado', 'fatigado'], ['camino', 'sendero'],
+  ['pequeño', 'chico'], ['empezar', 'comenzar'], ['acabar', 'terminar'], ['mirar', 'observar'],
+  ['ayudar', 'echar una mano'], ['cuidar', 'atender'], ['tranquilo', 'sereno'], ['valiente', 'con valor'],
+  ['fácil', 'sencillo'], ['difícil', 'complicado'], ['cansado', 'agotado'], ['camino', 'sendero'],
   ['vivienda', 'casa'], ['maestro', 'profesor'], ['alumno', 'estudiante'], ['respuesta', 'contestación']
 ];
 const extraSentences = [
@@ -866,17 +875,17 @@ const extraSentences = [
 const vocabularyByDifficulty = {
   Inicial: extraVocabulary,
   Medio: [
-    ['alejar', 'distanciar'], ['apagar', 'extinguir'], ['buscar', 'investigar'], ['construir', 'edificar'],
+    ['alejar', 'distanciar'], ['apagar', 'extinguir'], ['buscar', 'tratar de encontrar'], ['construir', 'edificar'],
     ['contestar', 'responder'], ['descubrir', 'encontrar'], ['dibujar', 'trazar'], ['elegir', 'escoger'],
-    ['escuchar', 'oír'], ['explicar', 'aclarar'], ['finalizar', 'terminar'], ['guardar', 'conservar'],
+    ['alegre', 'contento'], ['explicar', 'aclarar'], ['finalizar', 'terminar'], ['guardar', 'conservar'],
     ['iluminar', 'alumbrar'], ['iniciar', 'comenzar'], ['limpiar', 'asear'], ['llegar', 'arribar'],
     ['lograr', 'conseguir'], ['observar', 'mirar'], ['recordar', 'rememorar'], ['unir', 'juntar']
   ],
   Avanzado: [
     ['abundante', 'copioso'], ['afirmar', 'asegurar'], ['beneficio', 'ventaja'], ['calmado', 'sosegado'],
     ['concluir', 'finalizar'], ['conservar', 'preservar'], ['decidir', 'determinar'], ['dificultad', 'obstáculo'],
-    ['duradero', 'permanente'], ['evidente', 'claro'], ['exacto', 'preciso'], ['fragante', 'aromático'],
-    ['frecuente', 'habitual'], ['generoso', 'dadivoso'], ['importante', 'relevante'], ['ingenioso', 'creativo'],
+    ['duradero', 'perdurable'], ['evidente', 'claro'], ['exacto', 'preciso'], ['fragante', 'aromático'],
+    ['frecuente', 'habitual'], ['generoso', 'dadivoso'], ['importante', 'relevante'], ['ingenioso', 'ocurrente'],
     ['obstáculo', 'impedimento'], ['predecir', 'pronosticar'], ['reducir', 'disminuir'], ['valiente', 'valeroso']
   ]
 };
@@ -902,7 +911,7 @@ const spellingExpansion = [
   ['Completa con b o v', 'El _arco navega junto a la _oya.', 'El barco navega junto a la boya.'],
   ['Completa con b o v', 'La _entana mira al _osque.', 'La ventana mira al bosque.'],
   ['Completa con b o v', 'La _aca pasea por el _alle.', 'La vaca pasea por el valle.'],
-  ['Completa con b o v', 'El _aso está sobre el _anco.', 'El vaso está sobre el banco.']
+  ['Completa con b o v', 'La _entana y el _alcón están abiertos.', 'La ventana y el balcón están abiertos.']
 ];
 spellingActivities.push(...spellingExpansion);
 for (let start = 1; start <= 20; start += 1) {

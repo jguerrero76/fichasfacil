@@ -555,6 +555,17 @@ test('el PDF sitúa la línea de división entre divisor y cociente', () => {
   assert.ok(!lines.some(line => Math.abs(line.y1 - 48) < 0.001 && Math.abs(line.y2 - 48) < 0.001 && Math.abs(line.x2 - line.x1 - 28) < 0.001));
 });
 
+test('el PDF de divisiones aprovecha cinco filas compactas antes de crear otra página', () => {
+  const items = Array.from({ length: 15 }, (_, index) => ({ question: `${1200 + index} ÷ 6 =`, answer: 200 + index }));
+  assert.equal(makePdf({ type: 'divisiones', difficulty: 'Medio', student: '' }, items, false), true);
+  const pdf = PdfProbe.latest;
+  assert.equal(pdf.saved.pageCount, 1, 'quince divisiones deben caber en una página');
+  const divisionLines = pdf.lines
+    .filter(line => Math.abs(line.x2 - line.x1 - 28) < 0.001 && line.y1 > 50 && line.y1 < 230)
+    .map(line => line.y1);
+  assert.deepEqual([...new Set(divisionLines)].sort((a, b) => a - b), [60, 96, 132, 168, 204]);
+});
+
 test('la lectura sobre medición conserva los datos que justifican su respuesta', () => {
   const start = source.indexOf('const makeReading =');
   const end = source.indexOf('const copyingSequences =', start);

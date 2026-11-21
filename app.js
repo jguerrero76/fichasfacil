@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-30', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-31', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -298,7 +298,7 @@ function ensureWorksheetEngine() {
   if (worksheetEnginePromise) return worksheetEnginePromise;
   worksheetEnginePromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'worksheet-engine.js?v=20261121-30';
+    script.src = 'worksheet-engine.js?v=20261121-31';
     script.async = true;
     const timeout = setTimeout(() => { script.remove(); reject(new Error('El generador tarda demasiado en cargar.')); }, 15000);
     script.onload = () => { clearTimeout(timeout); resolve(); };
@@ -644,13 +644,15 @@ function downloadPdf(config, items, solutions = false) {
       const columns = 3;
       const columnWidth = (pageWidth - margin * 2) / columns;
       const startY = 55;
-      const rowHeight = 54;
+      const rowHeight = 36;
+      const rowsPerPage = Math.max(1, Math.floor((pageHeight - 38 - startY) / rowHeight));
+      const itemsPerPage = rowsPerPage * columns;
       items.forEach((item, index) => {
-        if (index > 0 && index % 10 === 0) {
+        if (index > 0 && index % itemsPerPage === 0) {
           doc.addPage();
           drawHeader(headerTitle);
         }
-        const localIndex = index % 10;
+        const localIndex = index % itemsPerPage;
         const column = localIndex % columns;
         const row = Math.floor(localIndex / columns);
         drawMathOperation(item, margin + columnWidth * (column + 0.5), startY + row * rowHeight);

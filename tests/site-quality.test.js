@@ -148,7 +148,7 @@ test('los enlaces HTML relativos apuntan a recursos existentes', () => {
     const html = read(page);
     for (const match of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
       const target = match[1];
-      if (!target || target.startsWith('#') || target.startsWith('http') || target.startsWith('mailto:') || target.startsWith('data:')) continue;
+      if (!target || target.startsWith('#') || target.startsWith('http') || target.startsWith('mailto:') || target.startsWith('data:') || target.startsWith('/_vercel/')) continue;
       const localPath = target.split('?')[0].split('#')[0];
       assert.ok(fs.existsSync(path.join(root, localPath)), `${page}: recurso local inexistente ${localPath}`);
     }

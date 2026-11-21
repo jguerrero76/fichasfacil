@@ -1320,7 +1320,7 @@ function exerciseMarkup(config, item, index, solutions) {
         const dividend = String(division[1]).split('').join('&nbsp;');
         const divisor = String(division[2]).split('').join('&nbsp;');
         const quotient = solutions ? `<span class="division-answer" style="position:absolute;left:0;right:0;top:30px;text-align:center;font-size:14px;font-weight:700">${escapeHtml(String(item.answer))}</span>` : '';
-        return `<div class="division-exercise" style="display:flex;align-items:center;justify-content:center;min-height:76px;padding:10px 2px 16px;font:700 18px/1.2 Arial,Helvetica,sans-serif;color:#20283f;white-space:nowrap"><span style="display:block;min-width:42px;text-align:right;padding-right:8px;letter-spacing:1px">${dividend}</span><span style="position:relative;display:grid;grid-template-rows:26px 2px;min-width:46px;padding-left:8px;border-left:2px solid #20283f;text-align:center">${quotient}<span style="letter-spacing:1px">${divisor}</span><span style="display:block;width:100%;border-bottom:1.5px solid #20283f"></span></span></div>`;
+        return `<div class="division-exercise" style="display:flex;align-items:center;justify-content:center;min-height:54px;padding:4px 2px 7px;font:700 18px/1.2 Arial,Helvetica,sans-serif;color:#20283f;white-space:nowrap"><span style="display:block;min-width:42px;text-align:right;padding-right:8px;letter-spacing:.35px">${dividend}</span><span style="position:relative;display:grid;grid-template-rows:23px 2px;min-width:46px;padding-left:8px;border-left:2px solid #20283f;text-align:center">${quotient}<span style="letter-spacing:.35px">${divisor}</span><span style="display:block;width:100%;border-bottom:1.5px solid #20283f"></span></span></div>`;
       }
     }
     const threeTermMatch = item.question.match(/^(\d+)\s+([+−])\s+(\d+)\s+([+−])\s+(\d+)\s*=/);
@@ -1364,14 +1364,17 @@ function printableHtml(config, items, solutions) {
     const cellsPerRow = config.type === 'divisiones' ? 3 : 4;
     const cellWidth = 100 / cellsPerRow;
     const operationRows = [];
-    const rowHeightMm = Math.min(90, Math.floor(230 / Math.ceil(items.length / cellsPerRow)));
+    const rowCount = Math.ceil(items.length / cellsPerRow);
+    const rowHeightMm = config.type === 'divisiones'
+      ? Math.min(38, Math.max(30, Math.floor(170 / rowCount)))
+      : Math.min(90, Math.floor(230 / rowCount));
     const rowHeightPx = Math.round(rowHeightMm * 96 / 25.4);
     for (let start = 0; start < items.length; start += cellsPerRow) {
       const cells = items.slice(start, start + cellsPerRow).map((item, offset) => `<td width="${cellWidth}%" height="${rowHeightPx}" align="center" valign="middle" style="height:${rowHeightPx}px;padding:1mm 2mm">${exerciseMarkup(config, item, start + offset, solutions)}</td>`);
       while (cells.length < cellsPerRow) cells.push(`<td width="${cellWidth}%" height="${rowHeightPx}" style="height:${rowHeightPx}px">&nbsp;</td>`);
       operationRows.push(`<tr style="break-inside:avoid;page-break-inside:avoid">${cells.join('')}</tr>`);
     }
-    worksheetContent = `<table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="table-layout:fixed;border-collapse:collapse"><tbody><tr><td colspan="${cellsPerRow}" height="45">&nbsp;</td></tr>${operationRows.join('')}</tbody></table>`;
+    worksheetContent = `<table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="table-layout:fixed;border-collapse:collapse"><tbody><tr><td colspan="${cellsPerRow}" height="${config.type === 'divisiones' ? 18 : 45}">&nbsp;</td></tr>${operationRows.join('')}</tbody></table>`;
   } else {
     worksheetContent = `<div class="exercise-grid text-grid">${rows}</div>${simpleWritingGuide}`;
   }

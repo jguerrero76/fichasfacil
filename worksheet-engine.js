@@ -807,6 +807,49 @@ Object.entries(expandedPracticalActivities).forEach(([type, items]) => {
   practicalActivitiesByDifficulty.Avanzado[type] = [...items, ...(finalPracticalExpansion[type] || [])];
 });
 
+// Ejercicios adicionales con datos variados y respuestas calculadas.
+for (const [tier, offset] of [['Inicial', 0], ['Medio', 10], ['Avanzado', 20]]) {
+  const bank = practicalActivitiesByDifficulty[tier];
+  for (let index = 1; index <= 20; index += 1) {
+    const hour = ((index + offset - 1) % 12) + 1;
+    const minutes = tier === 'Inicial' ? 30 : tier === 'Medio' ? 15 : 45;
+    const start = hour * 60;
+    const end = start + minutes;
+    const endHour = Math.floor(end / 60);
+    const endMinute = String(end % 60).padStart(2, '0');
+    bank.reloj.push([`Son las ${hour}:00. ¿Qué hora será dentro de ${minutes} minutos?`, `Las ${endHour}:${endMinute}.`]);
+    const price = index + offset;
+    const paid = price + (tier === 'Inicial' ? 2 : tier === 'Medio' ? 7 : 13);
+    bank.dinero.push([`Un material cuesta ${price} €. Pagas con ${paid} €. ¿Cuánto cambio recibes?`, `${paid - price} €.`]);
+    const meters = index + offset;
+    bank.medidas.push([`Una cinta mide ${meters} metros. ¿Cuántos centímetros son?`, `${meters * 100} centímetros.`]);
+    const denominator = index + 2 + offset;
+    const numerator = index + 1;
+    bank.fracciones.push([`Una figura está dividida en ${denominator} partes iguales y se colorean ${numerator}. ¿Qué fracción está coloreada?`, `${numerator}/${denominator}.`]);
+  }
+}
+
+const extraVocabulary = [
+  ['alegre', 'contento'], ['bonito', 'hermoso'], ['rápido', 'veloz'], ['grande', 'enorme'],
+  ['pequeño', 'diminuto'], ['empezar', 'comenzar'], ['acabar', 'terminar'], ['mirar', 'observar'],
+  ['ayudar', 'auxiliar'], ['cuidar', 'atender'], ['tranquilo', 'sereno'], ['valiente', 'intrépido'],
+  ['fácil', 'sencillo'], ['difícil', 'complicado'], ['cansado', 'fatigado'], ['camino', 'sendero'],
+  ['vivienda', 'casa'], ['maestro', 'profesor'], ['alumno', 'estudiante'], ['respuesta', 'contestación']
+];
+const extraSentences = [
+  ['Ana', 'lee', 'un cuento'], ['Luis', 'riega', 'las plantas'], ['Marta', 'dibuja', 'una casa'],
+  ['Pablo', 'ordena', 'sus lápices'], ['Sara', 'abre', 'la ventana'], ['Leo', 'prepara', 'la mochila'],
+  ['Inés', 'busca', 'su cuaderno'], ['Nora', 'recoge', 'las hojas'], ['Hugo', 'cierra', 'la puerta'],
+  ['Celia', 'pinta', 'una flor'], ['Diego', 'comparte', 'un libro'], ['Elena', 'cuida', 'su jardín'],
+  ['Bruno', 'escribe', 'una carta'], ['Clara', 'limpia', 'la mesa'], ['Sofía', 'guarda', 'la regla'],
+  ['Mario', 'construye', 'una torre'], ['Amina', 'escucha', 'una canción'], ['Julia', 'observa', 'los pájaros'],
+  ['Mateo', 'encuentra', 'una pelota'], ['Vera', 'prepara', 'una merienda']
+];
+for (const tier of ['Inicial', 'Medio', 'Avanzado']) {
+  for (const [word, synonym] of extraVocabulary) practicalActivitiesByDifficulty[tier].vocabulario.push([`Escribe un sinónimo de «${word}».`, synonym.charAt(0).toUpperCase() + synonym.slice(1) + '.']);
+  for (const [subject, verb, object] of extraSentences) practicalActivitiesByDifficulty[tier].ordenar.push([`Ordena: ${object} / ${verb} / ${subject}.`, `${subject} ${verb} ${object}.`]);
+}
+
 function activityQuestionPool(items, difficulty, type) {
   const level = difficultyTier(difficulty);
   if (type === 'ortografia') {
@@ -875,6 +918,18 @@ function randomReadingActivity(difficulty) {
   return selected;
 }
 
+function uniqueActivityPool(items) {
+  return [...new Map(items.map(item => [JSON.stringify(item), item])).values()];
+}
+
+function getUniqueExerciseLimit(type, difficulty) {
+  if (type === 'ortografia') return uniqueActivityPool(activityQuestionPool(spellingActivities, difficulty, type)).length;
+  if (type === 'logica') return uniqueActivityPool(activityQuestionPool(logicActivities, difficulty, type)).length;
+  if (practicalActivities[type]) return uniqueActivityPool(practicalActivitiesByDifficulty[difficultyTier(difficulty)]?.[type] || practicalActivities[type]).length;
+  if (type === 'mixta') return 12;
+  return 20;
+}
+
 function makeContent(type, count, difficulty, level, operands, firstDigits, secondDigits, paragraphs = 1, options = {}) {
   if (['sumas', 'restas', 'multiplicaciones', 'divisiones'].includes(type)) {
     return Array.from({ length: count }, () => makeOperation(type, difficulty, level, operands, firstDigits, secondDigits, options));
@@ -897,26 +952,26 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
     return copyingSequences[sequenceIndex].slice(0, paragraphs).map(text => ({ kind: 'copying', text }));
   }
   if (type === 'ortografia') {
-    const pool = activityQuestionPool(spellingActivities, difficulty, type);
+    const pool = uniqueActivityPool(activityQuestionPool(spellingActivities, difficulty, type));
     const order = shuffledIndexes(pool.length);
-    return Array.from({ length: count }, (_, index) => {
-      const item = pool[order[index % order.length]];
+    return Array.from({ length: Math.min(count, pool.length) }, (_, index) => {
+      const item = pool[order[index]];
       return { question: `${item[0]}: ${item[1]}`, answer: item[2] };
     });
   }
   if (type === 'logica') {
-    const pool = activityQuestionPool(logicActivities, difficulty, type);
+    const pool = uniqueActivityPool(activityQuestionPool(logicActivities, difficulty, type));
     const order = shuffledIndexes(pool.length);
-    return Array.from({ length: count }, (_, index) => {
-      const item = pool[order[index % order.length]];
+    return Array.from({ length: Math.min(count, pool.length) }, (_, index) => {
+      const item = pool[order[index]];
       return { question: `Completa la serie: ${item[0]}`, answer: item[1] };
     });
   }
   if (practicalActivities[type]) {
-    const pool = practicalActivitiesByDifficulty[difficultyTier(difficulty)]?.[type] || practicalActivities[type];
+    const pool = uniqueActivityPool(practicalActivitiesByDifficulty[difficultyTier(difficulty)]?.[type] || practicalActivities[type]);
     const order = shuffledIndexes(pool.length);
-    return Array.from({ length: count }, (_, index) => {
-      const item = pool[order[index % order.length]];
+    return Array.from({ length: Math.min(count, pool.length) }, (_, index) => {
+      const item = pool[order[index]];
       return { question: item[0], answer: type === 'vocabulario' && item[0].startsWith('Escribe') ? `Respuesta posible: ${item[1]}` : item[1], ...(type === 'geometria' ? { figure: geometryFigureFor(item[0]) } : {}) };
     });
   }
@@ -970,7 +1025,7 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
       const dailyOrder = shuffledIndexes(mixed.length);
       return dailyOrder.slice(0, 5).map(index => mixed[index]);
     }
-    return Array.from({ length: Math.max(8, count) }, (_, index) => mixed[index % mixed.length]);
+    return mixed.slice(0, Math.min(count, mixed.length));
   }
   if (type === 'problemas') {
     const grade = difficultyIndex(difficulty);

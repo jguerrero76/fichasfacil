@@ -393,3 +393,42 @@ test('las soluciones de las series siguen el patrón numérico', () => {
     assert.equal(expected, Number(answer), question);
   }
 });
+
+
+test('las fichas de bancos fijos no repiten preguntas aunque se soliciten veinte', () => {
+  for (const type of ['ortografia', 'logica', 'reloj', 'dinero', 'medidas', 'fracciones', 'geometria', 'vocabulario', 'ordenar', 'mixta']) {
+    for (const difficulty of ['Inicial', 'Medio', 'Avanzado']) {
+      const items = mathApi.makeContent(type, 20, difficulty, '', 2, 'auto', 'auto');
+      assert.ok(items.length > 0, type);
+      assert.equal(new Set(items.map(item => item.question)).size, items.length, type + ' ' + difficulty);
+    }
+  }
+});
+
+
+test('las actividades nuevas de cálculo práctico tienen respuestas correctas', () => {
+  const start = source.indexOf('const spellingActivities =');
+  const end = source.indexOf('function activityQuestionPool', start);
+  const banks = new Function(source.slice(start, end) + '; return practicalActivitiesByDifficulty;')();
+  for (const bank of Object.values(banks)) {
+    for (const [question, answer] of bank.dinero) {
+      const match = question.match(/^Un material cuesta (\d+) €. Pagas con (\d+) €/);
+      if (match) assert.equal(Number(answer.match(/\d+/)[0]), Number(match[2]) - Number(match[1]));
+    }
+    for (const [question, answer] of bank.medidas) {
+      const match = question.match(/^Una cinta mide (\d+) metros. ¿Cuántos centímetros son/);
+      if (match) assert.equal(Number(answer.match(/\d+/)[0]), Number(match[1]) * 100);
+    }
+    for (const [question, answer] of bank.fracciones) {
+      const match = question.match(/^Una figura está dividida en (\d+) partes iguales y se colorean (\d+)/);
+      if (match) assert.equal(answer, match[2] + '/' + match[1] + '.');
+    }
+    for (const [question, answer] of bank.reloj) {
+      const match = question.match(/^Son las (\d+):00. ¿Qué hora será dentro de (\d+) minutos/);
+      if (match) {
+        const total = Number(match[1]) * 60 + Number(match[2]);
+        assert.equal(answer, 'Las ' + Math.floor(total / 60) + ':' + String(total % 60).padStart(2, '0') + '.');
+      }
+    }
+  }
+});

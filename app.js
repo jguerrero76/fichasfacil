@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-5', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-6', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -132,7 +132,21 @@ const updateActivityFields = () => {
   document.querySelector('#remainder-field').classList.toggle('hidden-field', activity.value !== 'divisiones');
   updateSubtractionDigitOptions();
   updateDivisionOptions();
+  updateCountOptions();
 };
+function updateCountOptions() {
+  if (typeof getUniqueExerciseLimit !== 'function') return;
+  const select = document.querySelector('#count');
+  const note = document.querySelector('#count-limit-note');
+  const previous = Number(select.value) || 20;
+  const limit = Math.min(20, getUniqueExerciseLimit(activity.value, document.querySelector('#difficulty').value));
+  const values = [...new Set([5, 10, 15, 20, limit])].filter(value => value <= limit).sort((a, b) => a - b);
+  select.replaceChildren(...values.map(value => new Option(value + ' ejercicios', String(value))));
+  const selected = values.includes(previous) ? previous : values.filter(value => value <= previous).at(-1) || values[0];
+  select.value = String(selected);
+  note.textContent = limit < 20 ? 'Hasta ' + limit + ' ejercicios diferentes disponibles para esta actividad y nivel.' : '';
+  updateConfigurationSummary();
+}
 const savePreferences = () => {
   try { localStorage.setItem(preferenceKey, JSON.stringify(Object.fromEntries(preferenceIds.map(id => [id, document.querySelector(`#${id}`).value])))); } catch (error) { /* almacenamiento opcional */ }
 };
@@ -268,7 +282,7 @@ function ensureWorksheetEngine() {
   if (worksheetEnginePromise) return worksheetEnginePromise;
   worksheetEnginePromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'worksheet-engine.js?v=20261121-5';
+    script.src = 'worksheet-engine.js?v=20261121-6';
     script.async = true;
     const timeout = setTimeout(() => { script.remove(); reject(new Error('El generador tarda demasiado en cargar.')); }, 15000);
     script.onload = () => { clearTimeout(timeout); resolve(); };

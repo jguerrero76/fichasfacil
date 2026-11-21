@@ -1,0 +1,9 @@
+{
+  "name": "fichasfacil",
+  "version": "1.0.0",
+  "description": "FichasFacil - Generador de fichas educativas",
+  "private": true,
+  "dependencies": {
+    "@vercel/analytics": "^1.6.1"
+  }
+}

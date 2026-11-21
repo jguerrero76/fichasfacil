@@ -536,7 +536,7 @@ const practicalActivities = {
     ['¿Qué pesa más: 1 kilogramo o 500 gramos?', '1 kilogramo.'],
     ['¿Cuántos mililitros hay en un litro?', '1000 mililitros.'],
     ['¿Cuántos milímetros hay en un centímetro?', '10 milímetros.'],
-    ['Una botella tiene 750 mililitros. ¿Le falta mucho para llegar a 1 litro?', '250 mililitros.'],
+    ['Una botella tiene 750 mililitros. ¿Cuánto le falta para llegar a 1 litro?', '250 mililitros.'],
     ['¿Qué unidad usarías para pesar una sandía?', 'Kilogramos.'],
     ['¿Cuántos gramos hay en un kilogramo?', '1000 gramos.']
   ],
@@ -546,7 +546,7 @@ const practicalActivities = {
     ['¿En cuántas partes iguales se divide un entero para tomar un tercio?', '3 partes.'],
     ['De 8 partes iguales, 3 están coloreadas. ¿Qué fracción está coloreada?', '3/8.'],
     ['¿Qué es mayor: 1/2 o 1/4?', '1/2.'],
-    ['Una tarta tiene 6 partes y comes 2. ¿Qué fracción comes?', '2/6.'],
+    ['Una tarta tiene 6 partes iguales y comes 2. ¿Qué fracción comes?', '2/6.'],
     ['¿Qué fracción representa un cuarto?', '1/4.'],
     ['De 10 partes iguales, 7 están coloreadas. ¿Qué fracción está coloreada?', '7/10.'],
     ['¿Qué es menor: 1/3 o 1/2?', '1/3.']
@@ -593,7 +593,7 @@ spellingActivities.push(
   ['Completa con g o j', 'La _irafa come ho_as del árbol.', 'La jirafa come hojas del árbol.'],
   ['Completa con h', 'Mi _ermano _izo una tarta.', 'Mi hermano hizo una tarta.'],
   ['Coloca las tildes', 'La musica sono en el salon.', 'La música sonó en el salón.'],
-  ['Completa con ll o y', 'La _ave tiene una _anta amarilla.', 'La llave tiene una llanta amarilla.'],
+  ['Completa con ll o y', 'El caba_o salta junto a la va_a.', 'El caballo salta junto a la valla.'],
   ['Completa con r o rr', 'El ca_o llegó por la ca_etera.', 'El carro llegó por la carretera.'],
   ['Coloca las mayúsculas', 'el lunes viajamos a granada.', 'El lunes viajamos a Granada.'],
   ['Completa con c o z', 'La _ebra cruza la _ona de hierba.', 'La cebra cruza la zona de hierba.']
@@ -649,7 +649,7 @@ const additionalPracticalActivities = {
     ['¿Qué pesa más: 2 kilogramos o 1500 gramos?', '2 kilogramos.']
   ],
   fracciones: [
-    ['Una barra tiene 8 partes y comes 4. ¿Qué fracción comes?', '4/8.'],
+    ['Una barra tiene 8 partes iguales y comes 4. ¿Qué fracción comes?', '4/8.'],
     ['¿Qué fracción es mayor: 3/4 o 1/4?', '3/4.'],
     ['De 5 partes iguales, 2 están coloreadas. ¿Qué fracción está coloreada?', '2/5.'],
     ['¿Qué fracción representa un entero dividido en dos partes iguales?', '2/2.'],
@@ -713,11 +713,11 @@ const expandedPracticalActivities = {
     ['¿Qué unidad usarías para medir la distancia entre dos ciudades?', 'Kilómetros.']
   ],
   fracciones: [
-    ['Una tarta tiene 8 partes y comes 1. ¿Qué fracción comes?', '1/8.'],
+    ['Una tarta tiene 8 partes iguales y comes 1. ¿Qué fracción comes?', '1/8.'],
     ['¿Qué fracción es menor: 2/5 o 4/5?', '2/5.'],
     ['De 6 partes iguales, 5 están coloreadas. ¿Qué fracción está coloreada?', '5/6.'],
     ['¿Cuántos cuartos forman un entero?', '4 cuartos.'],
-    ['Una tableta tiene 10 trozos y quedan 3. ¿Qué fracción queda?', '3/10.']
+    ['Una tableta tiene 10 trozos iguales y quedan 3. ¿Qué fracción queda?', '3/10.']
   ],
   geometria: [
     ['Observa la figura. ¿Cuántas diagonales puedes dibujar en un cuadrado?', '2 diagonales.'],
@@ -769,12 +769,12 @@ const finalPracticalExpansion = {
     ['¿Qué unidad usarías para medir el peso de un lápiz?', 'Gramos.']
   ],
   fracciones: [
-    ['Una tableta tiene 12 trozos y comes 3. ¿Qué fracción comes?', '3/12.'],
+    ['Una tableta tiene 12 trozos iguales y comes 3. ¿Qué fracción comes?', '3/12.'],
     ['¿Qué es mayor: 2/4 o 1/4?', '2/4.'],
     ['De 9 partes iguales, 4 están coloreadas. ¿Qué fracción está coloreada?', '4/9.'],
     ['¿Cuántos medios forman un entero?', '2 medios.'],
     ['¿Qué es menor: 3/8 o 6/8?', '3/8.'],
-    ['Una pizza tiene 8 partes y quedan 5. ¿Qué fracción queda?', '5/8.']
+    ['Una pizza tiene 8 partes iguales y quedan 5. ¿Qué fracción queda?', '5/8.']
   ],
   geometria: [
     ['¿Cuántos lados tiene un octógono?', '8 lados.'],
@@ -782,7 +782,7 @@ const finalPracticalExpansion = {
     ['¿Cómo se llama un cuadrilátero de cuatro lados iguales y cuatro ángulos rectos?', 'Cuadrado.'],
     ['¿Qué figura tiene tres lados y tres vértices?', 'Triángulo.'],
     ['¿Cuántos lados tiene un heptágono?', '7 lados.'],
-    ['¿Cómo se llama un ángulo mayor que uno recto?', 'Ángulo obtuso.']
+    ['¿Cómo se llama un ángulo mayor que uno recto y menor que uno llano?', 'Ángulo obtuso.']
   ],
   vocabulario: [
     ['Escribe un sinónimo de “alegre”.', 'Contento.'],
@@ -852,6 +852,8 @@ const geometryFigureFor = question => {
   const text = question.toLowerCase();
   if (text.includes('triángulo')) return 'triangle';
   if (text.includes('tres lados') || text.includes('tres ángulos')) return 'triangle';
+  if (text.includes('línea cambia de dirección')) return 'brokenLine';
+  if (text.includes('ángulo mayor que uno recto')) return 'obtuseAngle';
   if (text.includes('cuadrilátero de cuatro lados iguales')) return 'square';
   if (text.includes('ángulo') && !text.includes('rectángulo')) return text.includes('menor, igual o mayor') ? 'acuteAngle' : 'angle';
   if (text.includes('cuadrado')) return 'square';
@@ -915,7 +917,7 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
     const order = shuffledIndexes(pool.length);
     return Array.from({ length: count }, (_, index) => {
       const item = pool[order[index % order.length]];
-      return { question: item[0], answer: item[1], ...(type === 'geometria' ? { figure: geometryFigureFor(item[0]) } : {}) };
+      return { question: item[0], answer: type === 'vocabulario' && item[0].startsWith('Escribe') ? `Respuesta posible: ${item[1]}` : item[1], ...(type === 'geometria' ? { figure: geometryFigureFor(item[0]) } : {}) };
     });
   }
   if (type === 'mixta' || type === 'diaria') {
@@ -1045,6 +1047,8 @@ const geometrySvg = figure => {
     hexagon: `<polygon points="20,7 56,7 70,29 56,51 20,51 6,29" ${stroke}/>`,
     heptagon: `<polygon points="38,5 64,16 70,39 52,53 24,53 6,39 12,16" ${stroke}/>`,
     octagon: `<polygon points="22,5 54,5 70,21 70,37 54,53 22,53 6,37 6,21" ${stroke}/>`,
+    brokenLine: `<path d="M7 43 L24 18 L42 38 L68 12" ${stroke}/>`,
+    obtuseAngle: `<path d="M35 46 L12 13 M35 46 L69 46" ${stroke}/>`,
     acuteAngle: `<path d="M12 47 L50 15 M12 47 L62 47" ${stroke}/><path d="M25 36 Q29 40 29 47" stroke="#ef8e69" stroke-width="2" fill="none"/>`,
     angle: `<path d="M12 47 L12 14 M12 47 L62 47" ${stroke}/><path d="M12 33 A14 14 0 0 1 26 47" stroke="#ef8e69" stroke-width="2" fill="none"/>`,
     line: `<path d="M8 29 H68" stroke="#315c9b" stroke-width="2.4"/><path d="M15 23 L8 29 L15 35 M61 23 L68 29 L61 35" stroke="#315c9b" stroke-width="2" fill="none"/>`

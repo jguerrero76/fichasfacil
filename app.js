@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-2', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-3', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -268,7 +268,7 @@ function ensureWorksheetEngine() {
   if (worksheetEnginePromise) return worksheetEnginePromise;
   worksheetEnginePromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'worksheet-engine.js?v=20261121-2';
+    script.src = 'worksheet-engine.js?v=20261121-3';
     script.async = true;
     const timeout = setTimeout(() => { script.remove(); reject(new Error('El generador tarda demasiado en cargar.')); }, 15000);
     script.onload = () => { clearTimeout(timeout); resolve(); };
@@ -529,6 +529,13 @@ function downloadPdf(config, items, solutions = false) {
         const next = points[(index + 1) % points.length];
         doc.line(point[0], point[1], next[0], next[1]);
       });
+    } else if (figure === 'brokenLine') {
+      doc.line(x - 18, topY + 23, x - 7, topY + 6);
+      doc.line(x - 7, topY + 6, x + 4, topY + 20);
+      doc.line(x + 4, topY + 20, x + 18, topY + 3);
+    } else if (figure === 'obtuseAngle') {
+      doc.line(x, topY + 24, x - 16, topY + 2);
+      doc.line(x, topY + 24, x + 18, topY + 24);
     } else if (figure === 'acuteAngle') {
       doc.line(x - 15, topY + 24, x + 10, topY + 3);
       doc.line(x - 15, topY + 24, x + 16, topY + 24);

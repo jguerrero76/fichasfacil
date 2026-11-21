@@ -334,6 +334,8 @@ test('las figuras corresponden a los enunciados de geometría', () => {
   assert.equal(figureFor('Observa el ángulo. ¿Es menor, igual o mayor que un ángulo recto?'), 'acuteAngle');
   assert.equal(figureFor('¿Cómo se llama un cuadrilátero de cuatro lados iguales y cuatro ángulos rectos?'), 'square');
   assert.equal(figureFor('Observa el ángulo. ¿Cómo se llama si forma una esquina como la de un cuadrado?'), 'angle');
+  assert.equal(figureFor('Observa la figura. ¿Qué tipo de línea cambia de dirección formando esquinas?'), 'brokenLine');
+  assert.equal(figureFor('¿Cómo se llama un ángulo mayor que uno recto?'), 'obtuseAngle');
 });
 
 

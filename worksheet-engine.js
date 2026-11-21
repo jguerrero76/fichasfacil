@@ -164,7 +164,7 @@ const readingActivitiesByLevel = {
     ["El paseo en bicicleta", "Claudia preparó su bicicleta para ir al parque. Revisó las ruedas, se puso el casco y guardó agua en la mochila. Allí encontró a Pablo y juntos continuaron hasta el estanque para observar los patos.", "¿Qué revisó Claudia?", "Las ruedas.", "¿Qué llevaba en la mochila?", "Agua.", "¿Qué observaron en el estanque?", "Los patos."],
     ["La receta de galletas", "Marta preparó galletas para la merienda. Mezcló harina, azúcar y un huevo. Su padre extendió la masa con ella y después esperaron a que las galletas estuvieran doradas.", "¿Para qué preparó las galletas?", "Para la merienda.", "¿Quién la ayudó con la masa?", "Su padre.", "¿Cómo supieron que estaban listas?", "Cuando estuvieron doradas."],
     ["El huerto del colegio", "La clase de tercero comenzó un pequeño huerto. Cada equipo se ocupó de una tarea: unos prepararon la tierra, otros plantaron lechugas y el último grupo colocó carteles con los nombres de las plantas.", "¿Qué comenzó la clase?", "Un pequeño huerto.", "¿Qué plantó uno de los equipos?", "Lechugas.", "¿Para qué sirvieron los carteles?", "Para poner los nombres de las plantas."],
-    ["El paraguas amarillo", "Samuel salió de casa cuando empezaba a llover. Cogió un paraguas amarillo y se puso las botas. En la entrada del colegio encontró un charco, lo rodeó y llegó a clase con los pies secos.", "¿Qué hizo Samuel antes de salir?", "Cogió el paraguas y se puso las botas.", "¿Dónde encontró el charco?", "En la entrada del colegio.", "¿Por qué lo rodeó?", "Para mantener secos los pies."],
+    ["El paraguas amarillo", "Antes de salir de casa, Samuel vio que empezaba a llover. Cogió un paraguas amarillo y se puso las botas. En la entrada del colegio encontró un charco, lo rodeó y llegó a clase con los pies secos.", "¿Qué hizo Samuel antes de salir?", "Cogió el paraguas y se puso las botas.", "¿Dónde encontró el charco?", "En la entrada del colegio.", "¿Por qué lo rodeó?", "Para mantener secos los pies."],
     ["El gato de la vecina", "Elena escuchó maullidos cerca del jardín y descubrió al gato de su vecina sobre un muro. Dejó agua junto a la valla y avisó a la dueña. La vecina llegó poco después y llevó al animal a casa.", "¿Dónde estaba el gato?", "Sobre un muro.", "¿Qué dejó Elena?", "Agua.", "¿Qué hizo la vecina?", "Llevó al gato a casa."],
     ["La brújula", "En una excursión, el grupo de Marcos aprendió a usar una brújula. La monitora explicó que la aguja señala el norte. Después, los niños compararon el instrumento con el mapa para encontrar el camino de vuelta.", "¿Qué aprendió el grupo?", "A usar una brújula.", "¿Qué señala la aguja?", "El norte.", "¿Con qué compararon la brújula?", "Con el mapa."],
     ["El banco de semillas", "La asociación del barrio guardó semillas de varias plantas en pequeños sobres. Escribieron el nombre y la fecha en cada uno. Así podrían plantarlas en primavera y recordar cuánto tiempo habían estado guardadas.", "¿Dónde guardaron las semillas?", "En pequeños sobres.", "¿Qué escribieron en cada sobre?", "El nombre y la fecha.", "¿Para qué las guardarían?", "Para plantarlas en primavera."],
@@ -450,7 +450,7 @@ calligraphySamples.sentences.push('La estrella brilla por la noche.', 'Mi perro 
 
 const spellingActivities = [
   ['Completa con b o v', 'La _icicleta de Bea es _erde.', 'La bicicleta de Bea es verde.'],
-  ['Completa con g o j', 'El _inete lleva su caballo al gara_e.', 'El jinete lleva su caballo al garaje.'],
+  ['Completa con g o j', 'El _inete salta una valla en el _ardín.', 'El jinete salta una valla en el jardín.'],
   ['Completa con h', 'Ayer _icimos una excursión y _allamos un tesoro.', 'Ayer hicimos una excursión y hallamos un tesoro.'],
   ['Completa con c o z', 'El _apato está junto a la _anahoria.', 'El zapato está junto a la zanahoria.'],
   ['Coloca las mayúsculas', 'marta vive en sevilla y visita el museo.', 'Marta vive en Sevilla y visita el museo.'],
@@ -458,10 +458,10 @@ const spellingActivities = [
   ['Completa con ll o y', 'El po_ito corre detrás de la _egua.', 'El pollito corre detrás de la yegua.'],
   ['Completa con r o rr', 'El pe_o corre alrededor del ca_o.', 'El perro corre alrededor del carro.'],
   ['Completa con m o n', 'La ca_pana suena junto al ta_bor.', 'La campana suena junto al tambor.'],
-  ['Completa con mp o mb', 'El ca__o tiene una bo__a.', 'El campo tiene una bomba.'],
+  ['Completa con mp o mb', 'La bo__a lleva agua al ca__o.', 'La bomba lleva agua al campo.'],
   ['Completa con gü o gu', 'La ci_eña vuela sobre el para_as.', 'La cigüeña vuela sobre el paraguas.'],
   ['Completa con qu o c', 'El _eso está en la _ocina.', 'El queso está en la cocina.'],
-  ['Completa con s o x', 'El e_amen fue muy sencillo y e_plicó la respuesta.', 'El examen fue muy sencillo y explicó la respuesta.'],
+  ['Completa con s o x', 'El e_amen fue sencillo y Ana e_plicó su respuesta.', 'El examen fue sencillo y Ana explicó su respuesta.'],
   ['Coloca los signos y las tildes', 'que sorpresa has preparado', '¡Qué sorpresa has preparado!'],
   ['Coloca las tildes', 'El pajaro llevo una ramita al arbol.', 'El pájaro llevó una ramita al árbol.'],
   ['Completa con y o i', 'La _glesia está junto al ra_o.', 'La iglesia está junto al rayo.']

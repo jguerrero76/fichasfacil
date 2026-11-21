@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-12', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-13', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -298,7 +298,7 @@ function ensureWorksheetEngine() {
   if (worksheetEnginePromise) return worksheetEnginePromise;
   worksheetEnginePromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'worksheet-engine.js?v=20261121-12';
+    script.src = 'worksheet-engine.js?v=20261121-13';
     script.async = true;
     const timeout = setTimeout(() => { script.remove(); reject(new Error('El generador tarda demasiado en cargar.')); }, 15000);
     script.onload = () => { clearTimeout(timeout); resolve(); };

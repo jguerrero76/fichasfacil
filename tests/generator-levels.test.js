@@ -497,3 +497,23 @@ test('las divisiones respetan las cifras en las combinaciones posibles', () => {
     }
   }
 });
+
+test('las restas sin llevadas respetan las cifras en todas las combinaciones posibles', () => {
+  for (let firstDigits = 1; firstDigits <= 6; firstDigits += 1) {
+    for (let secondDigits = 1; secondDigits <= firstDigits; secondDigits += 1) {
+      for (let sample = 0; sample < 10; sample += 1) {
+        const item = mathApi.makeOperation('restas', 'Avanzado', '', 2, String(firstDigits), String(secondDigits), { carryMode: 'no' });
+        const [minuend, subtrahend] = item.question.match(/\d+/g).map(Number);
+        assert.equal(String(minuend).length, firstDigits);
+        assert.equal(String(subtrahend).length, secondDigits);
+        assert.ok(minuend > subtrahend);
+        assert.equal(item.answer, minuend - subtrahend);
+        for (let position = 0; position < firstDigits; position += 1) {
+          const upper = Number(String(minuend).at(-1 - position) || 0);
+          const lower = Number(String(subtrahend).at(-1 - position) || 0);
+          assert.ok(upper >= lower, item.question);
+        }
+      }
+    }
+  }
+});

@@ -49,25 +49,27 @@ const hasAdditionCarry = (...values) => {
 };
 const hasSubtractionBorrow = (minuend, subtrahend) => Array.from({ length: String(minuend).length }, (_, position) => Number(String(minuend).at(-1 - position) || 0) < Number(String(subtrahend).at(-1 - position) || 0)).some(Boolean);
 
-function additionWithoutCarry(firstRange, secondRange, operands) {
+function operationWithoutCarry(firstRange, secondRange, operands, type) {
   const ranges = [firstRange, secondRange, ...(operands === 3 ? [secondRange] : [])];
   const width = Math.max(...ranges.map(range => String(range[1]).length));
   const bounds = ranges.map(([min, max]) => [String(min).padStart(width, '0'), String(max).padStart(width, '0')]);
   const failed = new Set();
-  const solve = (position, lowerTight, upperTight, values) => {
-    if (position === width) return values.map(Number);
-    const key = position + ':' + lowerTight.join('') + ':' + upperTight.join('');
+  const solve = (position, lowerTight, upperTight, values, different) => {
+    if (position === width) return type !== 'restas' || different ? values.map(Number) : null;
+    const key = position + ':' + lowerTight.join('') + ':' + upperTight.join('') + ':' + different;
     if (failed.has(key)) return null;
     const digits = [];
     const choose = (index, sum) => {
       if (index === ranges.length) {
         const nextLower = lowerTight.map((tight, i) => tight && digits[i] === Number(bounds[i][0][position]));
         const nextUpper = upperTight.map((tight, i) => tight && digits[i] === Number(bounds[i][1][position]));
-        return solve(position + 1, nextLower, nextUpper, values.map((value, i) => value + digits[i]));
+        const nextDifferent = different || (type === 'restas' && digits[0] > digits[1]);
+        return solve(position + 1, nextLower, nextUpper, values.map((value, i) => value + digits[i]), nextDifferent);
       }
       const min = lowerTight[index] ? Number(bounds[index][0][position]) : 0;
       const max = upperTight[index] ? Number(bounds[index][1][position]) : 9;
-      const choices = Array.from({ length: Math.max(0, Math.min(max, 9 - sum) - min + 1) }, (_, i) => min + i);
+      const columnMax = type === 'sumas' ? 9 - sum : index === 1 ? digits[0] : 9;
+      const choices = Array.from({ length: Math.max(0, Math.min(max, columnMax) - min + 1) }, (_, i) => min + i);
       for (const choice of shuffledIndexes(choices.length).map(i => choices[i])) {
         digits[index] = choice;
         const result = choose(index + 1, sum + choice);
@@ -79,7 +81,7 @@ function additionWithoutCarry(firstRange, secondRange, operands) {
     if (!result) failed.add(key);
     return result;
   };
-  return solve(0, ranges.map(() => true), ranges.map(() => true), ranges.map(() => ''));
+  return solve(0, ranges.map(() => true), ranges.map(() => true), ranges.map(() => ''), false);
 }
 
 function makeOperation(type, difficulty, level = '', operands = 2, firstDigits = 'auto', secondDigits = 'auto', options = {}, attempt = 0) {
@@ -129,9 +131,12 @@ function makeOperation(type, difficulty, level = '', operands = 2, firstDigits =
   }
   const firstRange = rangeForDigits(firstDigits, range);
   const secondRange = rangeForDigits(secondDigits, type === 'restas' && secondDigits === 'auto' ? firstRange : range);
-  if (type === 'sumas' && options.carryMode === 'no') {
-    const values = additionWithoutCarry(firstRange, secondRange, operands);
-    if (values) return { question: `${values.join(' + ')} =`, answer: values.reduce((sum, value) => sum + value, 0) };
+  if (options.carryMode === 'no' && (type === 'sumas' || (type === 'restas' && operands === 2))) {
+    const values = operationWithoutCarry(firstRange, secondRange, operands, type);
+    if (values) {
+      const answer = type === 'sumas' ? values.reduce((sum, value) => sum + value, 0) : values[0] - values[1];
+      return { question: `${values.join(type === 'sumas' ? ' + ' : ' − ')} =`, answer };
+    }
   }
   let a = randomInt(firstRange[0], firstRange[1]);
   let b = randomInt(secondRange[0], secondRange[1]);

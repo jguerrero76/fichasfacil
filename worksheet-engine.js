@@ -449,8 +449,13 @@ const calligraphySamples = {
 };
 calligraphySamples.letters.push('b  b  b  b  b', 'f  f  f  f  f', 'g  g  g  g  g', 'h  h  h  h  h', 'v  v  v  v  v', 'z  z  z  z  z', 'ñ  ñ  ñ  ñ  ñ');
 calligraphySamples.syllables.push('da  de  di  do  du', 'fa  fe  fi  fo  fu', 'ga  ge  gi  go  gu', 'ña  ñe  ñi  ño  ñu', 'va  ve  vi  vo  vu', 'za  ze  zi  zo  zu', 'cha  che  chi  cho  chu');
-calligraphySamples.words.push('naranja', 'mariposa', 'amistad', 'cuidadoso', 'camiseta', 'estrella', 'regadera');
+calligraphySamples.words.push('naranja', 'zapato', 'bosque', 'cuidadoso', 'camiseta', 'estrella', 'regadera');
 calligraphySamples.sentences.push('La estrella brilla por la noche.', 'Mi perro corre por el jardín.', 'La clase cuida los libros.', 'El barco navega despacio.', 'Preparamos juntos la mochila.', 'La lluvia moja las hojas.', 'Cada pregunta nos ayuda a aprender.');
+calligraphySamples.letters.push('k  k  k  k  k', 'q  q  q  q  q', 'w  w  w  w  w', 'x  x  x  x  x', 'y  y  y  y  y', 'A  A  A  A  A', 'E  E  E  E  E', 'I  I  I  I  I', 'O  O  O  O  O');
+calligraphySamples.syllables.push('ca  co  cu  que  qui', 'ga  go  gu  gue  gui', 'lla  lle  lli  llo  llu', 'ra  re  ri  ro  ru', 'ja  je  ji  jo  ju', 'bla  ble  bli  blo  blu', 'fra  fre  fri  fro  fru', 'gra  gre  gri  gro  gru', 'dra  dre  dri  dro  dru', 'fla  fle  fli  flo  flu', 'pra  pre  pri  pro  pru', 'cra  cre  cri  cro  cru', 'ta  te  ti  to  tu');
+calligraphySamples.words.push('sendero', 'manzana', 'compañero', 'jirafa', 'marinero', 'cometa', 'pizarra', 'semilla', 'paraguas');
+calligraphySamples.sentences.push('El viento mueve las ramas.', 'Mi cuaderno tiene hojas blancas.', 'Paseamos juntos por el parque.', 'La semilla crece en la tierra.', 'El gato duerme junto a la ventana.', 'Hoy leemos un cuento diferente.', 'Mi amiga comparte sus lápices.', 'En la biblioteca hay muchos libros.', 'La bicicleta espera en el patio.', 'El cielo cambia al atardecer.', 'Mañana regaremos las plantas.');
+
 
 const spellingActivities = [
   ['Completa con b o v', 'La _icicleta de Bea es _erde.', 'La bicicleta de Bea es verde.'],

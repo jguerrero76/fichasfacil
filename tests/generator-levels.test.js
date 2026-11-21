@@ -267,8 +267,12 @@ test('las 19 actividades producen PDF y sus hojas de soluciones sin respuestas v
       const pdf = PdfProbe.latest;
       assert.ok(pdf.saved?.pageCount >= 1, `${type}: PDF sin páginas`);
       const pdfTexts = pdf.saved.pages.flat().map(entry => entry.value);
-      assert.ok(pdfTexts.includes('FichasFácil'), `${type}: falta la marca del pie de página`);
-      assert.ok(pdf.roundedRects.length >= 5, `${type}: falta el icono de marca del pie`);
+      pdf.saved.pages.forEach((page, index) => {
+        const values = page.map(entry => entry.value);
+        assert.ok(values.includes('FichasFácil'), `${type}: falta la marca en página ${index + 1}`);
+        assert.ok(values.includes(`Página ${index + 1}/${pdf.saved.pageCount}`), `${type}: falta numeración en página ${index + 1}`);
+      });
+      assert.ok(pdf.roundedRects.length >= 5 * pdf.saved.pageCount, `${type}: falta el icono de marca en alguna página`);
       const printed = pdfTexts.join(' ');
       if (solutions) {
         const expectedAnswers = items.flatMap(item => item.kind === 'reading' ? item.answers : [item.answer ?? item.text]);
@@ -560,4 +564,15 @@ test('la lectura sobre medición conserva los datos que justifican su respuesta'
   assert.match(reading.text, /12 centímetros/);
   assert.match(reading.text, /16 centímetros/);
   assert.match(reading.answers[2], /12 y 16 centímetros/);
+});
+
+
+test('caligrafía ofrece diez modelos diferentes por tipo y nivel', () => {
+  for (const calligraphyMode of ['letters', 'syllables', 'words', 'sentences']) {
+    for (const difficulty of ['Inicial', 'Medio', 'Avanzado']) {
+      const items = mathApi.makeContent('caligrafia', 20, difficulty, '', 2, 'auto', 'auto', 5, { calligraphyMode });
+      assert.equal(items.length, 10);
+      assert.equal(new Set(items.map(item => item.text)).size, 10, calligraphyMode + ' ' + difficulty);
+    }
+  }
 });

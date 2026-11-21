@@ -49,6 +49,39 @@ const hasAdditionCarry = (...values) => {
 };
 const hasSubtractionBorrow = (minuend, subtrahend) => Array.from({ length: String(minuend).length }, (_, position) => Number(String(minuend).at(-1 - position) || 0) < Number(String(subtrahend).at(-1 - position) || 0)).some(Boolean);
 
+function additionWithoutCarry(firstRange, secondRange, operands) {
+  const ranges = [firstRange, secondRange, ...(operands === 3 ? [secondRange] : [])];
+  const width = Math.max(...ranges.map(range => String(range[1]).length));
+  const bounds = ranges.map(([min, max]) => [String(min).padStart(width, '0'), String(max).padStart(width, '0')]);
+  const failed = new Set();
+  const solve = (position, lowerTight, upperTight, values) => {
+    if (position === width) return values.map(Number);
+    const key = position + ':' + lowerTight.join('') + ':' + upperTight.join('');
+    if (failed.has(key)) return null;
+    const digits = [];
+    const choose = (index, sum) => {
+      if (index === ranges.length) {
+        const nextLower = lowerTight.map((tight, i) => tight && digits[i] === Number(bounds[i][0][position]));
+        const nextUpper = upperTight.map((tight, i) => tight && digits[i] === Number(bounds[i][1][position]));
+        return solve(position + 1, nextLower, nextUpper, values.map((value, i) => value + digits[i]));
+      }
+      const min = lowerTight[index] ? Number(bounds[index][0][position]) : 0;
+      const max = upperTight[index] ? Number(bounds[index][1][position]) : 9;
+      const choices = Array.from({ length: Math.max(0, Math.min(max, 9 - sum) - min + 1) }, (_, i) => min + i);
+      for (const choice of shuffledIndexes(choices.length).map(i => choices[i])) {
+        digits[index] = choice;
+        const result = choose(index + 1, sum + choice);
+        if (result) return result;
+      }
+      return null;
+    };
+    const result = choose(0, 0);
+    if (!result) failed.add(key);
+    return result;
+  };
+  return solve(0, ranges.map(() => true), ranges.map(() => true), ranges.map(() => ''));
+}
+
 function makeOperation(type, difficulty, level = '', operands = 2, firstDigits = 'auto', secondDigits = 'auto', options = {}, attempt = 0) {
   const grade = level ? levelIndex(level) : difficultyIndex(difficulty);
   if (type === 'multiplicaciones') {
@@ -71,7 +104,7 @@ function makeOperation(type, difficulty, level = '', operands = 2, firstDigits =
     const remainderMode = options.divisionMode === 'remainder';
     const specificDivisor = options.specificDivisor && options.specificDivisor !== 'all' ? Number(options.specificDivisor) : null;
     if (specificDivisor && Number(secondDigits) === 1) divisorRange[0] = divisorRange[1] = specificDivisor;
-    if (remainderMode) divisorRange[1] = Math.min(divisorRange[1], dividendRange[1] - 1);
+    divisorRange[1] = Math.min(divisorRange[1], dividendRange[1] - (remainderMode ? 1 : 0));
     for (let attempt = 0; attempt < 20; attempt += 1) {
       const divisor = randomInt(divisorRange[0], divisorRange[1]);
       const minQuotient = remainderMode
@@ -96,6 +129,10 @@ function makeOperation(type, difficulty, level = '', operands = 2, firstDigits =
   }
   const firstRange = rangeForDigits(firstDigits, range);
   const secondRange = rangeForDigits(secondDigits, type === 'restas' && secondDigits === 'auto' ? firstRange : range);
+  if (type === 'sumas' && options.carryMode === 'no') {
+    const values = additionWithoutCarry(firstRange, secondRange, operands);
+    if (values) return { question: `${values.join(' + ')} =`, answer: values.reduce((sum, value) => sum + value, 0) };
+  }
   let a = randomInt(firstRange[0], firstRange[1]);
   let b = randomInt(secondRange[0], secondRange[1]);
   if (type === 'restas' && operands === 2) {

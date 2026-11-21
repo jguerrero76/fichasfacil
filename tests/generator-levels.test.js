@@ -456,3 +456,44 @@ test('las lecturas evitan la plantilla repetida y los niveles de geometría se d
   assert.ok(banks.Avanzado.geometria.some(([question]) => question.includes('diagonales')));
   assert.ok(!banks.Inicial.geometria.some(([question]) => question.includes('diagonales')));
 });
+
+test('las sumas sin llevadas respetan cifras y número de sumandos', () => {
+  for (const operands of [2, 3]) {
+    for (let firstDigits = 1; firstDigits <= 6; firstDigits += 1) {
+      for (let secondDigits = 1; secondDigits <= 6; secondDigits += 1) {
+        for (let sample = 0; sample < 5; sample += 1) {
+          const item = mathApi.makeOperation('sumas', 'Avanzado', '', operands, String(firstDigits), String(secondDigits), { carryMode: 'no' });
+          const numbers = item.question.match(/\d+/g).map(Number);
+          assert.equal(numbers.length, operands);
+          assert.equal(String(numbers[0]).length, firstDigits);
+          numbers.slice(1).forEach(number => assert.equal(String(number).length, secondDigits));
+          assert.equal(item.answer, numbers.reduce((sum, number) => sum + number, 0));
+          const width = Math.max(...numbers.map(number => String(number).length));
+          for (let position = 0; position < width; position += 1) {
+            const column = numbers.reduce((sum, number) => sum + Number(String(number).at(-1 - position) || 0), 0);
+            assert.ok(column < 10, item.question);
+          }
+        }
+      }
+    }
+  }
+});
+
+test('las divisiones respetan las cifras en las combinaciones posibles', () => {
+  for (const divisionMode of ['exact', 'remainder']) {
+    for (let firstDigits = 1; firstDigits <= 4; firstDigits += 1) {
+      for (let secondDigits = 1; secondDigits <= firstDigits; secondDigits += 1) {
+        for (let sample = 0; sample < 30; sample += 1) {
+          const item = mathApi.makeOperation('divisiones', 'Inicial', '', 2, String(firstDigits), String(secondDigits), { divisionMode });
+          const [, dividend, , divisor] = parseOperation(item.question);
+          const a = Number(dividend);
+          const b = Number(divisor);
+          assert.equal(String(a).length, firstDigits, item.question);
+          assert.equal(String(b).length, secondDigits, item.question);
+          if (divisionMode === 'exact') assert.equal(a % b, 0, item.question);
+          else assert.notEqual(a % b, 0, item.question);
+        }
+      }
+    }
+  }
+});

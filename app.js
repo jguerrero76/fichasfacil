@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-11', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-12', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -95,7 +95,7 @@ const updateSubtractionDigitOptions = () => {
   const first = document.querySelector('#firstDigits');
   const second = document.querySelector('#secondDigits');
   const constrainsSubtraction = activity.value === 'restas';
-  const gradeMaximum = { Inicial: 9, Medio: 999, Avanzado: 99999 }[document.querySelector('#difficulty').value] || 9;
+  const gradeMaximum = { Inicial: 20, Medio: 999, Avanzado: 99999 }[document.querySelector('#difficulty').value] || 9;
   const firstMaximum = first.value === 'auto' ? gradeMaximum : (10 ** Number(first.value)) - 1;
   [...second.options].forEach(option => {
     option.disabled = constrainsSubtraction && option.value !== 'auto' && (10 ** (Number(option.value) - 1)) > firstMaximum;
@@ -104,11 +104,21 @@ const updateSubtractionDigitOptions = () => {
 };
 const updateDivisionOptions = () => {
   const divisor = document.querySelector('#specificDivisor');
-  const isRemainderDivision = activity.value === 'divisiones' && document.querySelector('#divisionMode').value === 'remainder';
+  const isDivision = activity.value === 'divisiones';
+  const isRemainderDivision = isDivision && document.querySelector('#divisionMode').value === 'remainder';
   const digits = document.querySelector('#firstDigits').value;
   const difficulty = document.querySelector('#difficulty').value;
-  const autoMaximum = { Inicial: 9, Medio: 999, Avanzado: 99999 }[difficulty] || 9;
+  const autoMaximum = { Inicial: 20, Medio: 999, Avanzado: 99999 }[difficulty] || 9;
   const dividendMaximum = digits === 'auto' ? autoMaximum : (10 ** Number(digits)) - 1;
+  const divisorDigits = document.querySelector('#secondDigits');
+  if (isDivision) {
+    [...divisorDigits.options].forEach(option => {
+      if (option.value === 'auto') return;
+      const minimumDivisor = option.value === '1' ? 2 : 10 ** (Number(option.value) - 1);
+      option.disabled = isRemainderDivision ? minimumDivisor >= dividendMaximum : minimumDivisor > dividendMaximum;
+    });
+    if (divisorDigits.selectedOptions[0]?.disabled) divisorDigits.value = 'auto';
+  }
   [...divisor.options].forEach(option => {
     option.disabled = isRemainderDivision && option.value !== 'all' && dividendMaximum <= Number(option.value);
   });
@@ -137,6 +147,7 @@ const updateActivityFields = () => {
   document.querySelector('#remainder-field').classList.toggle('hidden-field', activity.value !== 'divisiones');
   updateSubtractionDigitOptions();
   updateDivisionOptions();
+  document.querySelector('#specific-divisor-field').classList.toggle('hidden-field', activity.value !== 'divisiones' || document.querySelector('#secondDigits').value !== '1');
   updateCountOptions();
 };
 function updateCountOptions() {
@@ -287,7 +298,7 @@ function ensureWorksheetEngine() {
   if (worksheetEnginePromise) return worksheetEnginePromise;
   worksheetEnginePromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'worksheet-engine.js?v=20261121-11';
+    script.src = 'worksheet-engine.js?v=20261121-12';
     script.async = true;
     const timeout = setTimeout(() => { script.remove(); reject(new Error('El generador tarda demasiado en cargar.')); }, 15000);
     script.onload = () => { clearTimeout(timeout); resolve(); };

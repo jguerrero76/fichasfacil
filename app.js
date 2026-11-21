@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-7', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-8', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -578,7 +578,7 @@ function downloadPdf(config, items, solutions = false) {
   const write = (text, size = 11, options = {}) => {
     doc.setFont('helvetica', options.bold ? 'bold' : 'normal');
     doc.setFontSize(size);
-    const lines = doc.splitTextToSize(String(text), pageWidth - margin * 2);
+    const lines = doc.splitTextToSize(String(text).replaceAll('−', '-'), pageWidth - margin * 2);
     const lineHeight = size * 0.48 + 2;
     ensureSpace(lines.length * lineHeight + (options.gap ?? 2));
     doc.text(lines, margin, y);
@@ -643,6 +643,8 @@ function downloadPdf(config, items, solutions = false) {
     drawHeader(headerTitle);
     items.forEach((item, index) => {
     if (config.type === 'geometria') {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
       const questionLines = doc.splitTextToSize(`${index + 1}. ${item.question}`, pageWidth - margin * 2);
       const figureHeight = 30;
       const answerHeight = solutions ? 12 : 34;
@@ -669,8 +671,15 @@ function downloadPdf(config, items, solutions = false) {
       write(item.title, 14, { bold: true, gap: 3 });
       write(item.text, 11, { gap: 5 });
       item.questions.forEach((question, questionIndex) => {
-        if (!solutions) {
-          const questionLines = doc.splitTextToSize(`${questionIndex + 1}. ${question}`, pageWidth - margin * 2);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        const questionLines = doc.splitTextToSize(`${questionIndex + 1}. ${question}`, pageWidth - margin * 2);
+        if (solutions) {
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(10);
+          const answerLines = doc.splitTextToSize(`Respuesta: ${item.answers[questionIndex]}`, pageWidth - margin * 2);
+          ensureSpace(questionLines.length * (11 * 0.48 + 2) + 2 + answerLines.length * (10 * 0.48 + 2) + 5);
+        } else {
           ensureSpace(questionLines.length * (11 * 0.48 + 2) + 3 * 10 + 20);
         }
         write(`${questionIndex + 1}. ${question}`, 11, { bold: true, gap: 2 });
@@ -685,9 +694,16 @@ function downloadPdf(config, items, solutions = false) {
       return;
     }
     const answerLineCount = config.type === 'problemas' ? 6 : 4;
-    if (!solutions) {
-      const questionLines = doc.splitTextToSize(`${index + 1}. ${item.question}`, pageWidth - margin * 2);
-      const questionHeight = questionLines.length * (12 * 0.48 + 2) + 3;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    const questionLines = doc.splitTextToSize(`${index + 1}. ${item.question}`, pageWidth - margin * 2);
+    const questionHeight = questionLines.length * (12 * 0.48 + 2) + 3;
+    if (solutions) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      const answerLines = doc.splitTextToSize(`Respuesta: ${item.explanation || item.answer}`, pageWidth - margin * 2);
+      ensureSpace(questionHeight + answerLines.length * (10 * 0.48 + 2) + 5);
+    } else {
       ensureSpace(Math.max(questionHeight + answerLineCount * 10 + 15, config.type === 'problemas' ? 70 : 0));
     }
     write(`${index + 1}. ${item.question}`, 12, { bold: true, gap: 3 });

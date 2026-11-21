@@ -432,3 +432,14 @@ test('las actividades nuevas de cálculo práctico tienen respuestas correctas',
     }
   }
 });
+
+test('el PDF mantiene cada problema junto a su solución y representa la resta', () => {
+  const items = Array.from({ length: 20 }, (_, index) => ({ question: 'Problema ' + (index + 1) + ': una caja contiene objetos y se retiran algunos.', answer: index + 1, explanation: (index + 3) + ' − 2 = ' + (index + 1) }));
+  assert.equal(makePdf({ type: 'problemas', difficulty: 'Inicial', student: '' }, items, true), true);
+  const pages = PdfProbe.latest.saved.pages;
+  for (let index = 0; index < items.length; index += 1) {
+    const page = pages.find(entries => entries.some(entry => entry.value.includes((index + 1) + '. Problema ' + (index + 1) + ':')));
+    assert.ok(page, 'problema ' + (index + 1));
+    assert.ok(page.some(entry => entry.value.includes('Respuesta: ' + (index + 3) + ' - 2 = ' + (index + 1))), 'solución ' + (index + 1));
+  }
+});

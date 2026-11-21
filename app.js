@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-14', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-15', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -298,7 +298,7 @@ function ensureWorksheetEngine() {
   if (worksheetEnginePromise) return worksheetEnginePromise;
   worksheetEnginePromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'worksheet-engine.js?v=20261121-14';
+    script.src = 'worksheet-engine.js?v=20261121-15';
     script.async = true;
     const timeout = setTimeout(() => { script.remove(); reject(new Error('El generador tarda demasiado en cargar.')); }, 15000);
     script.onload = () => { clearTimeout(timeout); resolve(); };
@@ -528,7 +528,13 @@ function downloadPdf(config, items, solutions = false) {
     } else if (config.type === 'multiplicaciones') {
       doc.setDrawColor(196, 203, 212);
       doc.setLineWidth(0.25);
-      [lineY + 8, lineY + 15, lineY + 22].forEach(answerY => doc.line(operatorX - 3, answerY, numberRight + 1, answerY));
+      const answerRows = Math.max(3, second.length + 1);
+      const answerWidth = doc.getTextWidth("0".repeat(first.length + second.length));
+      const answerLeft = Math.max(margin, Math.min(operatorX - 3, numberRight - answerWidth - 2));
+      for (let row = 1; row <= answerRows; row += 1) {
+        const answerY = lineY + row * 7;
+        doc.line(answerLeft, answerY, numberRight + 1, answerY);
+      }
       doc.setDrawColor(0, 0, 0);
       doc.setLineWidth(0.2);
     } else if (config.type === 'sumas' || config.type === 'restas' || config.type === 'divisiones') {
@@ -653,10 +659,21 @@ function downloadPdf(config, items, solutions = false) {
       const columns = 4;
       const columnWidth = (pageWidth - margin * 2) / columns;
       const startY = 55;
-      const rowHeight = 43;
+      const multiplierDigits = config.type === 'multiplicaciones'
+        ? Math.max(1, ...items.map(item => (item.question.match(/×\s*(\d+)/)?.[1] || '').length))
+        : 0;
+      const answerRows = Math.max(3, multiplierDigits + 1);
+      const rowHeight = config.type === 'multiplicaciones' ? Math.max(43, 20 + answerRows * 7) : 43;
+      const rowsPerPage = Math.max(1, Math.floor((pageHeight - 25 - startY) / rowHeight));
+      const itemsPerPage = rowsPerPage * columns;
       items.forEach((item, index) => {
-        const column = index % columns;
-        const row = Math.floor(index / columns);
+        if (index > 0 && index % itemsPerPage === 0) {
+          doc.addPage();
+          drawHeader(headerTitle);
+        }
+        const localIndex = index % itemsPerPage;
+        const column = localIndex % columns;
+        const row = Math.floor(localIndex / columns);
         drawMathOperation(item, margin + columnWidth * (column + 0.5), startY + row * rowHeight);
       });
     }

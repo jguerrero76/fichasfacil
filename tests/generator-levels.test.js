@@ -518,3 +518,20 @@ test('las restas sin llevadas respetan las cifras en todas las combinaciones pos
     }
   }
 });
+
+test('las multiplicaciones largas reservan espacio y se reparten en páginas', () => {
+  const items = Array.from({ length: 20 }, () => ({ question: '123456 × 234567 =', answer: 28958703552 }));
+  assert.equal(makePdf({ type: 'multiplicaciones', difficulty: 'Avanzado', student: '' }, items, false), true);
+  const pdf = PdfProbe.latest;
+  assert.equal(pdf.saved.pageCount, 2);
+  const answerLines = pdf.lines.filter(line => line.x2 - line.x1 >= 30 && Math.abs(line.y2 - line.y1) < 0.001 && line.y1 > 55 && line.y1 < 260);
+  assert.ok(answerLines.length >= 20 * 7, 'debe haber siete líneas amplias por operación');
+});
+
+test('la vista imprimible reserva siete renglones para multiplicar por seis cifras', () => {
+  const config = { type: 'multiplicaciones', student: '', difficulty: 'Avanzado' };
+  const items = [{ question: '123456 × 234567 =', answer: 28958703552 }];
+  const html = printableApi(config, items, false);
+  assert.equal((html.match(/height="8mm"/g) || []).length, 7);
+  assert.match(html, /break-inside:avoid;page-break-inside:avoid/);
+});

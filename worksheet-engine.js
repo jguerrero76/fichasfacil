@@ -1233,12 +1233,15 @@ function exerciseMarkup(config, item, index, solutions) {
       }
     }
     const threeTermMatch = item.question.match(/^(\d+)\s+([+−])\s+(\d+)\s+([+−])\s+(\d+)\s*=/);
+    const multiplication = item.question.match(/^(\d+)\s+×\s+(\d+)\s*=/);
+    const multiplicationRows = multiplication ? Math.max(3, multiplication[2].length + 1) : 3;
+    const operationWidth = multiplication ? Math.max(120, Math.min(160, 12 * (multiplication[1].length + multiplication[2].length))) : 120;
     const digitMarkup = value => [...String(value)].map(digit => `<span style="display:inline-block;width:1ch;text-align:center">${digit}</span>`).join('');
     const numberRow = (operator, value) => `<tr><td width="20%" align="center" valign="middle" style="font:700 14pt 'Courier New',monospace">${operator || '&nbsp;'}</td><td width="80%" align="right" valign="middle" style="font:700 14pt 'Courier New',monospace"><span style="display:inline-flex;justify-content:flex-end">${digitMarkup(value)}</span></td></tr>`;
     const answerRows = solutions
       ? `<tr><td colspan="2" height="8mm" align="right" valign="middle" style="font:700 13pt Arial,Helvetica,sans-serif;padding-right:2mm;color:#20283f">${escapeHtml(String(item.answer))}</td></tr>`
       : config.type === 'multiplicaciones'
-        ? Array.from({ length: 3 }, () => '<tr><td colspan="2" height="8mm" style="height:8mm;padding:0;border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf">&nbsp;</td></tr><tr><td colspan="2" height="3mm" style="height:3mm;padding:0">&nbsp;</td></tr>').join('')
+        ? Array.from({ length: multiplicationRows }, () => '<tr><td colspan="2" height="8mm" style="height:8mm;padding:0;border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf">&nbsp;</td></tr><tr><td colspan="2" height="3mm" style="height:3mm;padding:0">&nbsp;</td></tr>').join('')
         : config.type === 'sumas' || config.type === 'restas' || config.type === 'divisiones'
           ? '<tr><td colspan="2" height="8mm" style="height:8mm;padding:0;border-top:1px solid #aeb6bf;border-bottom:1px solid #aeb6bf">&nbsp;</td></tr>'
           : '';
@@ -1248,7 +1251,7 @@ function exerciseMarkup(config, item, index, solutions) {
         const match = item.question.match(/^(\d+)\s+([+−×÷])\s+(\d+)\s*=/);
         return match ? `${numberRow('', match[1])}${numberRow(match[2], match[3])}` : '';
       })();
-    if (operationRows) return `<table role="presentation" width="120" align="center" border="0" cellspacing="0" cellpadding="0"><tbody>${operationRows}<tr><td colspan="2" align="center"><hr width="100%" size="1" color="#20283f" noshade></td></tr>${answerRows}</tbody></table>`;
+    if (operationRows) return `<table role="presentation" width="${operationWidth}" align="center" border="0" cellspacing="0" cellpadding="0"><tbody>${operationRows}<tr><td colspan="2" align="center"><hr width="100%" size="1" color="#20283f" noshade></td></tr>${answerRows}</tbody></table>`;
   }
   const responseRows = config.type === 'problemas' ? 6 : 4;
   const answerSpace = solutions
@@ -1275,7 +1278,7 @@ function printableHtml(config, items, solutions) {
     for (let start = 0; start < items.length; start += cellsPerRow) {
       const cells = items.slice(start, start + cellsPerRow).map((item, offset) => `<td width="${cellWidth}%" height="${rowHeightPx}" align="center" valign="middle" style="height:${rowHeightPx}px;padding:1mm 2mm">${exerciseMarkup(config, item, start + offset, solutions)}</td>`);
       while (cells.length < cellsPerRow) cells.push(`<td width="${cellWidth}%" height="${rowHeightPx}" style="height:${rowHeightPx}px">&nbsp;</td>`);
-      operationRows.push(`<tr>${cells.join('')}</tr>`);
+      operationRows.push(`<tr style="break-inside:avoid;page-break-inside:avoid">${cells.join('')}</tr>`);
     }
     worksheetContent = `<table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="table-layout:fixed;border-collapse:collapse"><tbody><tr><td colspan="${cellsPerRow}" height="45">&nbsp;</td></tr>${operationRows.join('')}</tbody></table>`;
   } else {

@@ -43,3 +43,18 @@ test('cambiar de nivel crea ejercicios nuevos y conserva los mostrados al descar
   assert.strictEqual(itemsFor(advanced), preview);
   assert.equal(generations, 2);
 });
+
+test('la impresión detecta si el navegador admite contadores de página', () => {
+  const start = source.indexOf('function supportsPrintPageNumbers()');
+  const end = source.indexOf("form.addEventListener('submit'", start);
+  assert.ok(start >= 0 && end > start);
+  const detect = new Function('CSSStyleSheet', source.slice(start, end) + '; return supportsPrintPageNumbers;');
+  class SupportedSheet {
+    replaceSync() { this.cssRules = [{cssRules: [{cssText:'@bottom-right {}', style:{content:'counter(page) counter(pages)'}}]}]; }
+  }
+  class UnsupportedSheet { replaceSync() { this.cssRules = [{cssRules: []}]; } }
+  class BrokenSheet { replaceSync() { throw new Error('no soportado'); } }
+  assert.equal(detect(SupportedSheet)(), true);
+  assert.equal(detect(UnsupportedSheet)(), false);
+  assert.equal(detect(BrokenSheet)(), false);
+});

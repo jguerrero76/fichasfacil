@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-23', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-24', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -298,7 +298,7 @@ function ensureWorksheetEngine() {
   if (worksheetEnginePromise) return worksheetEnginePromise;
   worksheetEnginePromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'worksheet-engine.js?v=20261121-23';
+    script.src = 'worksheet-engine.js?v=20261121-24';
     script.async = true;
     const timeout = setTimeout(() => { script.remove(); reject(new Error('El generador tarda demasiado en cargar.')); }, 15000);
     script.onload = () => { clearTimeout(timeout); resolve(); };
@@ -839,8 +839,10 @@ function createSheets(config) {
   // La altura mínima del body puede crear una página fantasma cuando el pie es fijo.
   const finalPdfLayout = '<style>html,body{height:auto!important;min-height:0!important}.math-grid{min-height:198mm!important}.text-exercise{min-height:160px!important}.reading-question{min-height:145px!important}</style>';
   const writingGuideLayout = '<style>.text-exercise i{height:8mm!important;min-height:8mm!important;box-sizing:border-box!important;border:0!important;border-top:1px solid #aeb6bf!important;border-bottom:1px solid #aeb6bf!important;background:none!important}.reading-question i{grid-column:2!important;display:grid!important;gap:3mm!important;height:auto!important;border:0!important;background:none!important}.reading-question i span{display:block!important;height:8mm!important;box-sizing:border-box!important;border-top:1px solid #aeb6bf!important;border-bottom:1px solid #aeb6bf!important}.geometry-exercise>table td{border-top:1px solid #aeb6bf!important;border-bottom:1px solid #aeb6bf!important}.geometry-exercise>table{border-spacing:0 3mm!important}div[role="img"][aria-label="FichasFácil"]{bottom:9mm!important;font-size:11px!important}div[role="img"][aria-label="FichasFácil"] svg{width:9mm!important;height:9mm!important}</style>';
+  // Los cuadros de margen del navegador imprimen contadores reales en cada página.
+  const pageNumberLayout = '<style>@page{size:A4;margin:0 0 10mm;@bottom-right{content:"Página " counter(page) "/" counter(pages);font:8pt Arial,sans-serif;color:#20385f;padding-right:12mm;vertical-align:middle}}@media print{.worksheet-print-math>tbody>tr>td[height=\"174\"]{height:145px!important}}</style>';
   const preparePrint = html => {
-    const inlineLayout = html
+    const inlineLayout = (simpleMath ? html.replace('<table role=\"presentation\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"table-layout:fixed;border-collapse:collapse\">', '<table class=\"worksheet-print-math\" role=\"presentation\" width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"table-layout:fixed;border-collapse:collapse\">') : html)
       .replace('<body>', '<body style="margin:0;background:#fff;color:#20283f;font-family:Arial,Helvetica,sans-serif;width:210mm;min-height:297mm;padding:13mm 12mm;box-sizing:border-box;overflow:visible;-webkit-print-color-adjust:exact;print-color-adjust:exact">')
       .replace(/<h1>/, '<h1 style="display:block;text-align:center;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.2;font-weight:700;color:#20283f;margin:0 0 19px">')
       .replace(/<div class="worksheet-header">/, '<div class="worksheet-header" style="display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:0 0 24px;padding:0 8px;font:700 10px Arial,Helvetica,sans-serif;white-space:nowrap">')
@@ -857,7 +859,7 @@ function createSheets(config) {
     .replace('</body>', '<div role="img" aria-label="FichasFácil" style="position:fixed!important;left:0!important;right:0!important;top:auto!important;bottom:5mm!important;height:10mm!important;box-sizing:border-box!important;border-top:1px solid #dce4ec!important;padding-top:2mm!important;width:100%!important;z-index:1000;display:flex;align-items:center;justify-content:center;gap:4mm;color:#20385f;font:700 9px Arial,sans-serif;background:#fff"><svg aria-hidden="true" width="6mm" height="6mm" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#20385f"/><rect x="10" y="10" width="19" height="19" rx="5" fill="#f4c91c"/><rect x="35" y="10" width="19" height="19" rx="5" fill="#ed7e35"/><rect x="10" y="35" width="19" height="19" rx="5" fill="#7eb9ff"/><rect x="35" y="35" width="19" height="19" rx="5" fill="#8bd1aa"/></svg><span>FichasFácil</span></div></body>')
     .replace('<style>', `<style>@page{size:A4;margin:0}${simpleMath ? 'h1{display:block!important;font-size:15px;letter-spacing:0;margin:0 0 19px}.worksheet-header{display:flex!important;justify-content:space-between;gap:20px;margin-bottom:24px;padding:0 8px;border:0;font-size:10px}.worksheet-header>div:first-child{flex:1}.worksheet-header>div:last-child{min-width:72px}.worksheet-header span{min-width:100px;height:13px}.worksheet-header>div:last-child span{min-width:62px}.math-grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(5,minmax(0,1fr));gap:0 22px;min-height:246mm;align-items:center;padding:0 2mm}.arithmetic{width:100%;min-height:0;justify-content:center;align-items:center;padding:0}.arithmetic-three .operation{min-height:54px}.print-row .number{display:none}.arithmetic .operation{display:block!important;flex:0 0 116px!important;width:116px!important;min-width:116px!important;max-width:116px!important;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:17px;line-height:1.15}.digit-value{display:inline-flex;gap:3px;letter-spacing:0}.digit-value b{letter-spacing:0}.top-number,.extra-number{padding-right:0;letter-spacing:0;font-variant-numeric:tabular-nums;white-space:nowrap;min-height:23px}.bottom-number{grid-template-columns:18px 1fr;gap:0;padding-right:0;letter-spacing:0;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1.15}.bottom-number .operator{text-align:center;letter-spacing:0}.bottom-number .digit-value{justify-self:end}.arithmetic .operation-rule{display:block!important;width:116px!important;max-width:116px!important;margin-top:5px}.answer-space{display:none}' : textStyles}`)
     .replaceAll('@media(max-width:650px)', simpleMath ? '@media print and (max-width:0px)' : '@media screen and (max-width:650px)')
-    .replace('</head>', `${printPolish}${screenLayout}${finalPdfLayout}${writingGuideLayout}</head>`);
+    .replace('</head>', `${printPolish}${screenLayout}${finalPdfLayout}${writingGuideLayout}${pageNumberLayout}</head>`);
   };
   const worksheet = preparePrint(printableHtml(config, items, false));
   const answerSheet = preparePrint(printableHtml(config, items, true));
@@ -951,13 +953,23 @@ document.querySelector('#download-direct')?.addEventListener('click', async () =
   setTimeout(() => { button.disabled = false; document.querySelector('#preview-download').disabled = false; button.removeAttribute('aria-busy'); button.textContent = originalLabel; }, 500);
 });
 
+function supportsPrintPageNumbers() {
+  try {
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync('@page { @bottom-right { content: "Página " counter(page) "/" counter(pages); } }');
+    const marginRule = sheet.cssRules[0]?.cssRules?.[0];
+    return Boolean(marginRule && marginRule.cssText.startsWith('@bottom-right') && marginRule.style?.content?.includes('counter(pages)'));
+  } catch (error) { return false; }
+}
+
 form.addEventListener('submit', async event => {
   event.preventDefault();
+  const pdfPrint = isMobileDevice() || !supportsPrintPageNumbers();
   const submitButton = document.querySelector('#print-direct');
   const originalSubmitLabel = submitButton.textContent;
   submitButton.disabled = true;
   submitButton.setAttribute('aria-busy', 'true');
-  submitButton.textContent = isMobileDevice() ? 'Preparando PDF…' : 'Preparando impresión…';
+  submitButton.textContent = pdfPrint ? 'Preparando PDF…' : 'Preparando impresión…';
   const config = readConfig();
   form.setAttribute('aria-busy', 'true');
   let printed = false;
@@ -970,13 +982,12 @@ form.addEventListener('submit', async event => {
     answerSheet = sheets.answerSheet;
     print = sheets.print;
     items = sheets.items;
-    const mobile = isMobileDevice();
-    printed = mobile ? await safeDownloadPdf(config, items) : print(sheets.worksheet);
+    printed = pdfPrint ? await safeDownloadPdf(config, items) : print(sheets.worksheet);
   } catch (error) {
     preparationFailed = true;
     console.error('No se pudo preparar la ficha.', error);
   }
-  const mobile = isMobileDevice();
+  const mobile = pdfPrint;
   setTimeout(() => { submitButton.disabled = false; submitButton.removeAttribute('aria-busy'); submitButton.textContent = originalSubmitLabel; form.setAttribute('aria-busy', 'false'); }, 500);
   const contentSummary = config.type === 'diaria' ? '5 actividades breves'
     : ['copiado', 'caligrafia'].includes(config.type)
@@ -987,7 +998,7 @@ form.addEventListener('submit', async event => {
     : mobile
       ? 'El navegador no ha podido generar el PDF.'
       : 'El navegador ha bloqueado la ventana de impresión.';
-  result.innerHTML = `<div class="success-box"><strong>${printed ? (mobile ? 'PDF descargado' : 'Ficha lista para imprimir') : 'No se ha podido preparar la ficha'}</strong><span class="print-hint">${printed ? `${labels[config.type]} · ${contentSummary}${mobile ? ' · Abre el PDF para imprimirlo o compartirlo.' : ''}` : failureMessage}</span>${config.solutions && !preparationFailed ? `<button class="solutions-link" id="print-solutions" type="button">${mobile ? 'Descargar soluciones' : 'Imprimir soluciones'}</button>` : ''}${printed ? '<button class="solutions-link new-sheet" id="new-sheet" type="button">Crear otra ficha</button>' : ''}${!printed ? '<button class="solutions-link" id="retry-print" type="button">Reintentar</button>' : ''}</div>`;
+  result.innerHTML = `<div class="success-box"><strong>${printed ? (mobile ? 'PDF descargado' : 'Ficha lista para imprimir') : 'No se ha podido preparar la ficha'}</strong><span class="print-hint">${printed ? `${labels[config.type]} · ${contentSummary}${mobile ? ' · Abre el PDF numerado para imprimirlo o compartirlo.' : ''}` : failureMessage}</span>${config.solutions && !preparationFailed ? `<button class="solutions-link" id="print-solutions" type="button">${mobile ? 'Descargar soluciones' : 'Imprimir soluciones'}</button>` : ''}${printed ? '<button class="solutions-link new-sheet" id="new-sheet" type="button">Crear otra ficha</button>' : ''}${!printed ? '<button class="solutions-link" id="retry-print" type="button">Reintentar</button>' : ''}</div>`;
   result.setAttribute('role', printed ? 'status' : 'alert');
   result.setAttribute('aria-live', printed ? 'polite' : 'assertive');
   document.querySelector('#print-solutions')?.addEventListener('click', async event => {

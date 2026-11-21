@@ -606,3 +606,21 @@ test('los ejercicios de dinero generan respuestas variadas', () => {
     assert.ok(new Set(answers).size >= 5, tier);
   }
 });
+
+test('las lecturas científicas distinguen observación y explicación verificable', () => {
+  const start = source.indexOf('const makeReading =');
+  const end = source.indexOf('const copyingSequences =', start);
+  const readings = new Function(source.slice(start, end) + '; return readingActivities;')();
+  assert.equal(readings.length, 126);
+  const find = title => readings.find(r => r.title === title);
+  assert.match(find('La brújula').text, /norte magnético.*no coincide exactamente con el norte geográfico/);
+  assert.match(find('El observatorio').answers[2], /cambia la parte iluminada/);
+  assert.match(find('El jardín de lluvia').text, /filtre en el suelo/);
+  assert.match(find('La lluvia de estrellas').text, /fragmentos que entran en la atmósfera/);
+});
+
+test('la impresión añade contadores y reserva espacio en el margen', () => {
+  assert.match(source, /@bottom-right\{content:"Página " counter\(page\) "\/" counter\(pages\)/);
+  assert.match(source, /@page\{size:A4;margin:0 0 10mm;/);
+  assert.match(source, /\$\{writingGuideLayout\}\$\{pageNumberLayout\}/);
+});

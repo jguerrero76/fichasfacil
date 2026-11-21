@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-21', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-22', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -298,7 +298,7 @@ function ensureWorksheetEngine() {
   if (worksheetEnginePromise) return worksheetEnginePromise;
   worksheetEnginePromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'worksheet-engine.js?v=20261121-21';
+    script.src = 'worksheet-engine.js?v=20261121-22';
     script.async = true;
     const timeout = setTimeout(() => { script.remove(); reject(new Error('El generador tarda demasiado en cargar.')); }, 15000);
     script.onload = () => { clearTimeout(timeout); resolve(); };
@@ -1015,14 +1015,18 @@ form.addEventListener('submit', async event => {
 const worksheetPreview = document.querySelector('#worksheet-preview');
 const previewFrame = document.querySelector('#worksheet-frame');
 const previewSolutions = document.querySelector('#preview-solutions');
+const previewDifficulty = document.querySelector('#preview-difficulty');
 const previewMessage = document.querySelector('#worksheet-preview-message');
 function renderWorksheetPreview(fresh = false) {
   const config = readConfig();
+  document.querySelector('#preview-download').disabled = false;
+  document.querySelector('#preview-print').disabled = false;
+  previewDifficulty.value = config.difficulty;
   if (fresh) getWorksheetItems(config, true);
   const sheets = createSheets(config);
   document.querySelector('#worksheet-preview-title').textContent = `${labels[config.type]} · Vista previa`;
-  const count = ['sumas', 'restas', 'multiplicaciones', 'divisiones'].includes(config.type) ? sheets.items.length + ' ejercicios' : config.difficulty;
-  document.querySelector('#worksheet-preview-summary').textContent = `${count} · Formato A4 · ${previewSolutions.checked ? 'Soluciones' : 'Ficha para resolver'}`;
+  const count = ['sumas', 'restas', 'multiplicaciones', 'divisiones'].includes(config.type) ? ` · ${sheets.items.length} ejercicios` : '';
+  document.querySelector('#worksheet-preview-summary').textContent = `Nivel ${config.difficulty}${count} · Formato A4 · ${previewSolutions.checked ? 'Soluciones' : 'Ficha para resolver'}`;
   const fitScale = Math.min(1, (previewFrame.clientWidth || Math.min(window.innerWidth - 32, 958)) / 794);
   const scale = document.querySelector('#preview-scale').value === 'actual' ? 1 : fitScale;
   const screenStyle = `<style>@media screen{html{zoom:${scale}!important}div[role="img"][aria-label="FichasFácil"]{position:static!important;margin-top:28px!important}}</style>`;
@@ -1059,6 +1063,29 @@ worksheetPreview.addEventListener('close', () => {
 });
 worksheetPreview.addEventListener('keydown', event => {
   if (event.key === 'Escape') event.stopPropagation();
+});
+previewDifficulty.addEventListener('change', () => {
+  const difficulty = document.querySelector('#difficulty');
+  const previousValues = Object.fromEntries(preferenceIds.map(id => [id, document.querySelector(`#${id}`).value]));
+  try {
+    difficulty.value = previewDifficulty.value;
+    difficulty.dispatchEvent(new Event('change', { bubbles: true }));
+    renderWorksheetPreview();
+    const config = readConfig();
+    const customDigits = ['sumas', 'restas', 'multiplicaciones', 'divisiones'].includes(config.type) && (config.firstDigits !== 'auto' || config.secondDigits !== 'auto');
+    previewMessage.textContent = customDigits
+      ? `Nivel ${config.difficulty}. Se mantienen las cifras elegidas en las opciones. Los ejercicios mostrados se conservarán al imprimir o descargar.`
+      : `Nivel ${config.difficulty}. Los ejercicios mostrados se conservarán al imprimir o descargar.`;
+  } catch (error) {
+    Object.entries(previousValues).forEach(([id, value]) => setSelectValue(id, value));
+    updateActivityFields();
+    savePreferences();
+    try { renderWorksheetPreview(); } catch (restoreError) {
+      document.querySelector('#preview-download').disabled = true;
+      document.querySelector('#preview-print').disabled = true;
+    }
+    previewMessage.textContent = 'No se ha podido cambiar el nivel. Vuelve a las opciones e inténtalo de nuevo.';
+  }
 });
 previewSolutions.addEventListener('change', () => renderWorksheetPreview());
 document.querySelector('#preview-scale').addEventListener('change', () => renderWorksheetPreview());

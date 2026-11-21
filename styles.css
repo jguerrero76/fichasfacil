@@ -436,3 +436,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #a3
 .form-actions .print-button[hidden] { display: none; }
 .form-actions.mobile-actions { grid-template-columns: minmax(120px, .8fr) repeat(2, minmax(0, 1fr)); }
 @media (max-width: 700px) { .form-actions.mobile-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.worksheet-preview-tools select:focus-visible{outline:3px solid #e6b900;outline-offset:2px}
+.worksheet-preview-tools .preview-difficulty-label{font-weight:700;font-size:14px}
+@media(max-width:700px){.worksheet-preview-tools .preview-difficulty-label select{max-width:130px}}

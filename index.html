@@ -34,7 +34,7 @@
     <link rel="icon" href="favicon.svg?v=20261011-17" type="image/svg+xml" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="apple-touch-icon" href="pwa-icon.svg?v=20261011-17" />
-    <link rel="stylesheet" href="styles.css?v=20261121-9" />
+    <link rel="stylesheet" href="styles.css?v=20261121-10" />
   </head>
   <body>
     <a class="skip-link" href="#actividades">Saltar a las actividades</a>
@@ -211,12 +211,12 @@
 
     <dialog id="worksheet-preview" class="worksheet-preview" aria-labelledby="worksheet-preview-title" aria-describedby="worksheet-preview-summary">
       <header class="worksheet-preview-header"><div><h2 id="worksheet-preview-title">Vista previa de tu ficha</h2><p id="worksheet-preview-summary">Formato A4</p></div><button id="close-worksheet-preview" type="button" autofocus>Volver a las opciones</button></header>
-      <div class="worksheet-preview-tools"><label><input id="preview-solutions" type="checkbox"> Ver soluciones</label><label class="preview-scale-label">Tamaño <select id="preview-scale"><option value="fit">Ajustar al ancho</option><option value="actual">Tamaño real</option></select></label><button id="preview-refresh" type="button">Crear otros ejercicios</button></div>
+      <div class="worksheet-preview-tools"><label class="preview-difficulty-label" for="preview-difficulty">Nivel <select id="preview-difficulty"><option>Inicial</option><option>Medio</option><option>Avanzado</option></select></label><label><input id="preview-solutions" type="checkbox"> Ver soluciones</label><label class="preview-scale-label">Tamaño <select id="preview-scale"><option value="fit">Ajustar al ancho</option><option value="actual">Tamaño real</option></select></label><button id="preview-refresh" type="button">Crear otros ejercicios</button></div>
       <iframe id="worksheet-frame" title="Vista previa de la ficha educativa en A4" sandbox="allow-same-origin" referrerpolicy="no-referrer"></iframe>
       <p id="worksheet-preview-message" role="status" aria-live="polite"></p>
       <div class="worksheet-preview-actions"><button id="preview-print" type="button">Imprimir ficha</button><button id="preview-download" type="button">Descargar PDF</button></div>
     </dialog>
-    <script defer src="app.js?v=20261121-21"></script>
+    <script defer src="app.js?v=20261121-22"></script>
     <script type="application/ld+json">
       {"@context":"https://schema.org","@type":"WebSite","name":"FichasFacil","url":"https://fichasfacil.es/","description":"Generador gratuito de fichas educativas imprimibles para Infantil y Primaria: matemáticas, lengua, lectura, escritura y lógica.","inLanguage":"es-ES","publisher":{"@type":"Organization","name":"FichasFacil","url":"https://fichasfacil.es/","logo":"https://fichasfacil.es/pwa-icon.svg"}}
     </script>

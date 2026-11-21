@@ -29,3 +29,17 @@ test('cambiar la actividad o las opciones genera una ficha nueva', () => {
   assert.notStrictEqual(itemsFor({...config,count:20}), first);
   assert.equal(generations, 3);
 });
+
+test('cambiar de nivel crea ejercicios nuevos y conserva los mostrados al descargar', () => {
+  let generations = 0;
+  const itemsFor = createCache((type, count, difficulty) => [{question: `${difficulty} ${++generations}`}]);
+  const initial = {type:'lectura',count:10,difficulty:'Inicial',student:'',solutions:false};
+  const first = itemsFor(initial);
+  const advanced = {...initial, difficulty:'Avanzado'};
+  const preview = itemsFor(advanced);
+  assert.notStrictEqual(preview, first);
+  assert.match(preview[0].question, /^Avanzado/);
+  assert.strictEqual(itemsFor({...advanced, solutions:true}), preview);
+  assert.strictEqual(itemsFor(advanced), preview);
+  assert.equal(generations, 2);
+});

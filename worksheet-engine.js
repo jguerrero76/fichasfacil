@@ -850,6 +850,47 @@ for (const tier of ['Inicial', 'Medio', 'Avanzado']) {
   for (const [subject, verb, object] of extraSentences) practicalActivitiesByDifficulty[tier].ordenar.push([`Ordena: ${object} / ${verb} / ${subject}.`, `${subject} ${verb} ${object}.`]);
 }
 
+const spellingExpansion = [
+  ['Coloca las tildes', 'El avion cruzo el oceano.', 'El avión cruzó el océano.'],
+  ['Coloca las tildes', 'Maria comio una pera.', 'María comió una pera.'],
+  ['Coloca las tildes', 'El arbol crecio en el jardin.', 'El árbol creció en el jardín.'],
+  ['Coloca las tildes', 'El pajaro canto en la mañana.', 'El pájaro cantó en la mañana.'],
+  ['Coloca las tildes', 'Ramon encontro un lapiz.', 'Ramón encontró un lápiz.'],
+  ['Coloca las tildes', 'La musica sono en el salon.', 'La música sonó en el salón.'],
+  ['Coloca las tildes', 'El raton corrio por el tunel.', 'El ratón corrió por el túnel.'],
+  ['Coloca las tildes', 'Mi tio preparo el cafe.', 'Mi tío preparó el café.'],
+  ['Coloca las tildes', 'La lampara ilumino el sofa.', 'La lámpara iluminó el sofá.'],
+  ['Coloca las tildes', 'El camion llevo azucar al almacen.', 'El camión llevó azúcar al almacén.'],
+  ['Completa con b o v', 'El _arco navega junto a la _oya.', 'El barco navega junto a la boya.'],
+  ['Completa con b o v', 'La _entana mira al _osque.', 'La ventana mira al bosque.'],
+  ['Completa con b o v', 'La _aca pasea por el _alle.', 'La vaca pasea por el valle.'],
+  ['Completa con b o v', 'El _aso está sobre el _anco.', 'El vaso está sobre el banco.']
+];
+spellingActivities.push(...spellingExpansion);
+for (let start = 1; start <= 20; start += 1) {
+  logicActivities.push([`${start}, ${start + 2}, ${start + 4}, ${start + 6}, __`, String(start + 8)]);
+}
+const geometryExpansion = [
+  ['¿Cuántos lados tiene un triángulo?', '3 lados.'],
+  ['¿Cuántos vértices tiene un triángulo?', '3 vértices.'],
+  ['¿Cuántos lados tiene un cuadrado?', '4 lados.'],
+  ['¿Cuántos ángulos tiene un cuadrado?', '4 ángulos.'],
+  ['¿Cuántos vértices tiene un rectángulo?', '4 vértices.'],
+  ['¿Cuántos lados tiene un rectángulo?', '4 lados.'],
+  ['¿Cuántos lados tiene un pentágono?', '5 lados.'],
+  ['¿Cuántos vértices tiene un pentágono?', '5 vértices.'],
+  ['¿Cuántos lados tiene un hexágono?', '6 lados.'],
+  ['¿Cuántos vértices tiene un hexágono?', '6 vértices.'],
+  ['¿Cuántos lados tiene un octógono?', '8 lados.'],
+  ['¿Cuántos vértices tiene un octógono?', '8 vértices.'],
+  ['¿Cuántos lados tiene un heptágono?', '7 lados.'],
+  ['¿Cuántos vértices tiene un heptágono?', '7 vértices.']
+];
+for (const tier of ['Inicial', 'Medio', 'Avanzado']) practicalActivitiesByDifficulty[tier].geometria.push(...geometryExpansion);
+for (let hour = 1; hour <= 12; hour += 1) {
+  practicalActivitiesByDifficulty.Medio.reloj.push([`Son las ${hour}:00. ¿Qué hora será dentro de 30 minutos?`, `Las ${hour}:30.`]);
+}
+
 function activityQuestionPool(items, difficulty, type) {
   const level = difficultyTier(difficulty);
   if (type === 'ortografia') {
@@ -897,7 +938,7 @@ const geometryFigureFor = question => {
   if (text.includes('tres lados') || text.includes('tres ángulos')) return 'triangle';
   if (text.includes('línea cambia de dirección')) return 'brokenLine';
   if (text.includes('ángulo mayor que uno recto')) return 'obtuseAngle';
-  if (text.includes('cuadrilátero de cuatro lados iguales')) return 'square';
+  if (text.includes('cuadrilátero de cuatro lados iguales') || text.includes('ángulos tiene un cuadrado')) return 'square';
   if (text.includes('ángulo') && !text.includes('rectángulo')) return text.includes('menor, igual o mayor') ? 'acuteAngle' : 'angle';
   if (text.includes('cuadrado')) return 'square';
   if (text.includes('círculo') || text.includes('redonda')) return 'circle';
@@ -926,7 +967,7 @@ function getUniqueExerciseLimit(type, difficulty) {
   if (type === 'ortografia') return uniqueActivityPool(activityQuestionPool(spellingActivities, difficulty, type)).length;
   if (type === 'logica') return uniqueActivityPool(activityQuestionPool(logicActivities, difficulty, type)).length;
   if (practicalActivities[type]) return uniqueActivityPool(practicalActivitiesByDifficulty[difficultyTier(difficulty)]?.[type] || practicalActivities[type]).length;
-  if (type === 'mixta') return 12;
+  if (type === 'mixta') return 20;
   return 20;
 }
 
@@ -1020,7 +1061,14 @@ function makeContent(type, count, difficulty, level, operands, firstDigits, seco
         { question: 'Explica una ventaja de revisar una fuente antes de compartirla.', answer: 'Respuesta orientativa: ayuda a comprobar que la información es fiable.' }
       ]
     };
-    const mixed = mixedByDifficulty[difficultyTier(difficulty)];
+    const tier = difficultyTier(difficulty);
+    const start = { Inicial: 10, Medio: 20, Avanzado: 100 }[tier];
+    const extras = Array.from({ length: 8 }, (_, index) => {
+      const first = start + index;
+      const second = index + 3;
+      return { question: `Calcula: ${first} + ${second} =`, answer: String(first + second) };
+    });
+    const mixed = [...mixedByDifficulty[tier], ...extras];
     if (type === 'diaria') {
       const dailyOrder = shuffledIndexes(mixed.length);
       return dailyOrder.slice(0, 5).map(index => mixed[index]);

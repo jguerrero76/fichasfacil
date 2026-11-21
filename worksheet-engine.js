@@ -613,7 +613,7 @@ spellingActivities.push(
   ['Coloca las tildes', 'El camion paso junto al rio.', 'El camión pasó junto al río.'],
   ['Coloca los signos', 'Has terminado la actividad', '¿Has terminado la actividad?'],
   ['Completa con ll o y', 'El _ate navega cerca de la _egua.', 'El yate navega cerca de la yegua.'],
-  ['Completa con r o rr', 'La to_uga cruza el ca_il.', 'La tortuga cruza el carril.'],
+  ['Completa con r o rr', 'La to_tuga cruza el ca_il.', 'La tortuga cruza el carril.'],
   ['Coloca las mayúsculas', 'lucas viaja a madrid en verano.', 'Lucas viaja a Madrid en verano.'],
   ['Completa con c o z', 'La _ebra corre por la _ona.', 'La cebra corre por la zona.'],
   ['Completa con qu o c', 'El pa__ete llegó a la _iudad.', 'El paquete llegó a la ciudad.']

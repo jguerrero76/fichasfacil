@@ -362,3 +362,34 @@ test('cada lectura tiene texto, tres preguntas y tres respuestas completas', () 
     for (const value of [...reading.questions, ...reading.answers]) assert.ok(value.trim(), reading.title);
   }
 });
+
+
+test('los huecos de ortografía se resuelven con las letras indicadas', () => {
+  const start = source.indexOf('const spellingActivities =');
+  const end = source.indexOf('function activityQuestionPool', start);
+  const items = new Function(source.slice(start, end) + '; return spellingActivities;')();
+  const escape = text => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  for (const [instruction, question, answer] of items) {
+    if (!instruction.startsWith('Completa con ')) continue;
+    const choices = instruction.replace('Completa con ', '').split(' o ');
+    const expression = question.split(/_+/).map(escape).join('(' + choices.map(escape).join('|') + ')');
+    assert.match(answer, new RegExp('^' + expression + '$', 'iu'), question);
+  }
+});
+
+test('las soluciones de las series siguen el patrón numérico', () => {
+  const start = source.indexOf('const spellingActivities =');
+  const end = source.indexOf('function activityQuestionPool', start);
+  const items = new Function(source.slice(start, end) + '; return logicActivities;')();
+  for (const [question, answer] of items) {
+    const values = question.match(/\d+/g).map(Number);
+    const differences = values.slice(1).map((value, index) => value - values[index]);
+    const ratios = values.slice(1).map((value, index) => value / values[index]);
+    const secondDifferences = differences.slice(1).map((value, index) => value - differences[index]);
+    let expected;
+    if (differences.every(value => value === differences[0])) expected = values.at(-1) + differences[0];
+    else if (ratios.every(value => value === ratios[0])) expected = values.at(-1) * ratios[0];
+    else if (secondDifferences.every(value => value === secondDifferences[0])) expected = values.at(-1) + differences.at(-1) + secondDifferences[0];
+    assert.equal(expected, Number(answer), question);
+  }
+});

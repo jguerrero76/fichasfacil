@@ -576,3 +576,18 @@ test('caligrafía ofrece diez modelos diferentes por tipo y nivel', () => {
     }
   }
 });
+
+
+test('los problemas nuevos de dinero varían y sus operaciones son correctas', () => {
+  for (const tier of ['Inicial', 'Medio', 'Avanzado']) {
+    const items = practicalApi.practicalActivitiesByDifficulty[tier].dinero.slice(-20);
+    assert.equal(items.length, 20);
+    assert.equal(new Set(items.map(([q]) => q.match(/^(En una caja hay|Una hucha tiene|En un sobre hay|Una caja tiene)/)[0])).size, 4);
+    for (const [question, answer] of items) {
+      const values = [...question.matchAll(/(\d+) €/g)].map(match => Number(match[1]));
+      assert.equal(values.length, 2);
+      const expected = question.startsWith('En una caja hay') ? values[0] + values[1] : question.startsWith('En un sobre hay') ? values[1] - values[0] : values[0] - values[1];
+      assert.equal(Number.parseInt(answer, 10), expected, question);
+    }
+  }
+});

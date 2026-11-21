@@ -443,3 +443,16 @@ test('el PDF mantiene cada problema junto a su solución y representa la resta',
     assert.ok(page.some(entry => entry.value.includes('Respuesta: ' + (index + 3) + ' - 2 = ' + (index + 1))), 'solución ' + (index + 1));
   }
 });
+
+
+test('las lecturas evitan la plantilla repetida y los niveles de geometría se diferencian', () => {
+  const startReading = source.indexOf('const makeReading =');
+  const endReading = source.indexOf('const copyingSequences =', startReading);
+  const readings = new Function(source.slice(startReading, endReading) + '; return readingActivities;')();
+  assert.ok(readings.every(reading => !reading.text.includes('Después revisó la actividad y dejó todo preparado para el día siguiente.')));
+  const startBanks = source.indexOf('const spellingActivities =');
+  const endBanks = source.indexOf('function activityQuestionPool', startBanks);
+  const banks = new Function(source.slice(startBanks, endBanks) + '; return practicalActivitiesByDifficulty;')();
+  assert.ok(banks.Avanzado.geometria.some(([question]) => question.includes('diagonales')));
+  assert.ok(!banks.Inicial.geometria.some(([question]) => question.includes('diagonales')));
+});

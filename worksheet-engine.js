@@ -278,64 +278,26 @@ const readingExpansionByLevel = {
 const readingActivities = Object.entries(readingActivitiesByLevel)
   .flatMap(([level, activities]) => [...activities, ...(additionalReadingActivitiesByLevel[level] || []), ...(readingExpansionByLevel[level] || [])].map(activity => makeReading(level, activity)));
 
-const buildShortReadings = (level, entries) => entries.map(([title, subject, action, object, place]) => makeReading(level, [
-  title,
-  `${subject} ${action} ${object} en ${place}. Después revisó la actividad y dejó todo preparado para el día siguiente.`,
-  '¿Quién realizó la actividad?', subject,
-  '¿Qué hizo?', `${action} ${object}.`,
-  '¿Dónde la realizó?', place + '.'
-]));
-
-readingActivities.push(
-  ...buildShortReadings('Inicial', [
-    ['La postal', 'Vera', 'dibujó', 'una postal', 'su habitación'], ['El tambor', 'Leo', 'guardó', 'un tambor', 'el armario'],
-    ['La cometa', 'Nora', 'preparó', 'una cometa', 'el patio'], ['El cuento', 'Hugo', 'eligió', 'un cuento', 'la biblioteca'],
-    ['La taza', 'Mía', 'lavó', 'una taza', 'la cocina'], ['El puzle', 'Álex', 'terminó', 'un puzle', 'la mesa'],
-    ['La gorra', 'Irene', 'encontró', 'una gorra', 'el banco'], ['El cuaderno', 'Bruno', 'ordenó', 'un cuaderno', 'la mochila'],
-    ['La pelota', 'Celia', 'compartió', 'una pelota', 'el parque'], ['El pañuelo', 'Dani', 'dobló', 'un pañuelo', 'su cajón'],
-    ['La semilla', 'Lola', 'plantó', 'una semilla', 'una maceta'], ['El dibujo', 'Mario', 'coloreó', 'un dibujo', 'la clase'],
-    ['La linterna', 'Sara', 'encendió', 'una linterna', 'la tienda'], ['El zumo', 'Pablo', 'preparó', 'un zumo', 'la cocina'],
-    ['La cuerda', 'Aina', 'recogió', 'una cuerda', 'el gimnasio'], ['El disfraz', 'Tomás', 'guardó', 'un disfraz', 'el baúl'],
-    ['La regla', 'Elena', 'utilizó', 'una regla', 'su escritorio'], ['El regalo', 'Nico', 'envolvió', 'un regalo', 'el salón'],
-    ['La hoja', 'Clara', 'recogió', 'una hoja', 'el jardín'], ['El cubo', 'Óscar', 'llenó', 'un cubo', 'el patio'],
-    ['La foto', 'Alicia', 'pegó', 'una foto', 'su álbum'], ['El botón', 'Mateo', 'cosió', 'un botón', 'la mesa'],
-    ['La canción', 'Julia', 'escuchó', 'una canción', 'su habitación'], ['El mapa', 'Diego', 'miró', 'un mapa', 'la clase'],
-    ['La caja', 'Emma', 'cerró', 'una caja', 'el dormitorio'], ['El vaso', 'Héctor', 'llenó', 'un vaso', 'la cocina'],
-    ['La planta', 'Olivia', 'regó', 'una planta', 'su habitación']
-  ]),
-  ...buildShortReadings('Medio', [
-    ['El plano del parque', 'Claudia', 'dibujó', 'un plano', 'la biblioteca'], ['La tabla de datos', 'Iván', 'completó', 'una tabla de datos', 'el aula'],
-    ['El cartel informativo', 'Marta', 'redactó', 'un cartel informativo', 'el pasillo'], ['La caja de muestras', 'Sergio', 'clasificó', 'una caja de muestras', 'el laboratorio'],
-    ['La entrevista', 'Lucía', 'preparó', 'una entrevista', 'el colegio'], ['El diario de campo', 'Adrián', 'escribió', 'un diario de campo', 'el sendero'],
-    ['La maqueta', 'Noa', 'construyó', 'una maqueta', 'el taller'], ['La encuesta', 'Valeria', 'revisó', 'una encuesta', 'la biblioteca'],
-    ['El experimento', 'Samuel', 'repitió', 'un experimento', 'el laboratorio'], ['La exposición', 'Carla', 'organizó', 'una exposición', 'el vestíbulo'],
-    ['El calendario', 'Raúl', 'actualizó', 'un calendario', 'la clase'], ['La brújula', 'Irene', 'comprobó', 'una brújula', 'el sendero'],
-    ['El inventario', 'Daniel', 'anotó', 'un inventario', 'el almacén'], ['La noticia', 'Ainhoa', 'contrastó', 'una noticia', 'la sala de lectura'],
-    ['El registro', 'Mario', 'completó', 'un registro', 'el huerto'], ['La colección', 'Nerea', 'ordenó', 'una colección', 'el museo'],
-    ['El itinerario', 'Lucas', 'calculó', 'un itinerario', 'el mapa'], ['La propuesta', 'Carmen', 'escribió', 'una propuesta', 'la reunión'],
-    ['El modelo', 'Hugo', 'mejoró', 'un modelo', 'el taller'], ['La observación', 'Vega', 'anotó', 'una observación', 'el cuaderno'],
-    ['El folleto', 'Pablo', 'diseñó', 'un folleto', 'la sala de informática'], ['La comparación', 'Elisa', 'preparó', 'una comparación', 'el aula'],
-    ['El recorrido', 'Álvaro', 'marcó', 'un recorrido', 'el plano'], ['La explicación', 'Sofía', 'ensayó', 'una explicación', 'el salón de actos'],
-    ['El informe', 'Gonzalo', 'revisó', 'un informe', 'la biblioteca'], ['La experiencia', 'Mara', 'describió', 'una experiencia', 'el cuaderno'],
-    ['El proyecto', 'Javier', 'presentó', 'un proyecto', 'la clase']
-  ]),
-  ...buildShortReadings('Avanzado', [
-    ['El informe energético', 'Lucía', 'analizó', 'un informe energético', 'el aula'], ['La propuesta vecinal', 'Mateo', 'defendió', 'una propuesta vecinal', 'la reunión'],
-    ['El archivo histórico', 'Sara', 'consultó', 'un archivo histórico', 'el museo'], ['La hipótesis', 'Nora', 'formuló', 'una hipótesis', 'el laboratorio'],
-    ['El mapa climático', 'Diego', 'interpretó', 'un mapa climático', 'la biblioteca'], ['La entrevista científica', 'Alicia', 'preparó', 'una entrevista científica', 'el estudio'],
-    ['El debate', 'Héctor', 'moderó', 'un debate', 'el salón de actos'], ['La investigación', 'Elena', 'documentó', 'una investigación', 'el cuaderno'],
-    ['El presupuesto', 'Bruno', 'calculó', 'un presupuesto', 'la oficina'], ['La campaña', 'Irene', 'planificó', 'una campaña', 'el centro juvenil'],
-    ['El prototipo', 'Óscar', 'probó', 'un prototipo', 'el taller'], ['La reseña', 'Clara', 'escribió', 'una reseña', 'la biblioteca'],
-    ['El análisis', 'Nico', 'realizó', 'un análisis', 'el laboratorio'], ['La cronología', 'Vera', 'ordenó', 'una cronología', 'el archivo'],
-    ['El acuerdo', 'Pablo', 'redactó', 'un acuerdo', 'la asamblea'], ['La encuesta pública', 'Marta', 'interpretó', 'una encuesta pública', 'el centro cívico'],
-    ['El diseño', 'Leo', 'revisó', 'un diseño', 'el estudio'], ['La conclusión', 'Emma', 'explicó', 'una conclusión', 'la clase'],
-    ['El recurso digital', 'Adrián', 'organizó', 'un recurso digital', 'la biblioteca'], ['La guía', 'Celia', 'editó', 'una guía', 'la oficina'],
-    ['El diagnóstico', 'Tomás', 'completó', 'un diagnóstico', 'el laboratorio'], ['La alternativa', 'Julia', 'valoró', 'una alternativa', 'la reunión'],
-    ['El registro de campo', 'Sergio', 'revisó', 'un registro de campo', 'el sendero'], ['La memoria oral', 'Noa', 'transcribió', 'una memoria oral', 'el archivo'],
-    ['El plan de mejora', 'Valeria', 'presentó', 'un plan de mejora', 'el consejo escolar'], ['La síntesis', 'Daniel', 'preparó', 'una síntesis', 'el aula'],
-    ['El resultado', 'Ainhoa', 'comunicó', 'un resultado', 'la exposición']
-  ])
-);
+const additionalThoughtfulReadings = {
+  Inicial: [
+    ['El paraguas de Nora', 'Al salir del colegio empezó a llover. Nora abrió su paraguas y vio que Leo no tenía uno. Los dos caminaron juntos bajo el paraguas hasta la parada.', '¿Qué abrió Nora?', 'Su paraguas.', '¿Por qué caminaron juntos bajo él?', 'Porque estaba lloviendo y Leo no tenía paraguas.', '¿A dónde llegaron?', 'A la parada.'],
+    ['La planta sedienta', 'Amina vio que la tierra de su planta estaba seca. Llenó una regadera pequeña y echó agua en la maceta. Al día siguiente miró de nuevo la tierra.', '¿Cómo estaba la tierra?', 'Seca.', '¿Por qué echó agua Amina?', 'Porque la tierra estaba seca.', '¿Qué miró al día siguiente?', 'La tierra.'],
+    ['Un lugar para leer', 'En el patio había mucho ruido. Pablo quería leer un cuento y buscó un banco tranquilo junto a la biblioteca. Allí pudo terminar la primera página.', '¿Qué quería hacer Pablo?', 'Leer un cuento.', '¿Por qué buscó otro lugar?', 'Porque había mucho ruido en el patio.', '¿Dónde se sentó?', 'En un banco junto a la biblioteca.']
+  ],
+  Medio: [
+    ['La bolsa reutilizable', 'En el mercado, Clara olvidó su bolsa de tela. Su padre le prestó una que llevaba en la mochila y guardaron allí la fruta. Al volver, Clara colocó la bolsa junto a la puerta para recordarla la próxima vez.', '¿Dónde llevaba el padre la bolsa?', 'En la mochila.', '¿Cómo resolvieron el olvido?', 'El padre prestó su bolsa para guardar la fruta.', '¿Por qué dejó Clara la bolsa junto a la puerta?', 'Para acordarse de llevarla la próxima vez.'],
+    ['La torre de cartón', 'El equipo de Inés construyó una torre con cajas. La primera se cayó porque las cajas pequeñas estaban debajo. En el segundo intento colocaron las más grandes en la base y la torre se mantuvo en pie.', '¿Con qué construyeron la torre?', 'Con cajas.', '¿Qué cambiaron en el segundo intento?', 'Pusieron las cajas más grandes en la base.', '¿Qué aprendieron de la primera caída?', 'Que podían mejorar la estabilidad cambiando la base.'],
+    ['El libro compartido', 'A Diego y Sara les interesaba el mismo libro de la biblioteca. Decidieron que Diego lo leería el fin de semana y Sara lo recogería el lunes. Así ambos pudieron leerlo antes de devolverlo.', '¿Qué querían leer Diego y Sara?', 'El mismo libro.', '¿Qué acuerdo tomaron?', 'Diego lo leería el fin de semana y Sara el lunes.', '¿Por qué fue útil el acuerdo?', 'Porque permitió que ambos leyeran el libro.']
+  ],
+  Avanzado: [
+    ['Dos maneras de medir', 'Para saber cuánto había crecido una planta, el grupo de Alba comparó fotografías tomadas desde distancias distintas. Después midieron la altura con una regla y descubrieron que las fotografías podían dar una impresión engañosa.', '¿Qué comparó primero el grupo?', 'Fotografías de la planta.', '¿Por qué podían engañar las fotografías?', 'Porque se habían tomado desde distancias distintas.', '¿Qué dato les ayudó a comprobar el crecimiento?', 'La altura medida con una regla.'],
+    ['Una propuesta para el patio', 'La clase quería instalar una mesa de juegos en el patio. Un equipo propuso ponerla junto a la puerta, pero otro recordó que allí podía dificultar el paso. Después de observar el espacio, acordaron situarla junto a una pared.', '¿Qué quería instalar la clase?', 'Una mesa de juegos.', '¿Qué problema tenía el primer lugar?', 'Podía dificultar el paso junto a la puerta.', '¿Cómo tuvieron en cuenta las dos ideas?', 'Buscaron un lugar junto a la pared que dejara libre el paso.'],
+    ['La noticia compartida', 'Hugo leyó un mensaje que afirmaba que la biblioteca cerraría el sábado. Antes de reenviarlo, consultó el horario oficial y encontró que la biblioteca abría con normalidad. Entonces avisó a quienes habían recibido el mensaje.', '¿Qué afirmaba el mensaje?', 'Que la biblioteca cerraría el sábado.', '¿Qué hizo Hugo para comprobarlo?', 'Consultó el horario oficial.', '¿Por qué fue útil revisar la información?', 'Porque pudo detectar que el mensaje era incorrecto y avisar a otras personas.']
+  ]
+};
+Object.entries(additionalThoughtfulReadings).forEach(([level, entries]) => {
+  readingActivities.push(...entries.map(entry => makeReading(level, entry)));
+});
 
 const copyingSequences = [
   [
@@ -845,9 +807,29 @@ const extraSentences = [
   ['Mario', 'construye', 'una torre'], ['Amina', 'escucha', 'una canción'], ['Julia', 'observa', 'los pájaros'],
   ['Mateo', 'encuentra', 'una pelota'], ['Vera', 'prepara', 'una merienda']
 ];
+const vocabularyByDifficulty = {
+  Inicial: extraVocabulary,
+  Medio: [
+    ['alejar', 'distanciar'], ['apagar', 'extinguir'], ['buscar', 'investigar'], ['construir', 'edificar'],
+    ['contestar', 'responder'], ['descubrir', 'encontrar'], ['dibujar', 'trazar'], ['elegir', 'escoger'],
+    ['escuchar', 'oír'], ['explicar', 'aclarar'], ['finalizar', 'terminar'], ['guardar', 'conservar'],
+    ['iluminar', 'alumbrar'], ['iniciar', 'comenzar'], ['limpiar', 'asear'], ['llegar', 'arribar'],
+    ['lograr', 'conseguir'], ['observar', 'mirar'], ['recordar', 'rememorar'], ['unir', 'juntar']
+  ],
+  Avanzado: [
+    ['abundante', 'copioso'], ['afirmar', 'asegurar'], ['beneficio', 'ventaja'], ['calmado', 'sosegado'],
+    ['concluir', 'finalizar'], ['conservar', 'preservar'], ['decidir', 'determinar'], ['dificultad', 'obstáculo'],
+    ['duradero', 'permanente'], ['evidente', 'claro'], ['exacto', 'preciso'], ['fragante', 'aromático'],
+    ['frecuente', 'habitual'], ['generoso', 'dadivoso'], ['importante', 'relevante'], ['ingenioso', 'creativo'],
+    ['obstáculo', 'impedimento'], ['predecir', 'pronosticar'], ['reducir', 'disminuir'], ['valiente', 'valeroso']
+  ]
+};
 for (const tier of ['Inicial', 'Medio', 'Avanzado']) {
-  for (const [word, synonym] of extraVocabulary) practicalActivitiesByDifficulty[tier].vocabulario.push([`Escribe un sinónimo de «${word}».`, synonym.charAt(0).toUpperCase() + synonym.slice(1) + '.']);
-  for (const [subject, verb, object] of extraSentences) practicalActivitiesByDifficulty[tier].ordenar.push([`Ordena: ${object} / ${verb} / ${subject}.`, `${subject} ${verb} ${object}.`]);
+  for (const [word, synonym] of vocabularyByDifficulty[tier]) practicalActivitiesByDifficulty[tier].vocabulario.push([`Escribe un sinónimo de «${word}».`, synonym.charAt(0).toUpperCase() + synonym.slice(1) + '.']);
+  for (const [subject, verb, object] of extraSentences) {
+    const ending = tier === 'Inicial' ? '' : tier === 'Medio' ? ' antes de salir' : ' para preparar la actividad';
+    practicalActivitiesByDifficulty[tier].ordenar.push([`Ordena: ${object} / ${verb} / ${subject}${ending ? ' / ' + ending.trim() : ''}.`, `${subject} ${verb} ${object}${ending}.`]);
+  }
 }
 
 const spellingExpansion = [
@@ -886,7 +868,22 @@ const geometryExpansion = [
   ['¿Cuántos lados tiene un heptágono?', '7 lados.'],
   ['¿Cuántos vértices tiene un heptágono?', '7 vértices.']
 ];
-for (const tier of ['Inicial', 'Medio', 'Avanzado']) practicalActivitiesByDifficulty[tier].geometria.push(...geometryExpansion);
+practicalActivitiesByDifficulty.Inicial.geometria.push(...geometryExpansion);
+for (const [name, sides] of [['triángulo', 3], ['cuadrado', 4], ['pentágono', 5], ['hexágono', 6], ['heptágono', 7], ['octógono', 8]]) {
+  practicalActivitiesByDifficulty.Medio.geometria.push([`¿Cuántos lados y vértices tiene un ${name}?`, `${sides} lados y ${sides} vértices.`]);
+  practicalActivitiesByDifficulty.Avanzado.geometria.push([`¿Cuántas diagonales tiene un ${name}?`, `${sides * (sides - 3) / 2} diagonales.`]);
+}
+practicalActivitiesByDifficulty.Medio.geometria.push(
+  ['¿Cuántos pares de lados opuestos tiene un rectángulo?', '2 pares.'],
+  ['¿Cuántos pares de lados opuestos tiene un cuadrado?', '2 pares.'],
+  ['¿Cuántos lados de un cuadrado son iguales?', '4 lados.']
+);
+practicalActivitiesByDifficulty.Avanzado.geometria.push(
+  ['¿Cuánto suman los ángulos interiores de un triángulo?', '180 grados.'],
+  ['¿Cuánto suman los ángulos interiores de un cuadrado?', '360 grados.'],
+  ['¿Cuánto suman los ángulos interiores de un pentágono?', '540 grados.'],
+  ['¿Cuánto suman los ángulos interiores de un hexágono?', '720 grados.']
+);
 for (let hour = 1; hour <= 12; hour += 1) {
   practicalActivitiesByDifficulty.Medio.reloj.push([`Son las ${hour}:00. ¿Qué hora será dentro de 30 minutos?`, `Las ${hour}:30.`]);
 }
@@ -939,7 +936,7 @@ const geometryFigureFor = question => {
   if (text.includes('línea cambia de dirección')) return 'brokenLine';
   if (text.includes('ángulo mayor que uno recto')) return 'obtuseAngle';
   if (text.includes('cuadrilátero de cuatro lados iguales') || text.includes('ángulos tiene un cuadrado')) return 'square';
-  if (text.includes('ángulo') && !text.includes('rectángulo')) return text.includes('menor, igual o mayor') ? 'acuteAngle' : 'angle';
+  if (text.includes('ángulo') && (text.includes('observa el ángulo') || !/triángulo|cuadrado|rectángulo|pentágono|hexágono|heptágono|octógono/.test(text))) return text.includes('menor, igual o mayor') ? 'acuteAngle' : 'angle';
   if (text.includes('cuadrado')) return 'square';
   if (text.includes('círculo') || text.includes('redonda')) return 'circle';
   if (text.includes('rectángulo') || text.includes('cuadrilátero')) return 'rectangle';

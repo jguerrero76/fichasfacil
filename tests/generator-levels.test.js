@@ -424,10 +424,11 @@ test('las actividades nuevas de cálculo práctico tienen respuestas correctas',
       if (match) assert.equal(answer, match[2] + '/' + match[1] + '.');
     }
     for (const [question, answer] of bank.reloj) {
-      const match = question.match(/^Son las (\d+):00. ¿Qué hora será dentro de (\d+) minutos/);
+      const match = question.match(/^(?:Son las|Es la) (\d+):00. ¿Qué hora será dentro de (\d+) minutos/);
       if (match) {
         const total = Number(match[1]) * 60 + Number(match[2]);
-        assert.equal(answer, 'Las ' + Math.floor(total / 60) + ':' + String(total % 60).padStart(2, '0') + '.');
+        const answerHour = Math.floor(total / 60);
+        assert.equal(answer, (answerHour === 1 ? 'La ' : 'Las ') + answerHour + ':' + String(total % 60).padStart(2, '0') + '.');
       }
     }
   }

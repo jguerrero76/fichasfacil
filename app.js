@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-13', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-14', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -298,7 +298,7 @@ function ensureWorksheetEngine() {
   if (worksheetEnginePromise) return worksheetEnginePromise;
   worksheetEnginePromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    script.src = 'worksheet-engine.js?v=20261121-13';
+    script.src = 'worksheet-engine.js?v=20261121-14';
     script.async = true;
     const timeout = setTimeout(() => { script.remove(); reject(new Error('El generador tarda demasiado en cargar.')); }, 15000);
     script.onload = () => { clearTimeout(timeout); resolve(); };
@@ -548,9 +548,10 @@ function downloadPdf(config, items, solutions = false) {
       doc.setFillColor(239, 142, 105);
       doc.circle(x, topY + 14, 1.8, 'F');
     } else if (figure === 'triangle') {
-      doc.line(x, topY, x - 15, topY + 25);
-      doc.line(x - 15, topY + 25, x + 15, topY + 25);
-      doc.line(x + 15, topY + 25, x, topY);
+      const triangleHeight = 15 * Math.sqrt(3);
+      doc.line(x, topY, x - 15, topY + triangleHeight);
+      doc.line(x - 15, topY + triangleHeight, x + 15, topY + triangleHeight);
+      doc.line(x + 15, topY + triangleHeight, x, topY);
     } else if (figure === 'rectangle') {
       doc.rect(x - 18, topY + 5, 36, 18);
     } else if (figure === 'pentagon' || figure === 'hexagon' || figure === 'heptagon' || figure === 'octagon') {

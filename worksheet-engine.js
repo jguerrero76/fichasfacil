@@ -821,7 +821,9 @@ for (const [tier, offset] of [['Inicial', 0], ['Medio', 10], ['Avanzado', 20]]) 
     const end = start + minutes;
     const endHour = Math.floor(end / 60);
     const endMinute = String(end % 60).padStart(2, '0');
-    bank.reloj.push([`Son las ${hour}:00. ¿Qué hora será dentro de ${minutes} minutos?`, `Las ${endHour}:${endMinute}.`]);
+    const startLabel = hour === 1 ? 'Es la' : 'Son las';
+    const endLabel = endHour === 1 ? 'La' : 'Las';
+    bank.reloj.push([`${startLabel} ${hour}:00. ¿Qué hora será dentro de ${minutes} minutos?`, `${endLabel} ${endHour}:${endMinute}.`]);
     const price = index + offset;
     const paid = price + (tier === 'Inicial' ? 2 : tier === 'Medio' ? 7 : 13);
     bank.dinero.push([`Un material cuesta ${price} €. Pagas con ${paid} €. ¿Cuánto cambio recibes?`, `${paid - price} €.`]);
@@ -927,7 +929,9 @@ practicalActivitiesByDifficulty.Avanzado.geometria.push(
   ['¿Cuánto suman los ángulos interiores de un hexágono?', '720 grados.']
 );
 for (let hour = 1; hour <= 12; hour += 1) {
-  practicalActivitiesByDifficulty.Medio.reloj.push([`Son las ${hour}:00. ¿Qué hora será dentro de 30 minutos?`, `Las ${hour}:30.`]);
+  const startLabel = hour === 1 ? 'Es la' : 'Son las';
+  const endLabel = hour === 1 ? 'La' : 'Las';
+  practicalActivitiesByDifficulty.Medio.reloj.push([`${startLabel} ${hour}:00. ¿Qué hora será dentro de 30 minutos?`, `${endLabel} ${hour}:30.`]);
 }
 
 function activityQuestionPool(items, difficulty, type) {
@@ -1181,7 +1185,7 @@ const geometrySvg = figure => {
   const common = 'width="104" height="80" viewBox="0 0 76 58" aria-hidden="true" style="display:block;flex:0 0 104px"';
   const stroke = 'fill="none" stroke="#315c9b" stroke-width="2.4" stroke-linejoin="round"';
   const shapes = {
-    triangle: `<polygon points="38,4 11,51 65,51" ${stroke}/>`,
+    triangle: `<polygon points="38,4.2346 11,51 65,51" ${stroke}/>`,
     square: `<rect x="19" y="10" width="38" height="38" ${stroke}/>`,
     rectangle: `<rect x="6" y="16" width="64" height="27" ${stroke}/>`,
     circle: `<circle cx="38" cy="29" r="21" ${stroke}/><circle cx="38" cy="29" r="2.5" fill="#ef8e69"/>`,

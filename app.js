@@ -71,7 +71,7 @@ installButton?.addEventListener('click', async () => {
   installButton.hidden = true;
 });
 window.addEventListener('appinstalled', () => { if (installButton) installButton.hidden = true; });
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-8', { updateViaCache: 'none' }).catch(() => {}));
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js?v=20261121-9', { updateViaCache: 'none' }).catch(() => {}));
 const updateConfigurationSummary = () => {
   const summary = document.querySelector('#configuration-summary');
   if (summary) {
@@ -324,7 +324,11 @@ const openGenerator = async type => {
     const selected = card.dataset.type === type;
     card.classList.toggle('is-selected', selected);
   });
-  document.querySelector('#print-direct').textContent = isMobileDevice() ? 'Descargar PDF' : 'Imprimir ficha';
+  const mobile = isMobileDevice();
+  const printButton = document.querySelector('#print-direct');
+  printButton.hidden = mobile;
+  printButton.textContent = 'Imprimir ficha';
+  document.querySelector('.form-actions').classList.toggle('mobile-actions', mobile);
   setTimeout(() => document.querySelector('#difficulty').focus(), 50);
 };
 
@@ -969,7 +973,7 @@ form.addEventListener('submit', async event => {
   document.querySelector('#new-sheet')?.addEventListener('click', () => {
     preparedWorksheet = null;
     result.innerHTML = '';
-    document.querySelector('#print-direct').focus();
+    document.querySelector(isMobileDevice() ? '#download-direct' : '#print-direct').focus();
   });
 });
 
